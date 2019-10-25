@@ -18,7 +18,6 @@
 			return {
 				StatusBar: this.StatusBar,
 				CustomBar: this.CustomBar,
-				baseEntrys:null,
 			};
 		},
 		props: {
@@ -45,9 +44,9 @@
 						});
 						console.log("ApprovalNoteList  返回上一层结束")
 					} else {
-						//返回到审批列表页面
+						//返回到首页
 						uni.navigateTo({
-							url: "/pages/firstPage/firstPage"
+							url: "/pages/tabBar/firstPage/firstPage"
 						});
 					}
 				} else if (this.backFrom === "ApprovalHandle") {
@@ -62,7 +61,7 @@
 					} else {
 						//返回到审批列表页面
 						uni.navigateTo({
-							url: "/pages/ApprovalNote/ApprovalNoteList"
+							url: "/pages/ApprovalNote/ApprovalNoteList" 
 						});
 					}
 				} 

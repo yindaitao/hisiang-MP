@@ -4,14 +4,30 @@
 		"ignore": []
 	},
 	"setting": {
-		"urlCheck": false
+		"urlCheck": false,
+		"es6": true,
+		"enhance": true,
+		"postcss": true,
+		"minified": true,
+		"newFeature": true,
+		"coverView": true,
+		"nodeModules": true,
+		"autoAudits": true,
+		"uglifyFileName": true,
+		"checkInvalidKey": true,
+		"checkSiteMap": true,
+		"uploadWithSourceMap": true,
+		"babelSetting": {
+			"ignore": [],
+			"disablePlugins": [],
+			"outputPath": ""
+		},
+		"bundle": true
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.7.0",
 	"appid": "wx39ca3f975d178890",
 	"projectname": "SmartOffice",
-	"simulatorType": "wechat",
-	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,
@@ -21,13 +37,28 @@
 			"current": -1,
 			"list": []
 		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
 		"game": {
+			"current": -1,
+			"list": []
+		},
+		"gamePlugin": {
 			"current": -1,
 			"list": []
 		},
 		"miniprogram": {
 			"current": -1,
-			"list": []
+			"list": [
+				{
+					"id": -1,
+					"name": "pages/ApprovalNote/ApprovalHandle",
+					"pathName": "pages/ApprovalNote/ApprovalHandle",
+					"scene": null
+				}
+			]
 		}
 	}
 }
