@@ -337,6 +337,21 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var sourceType = [["camera"], ["album"], ["camera", "album"]];
 var sizeType = [["compressed"], ["original"], ["compressed", "original"]];var _default =
 {
@@ -353,6 +368,17 @@ var sizeType = [["compressed"], ["original"], ["compressed", "original"]];var _d
       indexPayType: 2,
       indexCostType: 0,
       radio: 'radio1',
+      radio2: 'radio2',
+      DetailTypeList: [
+      {
+        Code: "Traffic",
+        Name: "交通费" },
+
+      {
+        Code: "Other",
+        Name: "其它" }],
+
+
       invCompanys: [],
       CostType: ["请选择"],
       CostTypeList: [],
@@ -380,6 +406,7 @@ var sizeType = [["compressed"], ["original"], ["compressed", "original"]];var _d
         id: 1,
         name: "张三",
         jine: "",
+        DetailType: "",
         itemDate: "请选择",
         itemOptionIndex: 0,
         itemOptionText: "",
@@ -392,7 +419,8 @@ var sizeType = [["compressed"], ["original"], ["compressed", "original"]];var _d
       totalJine: "0.00",
       editflag: false,
       editItem: {},
-      isDoSteps: false };
+      isDoSteps: false,
+      DetailID: "" };
 
   },
   computed: {
@@ -465,7 +493,15 @@ var sizeType = [["compressed"], ["original"], ["compressed", "original"]];var _d
       });
       console.log(e);
     },
+    RadioChangeType: function RadioChangeType(e) {
+      this.radio2 = e.detail.value;
+      this.formList[this.DetailID].DetailType = e.detail.value;
+    },
     showModal1: function showModal1(e) {
+      this.modalName = e.currentTarget.dataset.target;
+    },
+    showModalType: function showModalType(ID, e) {
+      this.DetailID = ID;
       this.modalName = e.currentTarget.dataset.target;
     },
     showModal: function showModal(e) {
@@ -537,6 +573,9 @@ var sizeType = [["compressed"], ["original"], ["compressed", "original"]];var _d
     hideModal: function hideModal(e) {
       this.modalName = null;
     },
+    hideModalType: function hideModalType(e) {
+      this.modalName = null;
+    },
     onlySave: function onlySave() {
       this.modalName = null;
       this.isDoSteps = false;
@@ -571,6 +610,7 @@ var sizeType = [["compressed"], ["original"], ["compressed", "original"]];var _d
           LineNum: _indx,
           ObjectType: "BusinessTravelRequest",
           Remarks: _this4.itemData.Remarks1,
+          DetailType: _item.DetailType,
           DocDateStart: _this4.itemData.DocDateStart,
           DocDateArrive: _this4.itemData.DocDateArrive,
           StartPlace: _this4.itemData.StartPlace,

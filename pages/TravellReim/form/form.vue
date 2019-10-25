@@ -44,6 +44,20 @@
 				</radio-group>
 			</view>
 		</view>
+		<view class="cu-modal" :class="modalName=='RadioModalType'?'show':''" @tap="hideModalType">
+			<view class="cu-dialog" @tap.stop="">
+				<radio-group class="block" @change="RadioChangeType">
+					<view class="cu-list menu text-left">
+						<view class="cu-item" v-for="(item,index) in DetailTypeList" :key="index">
+							<label class="flex justify-between align-center flex-sub">
+								<view class="flex-sub">{{item.Name}}</view>
+								<radio class="round" :class="radio2==item.Code?'checked':''" :checked="radio2==item.Code?true:false" :value="item.Code"></radio>
+							</label>
+						</view>
+					</view>
+				</radio-group>
+			</view>
+		</view>
 		<view class="ul-swiper-box margin-top" style="margin-top: 50px;">
 			<form>
 				<view class="cu-form-group" readonly>
@@ -103,9 +117,6 @@
 					</view>
 				<view class="cu-form-group">
 					<view class="title">备注</view>
-					<!-- <view class="action">
-						<view>已输入({{!this.$mbservices.isEmpty(itemData.Remarks)?itemData.Remarks.length:0}})个字符</view>
-					</view> -->
 				</view>
 				<view class="cu-form-group">
 					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
@@ -116,6 +127,10 @@
 						<view class="action">
 							<text class="icon-title text-orange"></text>
 							报销明细({{item.id}})
+						</view>
+						<view class="action">
+							<text class="cu-tag round bg-blue light" data-target="RadioModalType" @tap="showModalType(item.id,$event)">{{item.DetailType}}</text>
+							<text v-if="false" class="icon-roundclosefill text-orange"></text>
 						</view>
 						<view class="action" v-if="formList.length!=1">
 							<button class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
@@ -220,6 +235,17 @@ export default {
 			indexPayType:2,
 			indexCostType: 0,
 			radio: 'radio1',
+			radio2: 'radio2',
+			DetailTypeList:[
+				{
+					Code:"Traffic",
+					Name:"交通费"
+				},
+				{
+					Code:"Other",
+					Name:"其它"
+				}
+			],
 			invCompanys:[],
 			CostType:["请选择"],
 			CostTypeList: [],
@@ -247,6 +273,7 @@ export default {
           id: 1,
           name: "张三",
           jine: "",
+		  DetailType:"",
           itemDate: "请选择",
           itemOptionIndex: 0,
           itemOptionText: "",
@@ -259,7 +286,8 @@ export default {
       totalJine: "0.00",
       editflag: false,
       editItem: {},
-      isDoSteps: false
+      isDoSteps: false,
+	  DetailID:"",
     };
   },
   computed: {
@@ -332,7 +360,15 @@ export default {
 			})
 			console.log(e);
 		},
+		RadioChangeType(e) {
+			this.radio2 = e.detail.value;
+			this.formList[this.DetailID].DetailType=e.detail.value;
+		},
 		showModal1(e) {
+			this.modalName = e.currentTarget.dataset.target;
+		},
+		showModalType(ID,e) {
+			this.DetailID = ID;
 			this.modalName = e.currentTarget.dataset.target;
 		},
     showModal(e) {
@@ -404,6 +440,9 @@ export default {
     hideModal(e) {
       this.modalName = null;
     },
+	hideModalType(e) {
+	  this.modalName = null;
+	},
     onlySave() {
       this.modalName = null;
       this.isDoSteps = false;
@@ -438,6 +477,7 @@ export default {
           LineNum: _indx,
           ObjectType: "BusinessTravelRequest",
           Remarks: this.itemData.Remarks1,
+		  DetailType: _item.DetailType,
 		  DocDateStart:this.itemData.DocDateStart,
 		  DocDateArrive: this.itemData.DocDateArrive,
 		  StartPlace: this.itemData.StartPlace,
