@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "费用报销",
-  "usingComponents": {
-    "abc": "/pages/components/uni-datetimepicker"
-  }
-}

@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "差旅费报销申请",
-  "usingComponents": {
-    "abc": "/pages/components/uni-datetimepicker"
-  }
-}

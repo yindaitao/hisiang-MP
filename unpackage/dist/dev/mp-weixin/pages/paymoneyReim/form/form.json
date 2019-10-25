@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "还款申请",
-  "usingComponents": {
-    "abc": "/pages/components/uni-datetimepicker"
-  }
-}

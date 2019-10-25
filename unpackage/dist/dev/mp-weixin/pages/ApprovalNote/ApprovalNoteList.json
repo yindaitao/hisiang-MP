@@ -1,7 +1,0 @@
-{
-  "usingComponents": {
-    "uni-load-more": "/components/uni-load-more/uni-load-more",
-    "fab-tag": "/components/uni-fab-tag/uni-fab-tag",
-    "callback": "/pages/components/callback/callback"
-  }
-}
