@@ -1,0 +1,1 @@
+<view><custom vue-id="1" bind:__l="__l" vue-slots="{{['default']}}">发票信息</custom><web-view src="{{showUrl.url}}" data-event-opts="{{[['message',[['getMessage',['$event']]]]]}}" bindmessage="__e"></web-view></view>

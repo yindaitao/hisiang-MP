@@ -1,0 +1,112 @@
+var websiteUrl = "https://oa.magicbox.net.cn"; // "https://so.magicdata.co";
+/* http://localhost:60201 */
+/* http://oa.magicbox.net.cn */
+/* http://192.168.0.109:8080 */
+/* http://oa.magicbox.net.cn*/
+/* https://so.magicdata.co */
+module.exports = {
+	/* 接口根目录 */
+	webroot: websiteUrl,
+	/* 登录 */
+	login: websiteUrl + '/Token',
+	/* 根据用户id获取用户信息 */
+	getUserInfo: websiteUrl + '/api/User/GetUsers',
+	/* 获取AccessToken */
+	getAccessToken: websiteUrl + '/api/Authorization/GetUserAuthorization_Mobile',
+	/* 获取组织架构TreeList */
+	getTreeList: websiteUrl + '/api/Organization/GetOrganizationTreeApp',
+	/* 提交组织架构 */
+	submitOrgForm: websiteUrl + '/api/Organization/Save',
+	/* 删除组织架构 */
+	deleteOrg: websiteUrl + '/api/Organization/Delete',
+	/* 获取组织架构列表 */
+	getOrgList: websiteUrl + '/api/Organization/GetOrganizations',
+	/* 获取费用类型列表 */
+	getCostTypeList: websiteUrl + '/api/CostType/GetRecords',
+	/* 获取人员记录 */
+	getUserList: websiteUrl + '/api/User/GetUsers',
+	/* 添加、删除、修改人员记录 */
+	deleteUser: websiteUrl + '/api/User/Save',
+	/* 批量删除人员 */
+	deleteUserArray: websiteUrl + '/api/User/DeleteArray',
+	/* 上传图片 */
+	uploadImages: websiteUrl + '/api/Upload/PostImage',
+	/* 删除选中的图片 */
+	deleteImage: websiteUrl + '/api/Upload/appDeleteImage',
+	/* 添加请假审批 */
+	addLeaveEntity: websiteUrl + '/api/Leave/Save',
+	/* 获取请假列表 */
+	getLeaveList: websiteUrl + '/api/Leave/GetRecords',
+	/* 报销最大ID */
+	maxNumReimRequest: websiteUrl + '/api/ReimbursementRequest/GetMaxDocEntry',
+	/* 得到费用报销类型 */
+	getRemTypeList: websiteUrl + '/api/ReimbursementType/GetRecords',
+	/* 提交报销申请 */
+	submitCostForm: websiteUrl + '/api/ReimbursementRequest/Save',
+	/* 删除报销申请 */
+	deleteCostItem: websiteUrl + '/api/ReimbursementRequest/Delete',
+	/* 修改报销申请 */
+	updateCostItem: websiteUrl + '/api/ReimbursementRequest/Update',
+	/* 获取报销列表 */
+	getReimList: websiteUrl + '/api/ReimbursementRequest/GetRecords',
+	/* 获取审核步骤 */
+	getStages: websiteUrl + '/api/ApprovalTemplate/GetApprovalStage',
+	/* 获取待办任务列表 */
+	getTaskList: websiteUrl + '/api/Backlog/GetRecords',
+	/* 提交审批结果 */
+	submitApproveNote: websiteUrl + '/api/ApprovalNote/Save',
+	/* 获取支出分类 */
+	getExpendType: websiteUrl + '/api/ExpendType/GetRecords',
+	/* 支出申请最大编号 */
+	maxNumExpendRequest: websiteUrl + '/api/ExpendRequest/GetMaxDocEntry',
+	/* 提交支出申请 */
+	submitExpendRequest: websiteUrl + '/api/ExpendRequest/Save',
+	/* 获取支出申请列表 */
+	getExpendRequestList: websiteUrl + '/api/ExpendRequest/GetExpendRequest',
+	/* 支出申请单据详情 */
+	getItemExpendRequest: websiteUrl + '/api/ExpendRequest/GetRecords',
+	/* 借款申请最大编号 */
+	maxNumBorrowRequest: websiteUrl + '/api/BorrowRequest/GetMaxDocEntry',
+	/* 提交借款申请 */
+	submitBorrowRequest: websiteUrl + '/api/BorrowRequest/Save',
+	/* 获取借款申请列表 */
+	getBorrowRequestList: websiteUrl + '/api/BorrowRequest/GetRecords',
+	/* 借款申请单据详情 */
+	getItemBorrowRequest: websiteUrl + '/api/BorrowRequest/GetRecords',
+	/* 借款申请冲销明细 */
+	getBorrowRequestRepaymentDetail: websiteUrl + '/api/BorrowRequest/GetRepmentDetailRecords',
+	/* 差旅费报销申请最大编号 */
+	maxNumBusinessTravelRequest: websiteUrl + '/api/BusinessTravelRequest/GetMaxDocEntry',
+	/* 获取差旅费报销申请列表 */
+	getBusinesstravelReimList: websiteUrl + '/api/BusinessTravelRequest/GetRecords',
+	/* 差旅费报销申请、详情 */
+	getBusinesstravelRequestItemDetail: websiteUrl + '/api/BusinesstravelRequest/GetBusinesstravelRequestDetail',
+	/* 提交差旅费报销申请 */
+	saveBusinesstravelRequest: websiteUrl + '/api/BusinessTravelRequest/Save',
+	/* 还款申请最大编号 */
+	maxNumpaymentRequest: websiteUrl + '/api/RepaymentRequest/GetMaxDocEntry',
+	/* 获取还款申请列表 */
+	getpaymentRequestReimList: websiteUrl + '/api/RepaymentRequest/GetRecords',
+	/* 提交还款申请列表 */
+	submitpaymentRequest: websiteUrl + '/api/RepaymentRequest/Save',
+	// 在还款中获取借款单
+	GetOpenBorrowList: websiteUrl + '/api/Borrow/GetOpenBorrowList',
+	/* 还款申请、详情 */
+	getRepaymentRequestItemDetail: websiteUrl + '/api/RepaymentRequest/GetRepaymentRequestDetail',
+	/* 预支申请、详情 */
+	getAdvancePayRequestItemDetail: websiteUrl + '/api/AdvancePayRequest/GetAdvancePayRequestDetail',
+	/* 获取消耗申请列表 */
+	getDepleteRequestList: websiteUrl + '/api/Deplete/GetRecords',
+	// 在消耗申请中获取消耗管理
+	GetOpenDepletes: websiteUrl + '/api/Deplete/GetOpenDepletes',
+	/* 获取我的审核列表 */
+	getApprovalNotesList: websiteUrl + '/api/ApprovalNote/GetApprovalNotes',
+	// 获取可用会议室列表
+	getMeetingroomList: websiteUrl + "/api/MeetingRoom/GetRecords",
+	// 获取可用会议列表
+	getMeetingList: websiteUrl + "/api/Meeting/GetRecords",
+	// 获取我的审批未读
+	getApprovalNote: websiteUrl + "/api/ApprovalNote/GetRecordCounter",
+	//获取待办事项未读
+	getBacklog: websiteUrl + "/api/Backlog/GetRecords",
+}

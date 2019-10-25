@@ -1,0 +1,119 @@
+{
+  "pages": [
+    "pages/tabBar/firstPage/firstPage",
+    "pages/tabBar/personpage/personpage",
+    "pages/login/login",
+    "pages/person/personpage"
+  ],
+  "subPackages": [
+    {
+      "root": "pages/costApp",
+      "pages": [
+        "caform/caform",
+        "calist/calist",
+        "cadetail/cadetail"
+      ]
+    },
+    {
+      "root": "pages/costReim",
+      "pages": [
+        "list/list",
+        "form/form",
+        "detail/detail"
+      ]
+    },
+    {
+      "root": "pages/GeneralReim",
+      "pages": [
+        "list/general",
+        "form/form",
+        "detail/cadetail"
+      ]
+    },
+    {
+      "root": "pages/paymoneyReim",
+      "pages": [
+        "list/list",
+        "form/form",
+        "detail/detail"
+      ]
+    },
+    {
+      "root": "pages/ReseFund",
+      "pages": [
+        "rfform/rfform",
+        "rflist/rflist",
+        "rfdetail/rfdetail"
+      ]
+    },
+    {
+      "root": "pages/TravellReim",
+      "pages": [
+        "list/list",
+        "form/form",
+        "detail/detail"
+      ]
+    },
+    {
+      "root": "pages/xiaohaoReim",
+      "pages": [
+        "list/list",
+        "form/form",
+        "detail/detail"
+      ]
+    },
+    {
+      "root": "pages/ApprovalNote",
+      "pages": [
+        "ApprovalNoteList",
+        "ReceiptPage/ReceiptPage",
+        "ApprovalHandle"
+      ]
+    },
+    {
+      "root": "pages/meeting",
+      "pages": [
+        "meetingroomlist",
+        "meetinglist",
+        "meeting"
+      ]
+    },
+    {
+      "root": "pages/task",
+      "pages": [
+        "tasklist/tasklist",
+        "taskdetail/taskdetail"
+      ]
+    }
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#39b54a",
+    "navigationBarTitleText": "SmartOffice",
+    "navigationStyle": "custom",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#007AFF",
+    "borderStyle": "black",
+    "backgroundColor": "#F8F8F8",
+    "list": [
+      {
+        "pagePath": "pages/tabBar/firstPage/firstPage",
+        "iconPath": "static/template.png",
+        "selectedIconPath": "static/templateHL.png",
+        "text": "首页菜单"
+      },
+      {
+        "pagePath": "pages/tabBar/personpage/personpage",
+        "iconPath": "static/mime.png",
+        "selectedIconPath": "static/mimeHL.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "usingComponents": {
+    "custom": "/pages/components/custom/custom"
+  },
+  "sitemapLocation": "sitemap90.json"
+}

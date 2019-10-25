@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "会议列表",
+  "usingComponents": {
+    "uni-calendar": "/components/uni-calendar/uni-calendar"
+  }
+}
