@@ -1,8 +1,6 @@
 <template>
     <view>
 		<callback :baseEntry="from" :backFrom="backFrom">我的审批列表</callback>
-		{{from}}<br/>
-		{{backFrom}}
         <scroll-view
             id="_tabBar"
             ref="_tabBar"

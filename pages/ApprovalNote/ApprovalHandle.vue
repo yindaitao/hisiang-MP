@@ -1,8 +1,6 @@
 <template>
     <view>
         <callback :baseEntry="from" :backFrom="backFrom">{{appNote.BusinessTypeName}} - {{appNote.BusinessOrderNo}}</callback>
-		{{from}}<br/>
-		{{backFrom}}
         <!-- 单据信息 -->
         <view>
             <view class="cu-bar bg-white solid-bottom solid-top">
