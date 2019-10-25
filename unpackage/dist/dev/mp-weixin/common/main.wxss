@@ -4874,7 +4874,7 @@ to {
 	position: absolute;
 	top: 36rpx;
 	z-index: 9;
-	background: #fff;
+	/* background: #fff; */
 	width: 50rpx;
 	height: 50rpx;
 	text-align: center;

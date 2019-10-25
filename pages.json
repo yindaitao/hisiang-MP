@@ -38,6 +38,10 @@
             "path": "pages/person/personpage",
             "style": {}
         }
+        ,{
+            "path" : "pages/Attendance/CheckInOut/CheckInOut",
+            "style" : {}
+        }
     ],
     "subPackages": [
         {
@@ -290,8 +294,14 @@
                 "pagePath": "pages/tabBar/firstPage/firstPage",
                 "iconPath": "static/template.png",
                 "selectedIconPath": "static/templateHL.png",
-                "text": "首页菜单"
+                "text": "菜单"
             },
+			{
+			    "pagePath": "pages/Attendance/CheckInOut/CheckInOut",
+			    "iconPath": "static/location.png",
+			    "selectedIconPath": "static/locationfill.png",
+			    "text": "打卡"
+			},
             {
                 "pagePath": "pages/tabBar/personpage/personpage",
                 "iconPath": "static/mime.png",

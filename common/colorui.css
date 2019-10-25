@@ -2101,7 +2101,7 @@ button.icon.lg {
 	position: absolute;
 	top: 36upx;
 	z-index: 9;
-	background: #fff;
+	/* background: #fff; */
 	width: 50upx;
 	height: 50upx;
 	text-align: center;

@@ -734,7 +734,7 @@ function initData(vueOptions, context) {
     try {
       data = data.call(context); // 支持 Vue.prototype 上挂的数据
     } catch (e) {
-      if (Object({"VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+      if (Object({"NODE_ENV":"development","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
         console.warn('根据 Vue 的 data 函数初始化小程序 data 失败，请尽量确保 data 函数中不访问 vm 对象，否则可能影响首次数据渲染速度。', data);
       }
     }
@@ -1177,6 +1177,8 @@ function parseBaseApp(vm, _ref3)
 
 
       this.$vm.$scope = this;
+      // vm 上也挂载 globalData
+      this.$vm.globalData = this.globalData;
 
       this.$vm._isMounted = true;
       this.$vm.__call_hook('mounted', args);
@@ -1606,9 +1608,9 @@ function normalizeComponent (
 /***/ }),
 
 /***/ 15:
-/*!*******************************************************************************!*\
-  !*** F:/xiaochengxu/SmartOffice/SmartOffice.WebApi/WeChat_Dev/store/index.js ***!
-  \*******************************************************************************/
+/*!*************************************************************************!*\
+  !*** C:/MagicWork/OAUniApp/MiniProgramHR/SmartOffice.MP/store/index.js ***!
+  \*************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8903,7 +8905,7 @@ function type(obj) {
 
 function flushCallbacks$1(vm) {
     if (vm.__next_tick_callbacks && vm.__next_tick_callbacks.length) {
-        if (Object({"VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+        if (Object({"NODE_ENV":"development","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:flushCallbacks[' + vm.__next_tick_callbacks.length + ']');
@@ -8924,14 +8926,14 @@ function nextTick$1(vm, cb) {
     //1.nextTick 之前 已 setData 且 setData 还未回调完成
     //2.nextTick 之前存在 render watcher
     if (!vm.__next_tick_pending && !hasRenderWatcher(vm)) {
-        if(Object({"VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"NODE_ENV":"development","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:nextVueTick');
         }
         return nextTick(cb, vm)
     }else{
-        if(Object({"VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"NODE_ENV":"development","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance$1 = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance$1.is || mpInstance$1.route) + '][' + vm._uid +
                 ']:nextMPTick');
@@ -9007,7 +9009,7 @@ var patch = function(oldVnode, vnode) {
     });
     var diffData = diff(data, mpData);
     if (Object.keys(diffData).length) {
-      if (Object({"VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+      if (Object({"NODE_ENV":"development","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
         console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + this._uid +
           ']差量更新',
           JSON.stringify(diffData));
@@ -9385,9 +9387,9 @@ internalMixin(Vue);
 /***/ }),
 
 /***/ 20:
-/*!*********************************************************************************!*\
-  !*** F:/xiaochengxu/SmartOffice/SmartOffice.WebApi/WeChat_Dev/common/webapi.js ***!
-  \*********************************************************************************/
+/*!***************************************************************************!*\
+  !*** C:/MagicWork/OAUniApp/MiniProgramHR/SmartOffice.MP/common/webapi.js ***!
+  \***************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9507,9 +9509,9 @@ module.exports = {
 /***/ }),
 
 /***/ 21:
-/*!*************************************************************************************!*\
-  !*** F:/xiaochengxu/SmartOffice/SmartOffice.WebApi/WeChat_Dev/common/mbservices.js ***!
-  \*************************************************************************************/
+/*!*******************************************************************************!*\
+  !*** C:/MagicWork/OAUniApp/MiniProgramHR/SmartOffice.MP/common/mbservices.js ***!
+  \*******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9905,10 +9907,10 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 302:
-/*!********************************************************************************************************!*\
-  !*** F:/xiaochengxu/SmartOffice/SmartOffice.WebApi/WeChat_Dev/components/mescroll-uni/mescroll-uni.js ***!
-  \********************************************************************************************************/
+/***/ 310:
+/*!**************************************************************************************************!*\
+  !*** C:/MagicWork/OAUniApp/MiniProgramHR/SmartOffice.MP/components/mescroll-uni/mescroll-uni.js ***!
+  \**************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10657,10 +10659,10 @@ MeScroll.prototype.setBounce = function (isBounce) {
 
 /***/ }),
 
-/***/ 303:
-/*!***************************************************************************************************************!*\
-  !*** F:/xiaochengxu/SmartOffice/SmartOffice.WebApi/WeChat_Dev/components/mescroll-uni/mescroll-uni-option.js ***!
-  \***************************************************************************************************************/
+/***/ 311:
+/*!*********************************************************************************************************!*\
+  !*** C:/MagicWork/OAUniApp/MiniProgramHR/SmartOffice.MP/components/mescroll-uni/mescroll-uni-option.js ***!
+  \*********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10699,10 +10701,10 @@ GlobalOption;exports.default = _default;
 
 /***/ }),
 
-/***/ 311:
-/*!****************************************************************************************************!*\
-  !*** F:/xiaochengxu/SmartOffice/SmartOffice.WebApi/WeChat_Dev/components/uni-calendar/calendar.js ***!
-  \****************************************************************************************************/
+/***/ 319:
+/*!**********************************************************************************************!*\
+  !*** C:/MagicWork/OAUniApp/MiniProgramHR/SmartOffice.MP/components/uni-calendar/calendar.js ***!
+  \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11261,9 +11263,9 @@ calendar;exports.default = _default;
 /***/ }),
 
 /***/ 4:
-/*!***************************************************************************!*\
-  !*** F:/xiaochengxu/SmartOffice/SmartOffice.WebApi/WeChat_Dev/pages.json ***!
-  \***************************************************************************/
+/*!*********************************************************************!*\
+  !*** C:/MagicWork/OAUniApp/MiniProgramHR/SmartOffice.MP/pages.json ***!
+  \*********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12160,9 +12162,9 @@ main();
 /***/ }),
 
 /***/ 51:
-/*!*************************************************************************************!*\
-  !*** F:/xiaochengxu/SmartOffice/SmartOffice.WebApi/WeChat_Dev/common/md5encrypt.js ***!
-  \*************************************************************************************/
+/*!*******************************************************************************!*\
+  !*** C:/MagicWork/OAUniApp/MiniProgramHR/SmartOffice.MP/common/md5encrypt.js ***!
+  \*******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12439,26 +12441,26 @@ function binl2b64(binarray) {
 /*! exports provided: _from, _id, _inBundle, _integrity, _location, _phantomChildren, _requested, _requiredBy, _resolved, _shasum, _spec, _where, author, bugs, bundleDependencies, deprecated, description, devDependencies, files, gitHead, homepage, license, main, name, repository, scripts, version, default */
 /***/ (function(module) {
 
-module.exports = {"_from":"@dcloudio/uni-stat@next","_id":"@dcloudio/uni-stat@2.0.0-23620191019001","_inBundle":false,"_integrity":"sha512-gBpkjEOQ/LhTnXBVi266PoTNT5VJtbYoEVy+gZ8/LN9/jKEWeWndd2Lu7vn7hmUySVM5K5UV/Bd5LEVkgXB8mA==","_location":"/@dcloudio/uni-stat","_phantomChildren":{},"_requested":{"type":"tag","registry":true,"raw":"@dcloudio/uni-stat@next","name":"@dcloudio/uni-stat","escapedName":"@dcloudio%2funi-stat","scope":"@dcloudio","rawSpec":"next","saveSpec":null,"fetchSpec":"next"},"_requiredBy":["#USER","/","/@dcloudio/vue-cli-plugin-uni"],"_resolved":"https://registry.npmjs.org/@dcloudio/uni-stat/-/uni-stat-2.0.0-23620191019001.tgz","_shasum":"5c006b903ae7bc407c8b1786de249ffbf72da996","_spec":"@dcloudio/uni-stat@next","_where":"/Users/fxy/Documents/DCloud/HbuilderX-plugins/release/uniapp-cli","author":"","bugs":{"url":"https://github.com/dcloudio/uni-app/issues"},"bundleDependencies":false,"deprecated":false,"description":"","devDependencies":{"@babel/core":"^7.5.5","@babel/preset-env":"^7.5.5","eslint":"^6.1.0","rollup":"^1.19.3","rollup-plugin-babel":"^4.3.3","rollup-plugin-clear":"^2.0.7","rollup-plugin-commonjs":"^10.0.2","rollup-plugin-copy":"^3.1.0","rollup-plugin-eslint":"^7.0.0","rollup-plugin-json":"^4.0.0","rollup-plugin-node-resolve":"^5.2.0","rollup-plugin-replace":"^2.2.0","rollup-plugin-uglify":"^6.0.2"},"files":["dist","package.json","LICENSE"],"gitHead":"bc995d4b43b68e7fe7914ae6b2112117d36e63a8","homepage":"https://github.com/dcloudio/uni-app#readme","license":"Apache-2.0","main":"dist/index.js","name":"@dcloudio/uni-stat","repository":{"type":"git","url":"git+https://github.com/dcloudio/uni-app.git","directory":"packages/uni-stat"},"scripts":{"build":"NODE_ENV=production rollup -c rollup.config.js","dev":"NODE_ENV=development rollup -w -c rollup.config.js"},"version":"2.0.0-23620191019001"};
+module.exports = {"_from":"@dcloudio/uni-stat@next","_id":"@dcloudio/uni-stat@2.0.0-23720191024001","_inBundle":false,"_integrity":"sha512-vJEk493Vdb8KueNzR2otzDi23rfyRcQBo/t1R41MwNGPk+AUB94gh10+HVLo98DRcvMzkuVofz3KXTAfEx24iw==","_location":"/@dcloudio/uni-stat","_phantomChildren":{},"_requested":{"type":"tag","registry":true,"raw":"@dcloudio/uni-stat@next","name":"@dcloudio/uni-stat","escapedName":"@dcloudio%2funi-stat","scope":"@dcloudio","rawSpec":"next","saveSpec":null,"fetchSpec":"next"},"_requiredBy":["#USER","/","/@dcloudio/vue-cli-plugin-uni"],"_resolved":"https://registry.npmjs.org/@dcloudio/uni-stat/-/uni-stat-2.0.0-23720191024001.tgz","_shasum":"18272814446a9bc6053bc92666ec7064a1767588","_spec":"@dcloudio/uni-stat@next","_where":"/Users/fxy/Documents/DCloud/HbuilderX-plugins/release/uniapp-cli","author":"","bugs":{"url":"https://github.com/dcloudio/uni-app/issues"},"bundleDependencies":false,"deprecated":false,"description":"","devDependencies":{"@babel/core":"^7.5.5","@babel/preset-env":"^7.5.5","eslint":"^6.1.0","rollup":"^1.19.3","rollup-plugin-babel":"^4.3.3","rollup-plugin-clear":"^2.0.7","rollup-plugin-commonjs":"^10.0.2","rollup-plugin-copy":"^3.1.0","rollup-plugin-eslint":"^7.0.0","rollup-plugin-json":"^4.0.0","rollup-plugin-node-resolve":"^5.2.0","rollup-plugin-replace":"^2.2.0","rollup-plugin-uglify":"^6.0.2"},"files":["dist","package.json","LICENSE"],"gitHead":"a725c04ef762e5df78a9a69d140c2666e0de05fc","homepage":"https://github.com/dcloudio/uni-app#readme","license":"Apache-2.0","main":"dist/index.js","name":"@dcloudio/uni-stat","repository":{"type":"git","url":"git+https://github.com/dcloudio/uni-app.git","directory":"packages/uni-stat"},"scripts":{"build":"NODE_ENV=production rollup -c rollup.config.js","dev":"NODE_ENV=development rollup -w -c rollup.config.js"},"version":"2.0.0-23720191024001"};
 
 /***/ }),
 
 /***/ 7:
-/*!********************************************************************************************!*\
-  !*** F:/xiaochengxu/SmartOffice/SmartOffice.WebApi/WeChat_Dev/pages.json?{"type":"style"} ***!
-  \********************************************************************************************/
+/*!**************************************************************************************!*\
+  !*** C:/MagicWork/OAUniApp/MiniProgramHR/SmartOffice.MP/pages.json?{"type":"style"} ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _default = { "pages": { "pages/tabBar/firstPage/firstPage": { "navigationBarTitleText": "欢迎使用", "usingComponents": {} }, "pages/tabBar/personpage/personpage": { "navigationBarTitleText": "个人中心", "usingComponents": {} }, "pages/login/login": { "navigationBarTitleText": "登录", "usingComponents": {} }, "pages/person/personpage": { "usingComponents": {} }, "pages/costApp/caform/caform": { "navigationBarTitleText": "支出申请", "usingComponents": { "abc": "/pages/components/uni-datetimepicker", "uni-icon": "/components/uni-icon/uni-icon" } }, "pages/costApp/calist/calist": { "navigationBarTitleText": "支出申请历史", "usingComponents": {} }, "pages/costApp/cadetail/cadetail": { "navigationBarTitleText": "支出申请历史", "usingComponents": {} }, "pages/costReim/list/list": { "navigationBarTitleText": "历史申请", "usingComponents": {} }, "pages/costReim/form/form": { "navigationBarTitleText": "费用报销", "usingComponents": { "abc": "/pages/components/uni-datetimepicker" } }, "pages/costReim/detail/detail": { "navigationBarTitleText": "费用报销详情", "usingComponents": {} }, "pages/GeneralReim/list/general": { "navigationBarTitleText": "报销申请", "usingComponents": {} }, "pages/GeneralReim/form/form": { "navigationBarTitleText": "报销申请", "usingComponents": { "abc": "/pages/components/uni-datetimepicker" } }, "pages/GeneralReim/detail/cadetail": { "navigationBarTitleText": "报销申请", "usingComponents": {} }, "pages/paymoneyReim/list/list": { "navigationBarTitleText": "还款申请", "usingComponents": {} }, "pages/paymoneyReim/form/form": { "navigationBarTitleText": "还款申请", "usingComponents": { "abc": "/pages/components/uni-datetimepicker" } }, "pages/paymoneyReim/detail/detail": { "navigationBarTitleText": "还款申请", "usingComponents": {} }, "pages/ReseFund/rfform/rfform": { "navigationBarTitleText": "借款申请", "usingComponents": { "abc": "/pages/components/uni-datetimepicker", "uni-icon": "/components/uni-icon/uni-icon" } }, "pages/ReseFund/rflist/rflist": { "navigationBarTitleText": "借款申请", "usingComponents": {} }, "pages/ReseFund/rfdetail/rfdetail": { "navigationBarTitleText": "借款申请", "usingComponents": {} }, "pages/TravellReim/list/list": { "navigationBarTitleText": "差旅费报销申请", "usingComponents": {} }, "pages/TravellReim/form/form": { "navigationBarTitleText": "差旅费报销申请", "usingComponents": { "abc": "/pages/components/uni-datetimepicker" } }, "pages/TravellReim/detail/detail": { "navigationBarTitleText": "差旅费报销申请", "usingComponents": {} }, "pages/xiaohaoReim/list/list": { "navigationBarTitleText": "消耗申请", "usingComponents": {} }, "pages/xiaohaoReim/form/form": { "navigationBarTitleText": "消耗申请", "usingComponents": { "abc": "/pages/components/uni-datetimepicker" } }, "pages/xiaohaoReim/detail/detail": { "navigationBarTitleText": "消耗申请", "usingComponents": {} }, "pages/ApprovalNote/ApprovalNoteList": { "usingComponents": { "uni-load-more": "/components/uni-load-more/uni-load-more", "fab-tag": "/components/uni-fab-tag/uni-fab-tag", "callback": "/pages/components/callback/callback" } }, "pages/ApprovalNote/ReceiptPage/ReceiptPage": { "usingComponents": {} }, "pages/ApprovalNote/ApprovalHandle": { "usingComponents": { "callback": "/pages/components/callback/callback" } }, "pages/meeting/meetingroomlist": { "navigationBarTitleText": "预约会议室", "usingComponents": { "mescroll-uni": "/components/mescroll-uni/mescroll-uni" } }, "pages/meeting/meetinglist": { "navigationBarTitleText": "会议列表", "usingComponents": { "uni-calendar": "/components/uni-calendar/uni-calendar" } }, "pages/meeting/meeting": { "navigationBarTitleText": "会议", "usingComponents": {} }, "pages/task/tasklist/tasklist": { "usingComponents": { "mpvue-picker": "/components/mpvue-picker/mpvuePicker" } }, "pages/task/taskdetail/taskdetail": { "usingComponents": {} } }, "globalStyle": { "navigationBarBackgroundColor": "#39b54a", "navigationBarTitleText": "SmartOffice", "navigationStyle": "custom", "navigationBarTextStyle": "white" } };exports.default = _default;
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _default = { "pages": { "pages/tabBar/firstPage/firstPage": { "navigationBarTitleText": "欢迎使用" }, "pages/tabBar/personpage/personpage": { "navigationBarTitleText": "个人中心" }, "pages/login/login": { "navigationBarTitleText": "登录" }, "pages/person/personpage": {}, "pages/Attendance/CheckInOut/CheckInOut": {}, "pages/costApp/caform/caform": { "navigationBarTitleText": "支出申请" }, "pages/costApp/calist/calist": { "navigationBarTitleText": "支出申请历史" }, "pages/costApp/cadetail/cadetail": { "navigationBarTitleText": "支出申请历史" }, "pages/costReim/list/list": { "navigationBarTitleText": "历史申请" }, "pages/costReim/form/form": { "navigationBarTitleText": "费用报销" }, "pages/costReim/detail/detail": { "navigationBarTitleText": "费用报销详情" }, "pages/GeneralReim/list/general": { "navigationBarTitleText": "报销申请" }, "pages/GeneralReim/form/form": { "navigationBarTitleText": "报销申请" }, "pages/GeneralReim/detail/cadetail": { "navigationBarTitleText": "报销申请" }, "pages/paymoneyReim/list/list": { "navigationBarTitleText": "还款申请" }, "pages/paymoneyReim/form/form": { "navigationBarTitleText": "还款申请" }, "pages/paymoneyReim/detail/detail": { "navigationBarTitleText": "还款申请" }, "pages/ReseFund/rfform/rfform": { "navigationBarTitleText": "借款申请" }, "pages/ReseFund/rflist/rflist": { "navigationBarTitleText": "借款申请" }, "pages/ReseFund/rfdetail/rfdetail": { "navigationBarTitleText": "借款申请" }, "pages/TravellReim/list/list": { "navigationBarTitleText": "差旅费报销申请" }, "pages/TravellReim/form/form": { "navigationBarTitleText": "差旅费报销申请" }, "pages/TravellReim/detail/detail": { "navigationBarTitleText": "差旅费报销申请" }, "pages/xiaohaoReim/list/list": { "navigationBarTitleText": "消耗申请" }, "pages/xiaohaoReim/form/form": { "navigationBarTitleText": "消耗申请" }, "pages/xiaohaoReim/detail/detail": { "navigationBarTitleText": "消耗申请" }, "pages/ApprovalNote/ApprovalNoteList": {}, "pages/ApprovalNote/ReceiptPage/ReceiptPage": {}, "pages/ApprovalNote/ApprovalHandle": {}, "pages/meeting/meetingroomlist": { "navigationBarTitleText": "预约会议室" }, "pages/meeting/meetinglist": { "navigationBarTitleText": "会议列表" }, "pages/meeting/meeting": { "navigationBarTitleText": "会议" }, "pages/task/tasklist/tasklist": {}, "pages/task/taskdetail/taskdetail": {} }, "globalStyle": { "navigationBarBackgroundColor": "#39b54a", "navigationBarTitleText": "SmartOffice", "navigationStyle": "custom", "navigationBarTextStyle": "white" } };exports.default = _default;
 
 /***/ }),
 
 /***/ 8:
-/*!*******************************************************************************************!*\
-  !*** F:/xiaochengxu/SmartOffice/SmartOffice.WebApi/WeChat_Dev/pages.json?{"type":"stat"} ***!
-  \*******************************************************************************************/
+/*!*************************************************************************************!*\
+  !*** C:/MagicWork/OAUniApp/MiniProgramHR/SmartOffice.MP/pages.json?{"type":"stat"} ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

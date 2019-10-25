@@ -1,213 +1,105 @@
 <template>
-    <view class="page">
-        <custom>分摊报销</custom>
-        <view
-            class="cu-bar bg-white solid-bottom"
-            style="position: fixed;display: flex;z-index: 2;z-index: 999;width: 100%;"
-        >
-            <view class="action">
-                <text class="icon-redpacket text-orange"></text>
-                总金额:{{totalJine}}(元)
-            </view>
-            <view class="action">
-                <button
-                    class="cu-btn round bg-blue shadow"
-                    data-target="DialogModal2"
-                    @tap="showModal"
-                >
-                    <text class="icon-upload"></text>提交
-                </button>
-            </view>
-        </view>
-        <view
-            class="cu-modal"
-            :class="modalName=='DialogModal2'?'show':''"
-        >
-            <view class="cu-dialog">
-                <view class="cu-bar bg-white justify-end">
-                    <view class="content">操作提示</view>
-                    <view
-                        class="action"
-                        @tap="hideModal"
-                    >
-                        <text class="icon-roundclose text-black"></text>
-                    </view>
-                </view>
-                <view class="padding-xl bg-white">
-                    <text class="text-black text-bold">确定提交申请?</text>
-                </view>
-                <view class="cu-bar bg-white">
-                    <view
-                        class="action margin-0 flex-sub text-grey"
-                        @tap="onlySave"
-                    >存草稿</view>
-                    <view
-                        class="action margin-0 flex-sub text-black solid-left"
-                        @tap="hideModal"
-                    >取消</view>
-                    <view
-                        class="action margin-0 flex-sub text-green solid-left"
-                        @tap="saveAndDoSteps"
-                    >确定提交</view>
-                </view>
-            </view>
-        </view>
-        <view
-            class="cu-modal"
-            :class="modalName=='RadioModal'?'show':''"
-            @tap="hideModal"
-        >
-            <view
-                class="cu-dialog"
-                @tap.stop=""
-            >
-                <button
-                    type="primary"
-                    plain="true"
-                >确定</button>
-                <radio-group
-                    class="block"
-                    @change="RadioChange"
-                >
-                    <view class="cu-list menu text-left">
-                        <view
-                            class="cu-item"
-                            v-for="(item,index) in invCompanys"
-                            :key="index"
-                        >
-                            <label class="flex justify-between align-center flex-sub">
-                                <view class="flex-sub">{{item.Name}}</view>
-                                <radio
-                                    class="round"
-                                    :class="radio==item.Code?'checked':''"
-                                    :checked="radio==item.Code?true:false"
-                                    :value="item.Code"
-                                ></radio>
-                            </label>
-                        </view>
-                    </view>
-                </radio-group>
-            </view>
-        </view>
-        <view
-            class="ul-swiper-box margin-top"
-            style="margin-top: 50px;"
-        >
-            <form @submit="setNaivgationBarTitle">
-                <view
-                    class="cu-form-group"
-                    readonly
-                >
-                    <view class="title">单号</view>
-                    <text class="cu-tag round bg-gray light">{{itemData.DocEntry}}</text>
-                    <text
-                        v-if="false"
-                        class="icon-roundclosefill text-orange"
-                    ></text>
-                </view>
-                <view
-                    class="cu-form-group"
-                    readonly
-                >
-                    <view class="title">公司</view>
-                    <text
-                        class="cu-tag round bg-blue light"
-                        data-target="RadioModal"
-                        @tap="showModal1"
-                    >{{itemData.InvCompanyName}}</text>
-                    <text
-                        v-if="false"
-                        class="icon-roundclosefill text-orange"
-                    ></text>
-                </view>
-                <view class="cu-form-group">
-                    <view class="title">类型</view>
-                    <picker
-                        @change="bindPickerChange"
-                        :value="indexExpentType"
-                        :range="ExpentType"
-                    >
-                        <view class="picker">{{ExpentType[indexExpentType]}}</view>
-                    </picker>
-                </view>
-                <view class="cu-form-group">
-                    <view class="title">金额</view>
-                    <input
-                        placeholder="金额"
-                        name="input"
-                        type="digit"
-                        style="text-align: right;"
-                        @input="inputNum"
-                        :value="itemData.Amount"
-                    >
-                    <text
-                        v-if="false"
-                        class="icon-roundclosefill text-orange"
-                    ></text>
-                </view>
-                <view class="cu-form-group">
-                    <view class="title">大写</view>
-                    <view class="action">
-                        <view class="cu-tag round bg-blue light">{{itemData.bigjine}}</view>
-                    </view>
-                </view>
-                <view class="cu-form-group">
-                    <view class="title">支付方式</view>
-                    <picker
-                        @change="bindPickerChange1"
-                        :value="indexPayType"
-                        :range="PayType"
-                    >
-                        <view class="picker">{{PayType[indexPayType]}}</view>
-                    </picker>
-                </view>
-                <view class="cu-form-group">
-                    <view class="title">账户(卡号)</view>
-                    <input
-                        placeholder="账户(卡号)"
-                        name="input"
-                        style="text-align: right;"
-                        @input="inputNum1($event)"
-                        :value="itemData.AccountNumber"
-                    >
-                    <text
-                        v-if="false"
-                        class="icon-roundclosefill text-orange"
-                    ></text>
-                </view>
-                <view class="cu-form-group">
-                    <view class="title">受理单位(银行)</view>
-                    <input
-                        placeholder="受理单位(银行)"
-                        name="input"
-                        style="text-align: right;"
-                        @input="inputNum2($event)"
-                        :value="itemData.AcceptingUnit"
-                    >
-                    <text
-                        v-if="false"
-                        class="icon-roundclosefill text-orange"
-                    ></text>
-                </view>
-                <view class="cu-form-group">
-                    <view class="title">备注</view>
-                    <!-- <view class="action">
+	<view class="page">
+		<custom>分摊报销</custom>
+		<view class="cu-bar bg-white solid-bottom" style="position: fixed;display: flex;z-index: 2;z-index: 999;width: 100%;">
+			<view class="action">
+				<text class="icon-redpacket text-orange"></text>
+				总金额:{{totalJine}}(元)
+			</view>
+			<view class="action">
+				<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
+					<text class="icon-upload"></text>提交
+				</button>
+			</view>
+		</view>
+		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">操作提示</view>
+					<view class="action" @tap="hideModal">
+						<text class="icon-roundclose text-black"></text>
+					</view>
+				</view>
+				<view class="padding-xl bg-white">
+					<text class="text-black text-bold">确定提交申请?</text>
+				</view>
+				<view class="cu-bar bg-white">
+					<view class="action margin-0 flex-sub text-grey" @tap="onlySave">存草稿</view>
+					<view class="action margin-0 flex-sub text-black solid-left" @tap="hideModal">取消</view>
+					<view class="action margin-0 flex-sub text-green solid-left" @tap="saveAndDoSteps">确定提交</view>
+				</view>
+			</view>
+		</view>
+		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal">
+			<view class="cu-dialog" @tap.stop="">
+				<button type="primary" plain="true">确定</button>
+				<radio-group class="block" @change="RadioChange">
+					<view class="cu-list menu text-left">
+						<view class="cu-item" v-for="(item,index) in invCompanys" :key="index">
+							<label class="flex justify-between align-center flex-sub">
+								<view class="flex-sub">{{item.Name}}</view>
+								<radio class="round" :class="radio==item.Code?'checked':''" :checked="radio==item.Code?true:false" :value="item.Code"></radio>
+							</label>
+						</view>
+					</view>
+				</radio-group>
+			</view>
+		</view>
+		<view class="ul-swiper-box margin-top" style="margin-top: 50px;">
+			<form @submit="setNaivgationBarTitle">
+				<view class="cu-form-group" readonly>
+					<view class="title">单号</view>
+					<text class="cu-tag round bg-gray light">{{itemData.DocEntry}}</text>
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group" readonly>
+					<view class="title">公司</view>
+					<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1">{{itemData.InvCompanyName}}</text>
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">类型</view>
+					<picker @change="bindPickerChange" :value="indexExpentType" :range="ExpentType">
+						<view class="picker">{{ExpentType[indexExpentType]}}</view>
+					</picker>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">金额</view>
+					<input placeholder="金额" name="input" type="digit" style="text-align: right;" @input="inputNum" :value="itemData.Amount">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">大写</view>
+					<view class="action">
+						<view class="cu-tag round bg-blue light">{{itemData.bigjine}}</view>
+					</view>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">支付方式</view>
+					<picker @change="bindPickerChange1" :value="indexPayType" :range="PayType">
+						<view class="picker">{{PayType[indexPayType]}}</view>
+					</picker>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">账户(卡号)</view>
+					<input placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum1($event)" :value="itemData.AccountNumber">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">受理单位(银行)</view>
+					<input placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum2($event)" :value="itemData.AcceptingUnit">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">备注</view>
+					<!-- <view class="action">
 						<view>已输入({{itemData.Remarks.length!==undefined?itemData.Remarks.length:0}})个字符</view>
 					</view> -->
-                </view>
-                <view class="cu-form-group">
-                    <textarea
-                        @input="textareaInput"
-                        :class="itemData.Remarks?'value':''"
-                        maxlength="-1"
-                        :disabled="modalName!=null"
-                        id="_Remarks"
-                        name="_Remarks"
-                        placeholder-class="placeholder"
-                        data-placeholder="在此输入备注"
-                        :value="itemData.Remarks"
-                    />
-                    </view>
+				</view>
+				<view class="cu-form-group">
+					<textarea @input="textareaInput" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
+					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
+					</view>
 		</form>
 		</view>
 	</view>
