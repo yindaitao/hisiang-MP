@@ -1,8 +1,6 @@
 <template>
     <view>
         <callback :baseEntry="from" :backFrom="backFrom">{{appNote.BusinessTypeName}} - {{appNote.BusinessOrderNo}}</callback>
-		{{from}}<br/>
-		{{backFrom}}
         <!-- 单据信息 -->
         <view>
             <view class="cu-bar bg-white solid-bottom solid-top">
@@ -123,7 +121,7 @@ export default {
             isOrder: true,
             isFlow: true,
 			from: "",
-			textareaAValue:"",
+			textareaAValue:""
         };
     },
     methods: {
@@ -244,13 +242,21 @@ export default {
     },
     onLoad(e) {
         try {
-			this.from = JSON.parse(e.data).from;
-			if(this.from !==null){
-				this.getApprovalNoteData(JSON.parse(e.data).DocEntry);
+			if(this.$mbservices.isEmpty(JSON.parse(e.data))){
+				uni.showToast({
+				    title: "获取的DocEntry为空",
+				    icon: "none"
+				});
+				return false;
 			}else{
-				this.getApprovalNoteData(e.data);
+				if(this.$mbservices.isEmpty(JSON.parse(e.data).from)){
+					this.getApprovalNoteData(e.data);
+					this.from = null;
+				}else{
+					this.getApprovalNoteData(JSON.parse(e.data).DocEntry);
+					this.from = JSON.parse(e.data).from;
+				}
 			}
-            return false;
             //获取
         } catch (e) {
             //TODO handle the exception
