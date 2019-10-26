@@ -37,6 +37,7 @@
 		},
 		data() {
 			return {
+				Code: '',
 				iconList: [],
 				gridCol: 3,
 				gridBorder: false,
@@ -150,8 +151,8 @@
 						uni.navigateTo({
 							url: "/pages/ApprovalNote/ApprovalNoteList?data=" + JSON.stringify({
 								from: "firstPage",
-								})
 							})
+						})
 						break;
 						// case "approvalNote":
 						//     uni.navigateTo({
@@ -186,7 +187,7 @@
 						break;
 				}
 			},
-			getApprovalNote(){
+			getApprovalNote() {
 				var _this = this;
 				var criteria = {
 					type: "Search",
@@ -227,7 +228,7 @@
 					uni.hideLoading()
 				});
 			},
-			getBacklog(){
+			getBacklog() {
 				var _this = this;
 				var ajax = {};
 				this.$mbservices.Request(this.$webapi.getBacklog, 'POST', ajax, res => {
@@ -238,30 +239,75 @@
 				}, err => {
 					uni.hideLoading()
 				});
+			},
+			autoLogin() {
+				uni.request({
+					url: this.$webapi.login,
+					method: "POST",
+					header: {
+						"content-type": "application/x-www-form-urlencoded;charset=utf-8",
+						Authorization: "Basic bWFnaWM6MTIzNA=="
+					},
+					data: {
+						grant_type: "password",
+						username: "",
+						password: "",
+						Scope: [JSON.stringify({
+							Flag: 1,
+							Code: this.Code,
+							ClientInfo: ""
+						})],
+					},
+					success: result => {
+						if (result.statusCode !== 200 || result.data.error === 'noBinding') {
+							uni.showToast({
+								title: result.data.error_description,
+								icon: "none"
+							});
+							uni.reLaunch({
+								url: "/pages/login/login"
+							});
+							return false;
+						}
+						this.$store.state.userId = result.data.UserId;
+						this.$store.state.companyId = result.data.CompanyId;
+						this.$store.state.organizationCode = result.data.OrganizationCode;
+						this.$store.state.userType = result.data.UserType;
+						this.$store.state.access_token = result.data.access_token;
+						let _this = this;
+						this.$mbservices.setStorageInfo(
+							"JSUserInfo",
+							result.data,
+							function(result) {
+								uni.reLaunch({
+									url: "/pages/tabBar/firstPage/firstPage",
+									complete: function(e) {}
+								});
+							}
+						);
+					},
+					fail: function(error) {
+						uni.showModal({
+							title: "失败:" + JSON.stringify(error)
+						});
+					}
+				});
 			}
-			
 		},
-		onShow() {},
-		onBackPress: e => {
-			console.log(
-				"======================4444444444444444444444444444444=========================="
-			);
+		onShow() {
+			console.log('这个走也行');
 		},
+		onBackPress: e => {},
 		onLoad: function(e) {
+			console.log('kkkkkkkkkkkkkkkkkkkk');
 			/* 菜单组合 */
 			var _this = this;
-			this.getApprovalNote();
-			this.getBacklog();
-			// console.log("xxxxxxxxxxxxxxxxx=========xxxxxxxxxxxxx");
-			// console.log(this.$store);
-			// console.log(this.$store.state);
-			console.log(this.$store.state.access_token);
-			// // console.log(this.$store.access_token);
-			// console.log("xxxxxxxxxxxxxxxxx=========xxxxxxxxxxxxx");
-			// // console.log(uni.getStorageSync("JSUserInfo").access_token);
 			if (this.$store.state.access_token !== null) {
-				//Basic bWFnaWM6MTIzNA==
-				console.log("dddddddd");
+				this.getApprovalNote();
+				this.getBacklog();
+				uni.showLoading({
+					title: '努力加载菜单中...'
+				})
 				uni.request({
 					url: this.$webapi.getAccessToken,
 					method: "POST",
@@ -271,6 +317,9 @@
 					},
 					data: {},
 					success: resultM => {
+						setTimeout(function() {
+							uni.hideLoading()
+						}, 3000);
 						if (!resultM || resultM.statusCode === 401) {
 							uni.reLaunch({
 								url: "/pages/login/login"
@@ -279,7 +328,6 @@
 						}
 						_this.iconList = [];
 						resultM.data.forEach(item => {
-							console.log(item)
 							item.children.forEach(_item => {
 								_item.children.forEach(__item => {
 									if (_item.isVisible === "Yes") {
@@ -299,7 +347,7 @@
 												badge: _this.BacklogBage,
 												name: __item.Name
 											});
-										}else{
+										} else {
 											_this.iconList.push({
 												id: __item.Code,
 												icon: __item.Icon,
@@ -312,20 +360,34 @@
 								});
 							});
 						});
-						console.log(_this.iconList)
 					},
 					fail: resultM => {
-						console.log(
-							"======hhfhfhfhfhfhhfhfhfhfhfhfhfhfhhfhfhfhfhf========"
-						);
+						setTimeout(function() {
+							uni.hideLoading()
+						}, 3000);
 						console.log("失败：" + JSON.stringify(resultM));
 					}
 				});
 			} else {
-				console.log("aaaaaaaa");
-				uni.reLaunch({
-					url: "/pages/login/login"
+				// #ifdef MP-WEIXIN
+				uni.login({
+					provider: 'weixin',
+					success: (res) => {
+						console.log('授权进来了');
+						console.log(res);
+						this.Code = res.code;
+						this.autoLogin();
+					},
+					fail: (err) => {
+						uni.showModal({
+							title: '登录提示',
+							content: "data: '" + JSON.stringify(err) + "'",
+							showCancel: false
+						});
+					}
 				});
+				// #endif
+
 			}
 		}
 	};

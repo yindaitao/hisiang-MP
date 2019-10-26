@@ -1,319 +1,303 @@
 {
-    "pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-        // #ifdef H5
-        {
-            "path": "pages/tabBar/firstPage/firstPage",
-            "style": {
-                "navigationBarTitleText": "",
-                "app-plus": {
-                    "titleView": false,
-                    "titleNView": {
-                        "type": "transparent"
-                    }
-                }
-            }
-        },
-        //#endif
-        // #ifdef APP-PLUS || MP-BAIDU || MP-WEIXIN
-        {
-            "path": "pages/tabBar/firstPage/firstPage",
-            "style": {
-                "navigationBarTitleText": "欢迎使用"
-            }
-        },
-        //#endif
-        {
-            "path": "pages/tabBar/personpage/personpage",
-            "style": {
-                "navigationBarTitleText": "个人中心"
-            }
-        },
-        {
-            "path": "pages/login/login",
-            "style": {
-                "navigationBarTitleText": "登录"
-            }
-        },
-        {
-            "path": "pages/person/personpage",
-            "style": {}
-        }
-        ,{
-            "path" : "pages/Attendance/CheckInOut/CheckInOut",
-            "style" : {}
-        }
-    ],
-    "subPackages": [
-        {
-            "root": "pages/costApp",
-            "pages": [
-                {
-                    "path": "caform/caform",
-                    "style": {
-                        "navigationBarTitleText": "支出申请"
-                    }
-                },
-                {
-                    "path": "calist/calist",
-                    "style": {
-                        "navigationBarTitleText": "支出申请历史"
-                    }
-                },
-                {
-                    "path": "cadetail/cadetail",
-                    "style": {
-                        "navigationBarTitleText": "支出申请历史"
-                    }
-                }
-            ]
-        },
-        {
-            "root": "pages/costReim",
-            "pages": [
-                {
-                    "path": "list/list",
-                    "style": {
-                        "navigationBarTitleText": "历史申请"
-                    }
-                },
-                {
-                    "path": "form/form",
-                    "style": {
-                        "navigationBarTitleText": "费用报销"
-                    }
-                },
-                {
-                    "path": "detail/detail",
-                    "style": {
-                        "navigationBarTitleText": "费用报销详情"
-                    }
-                }
-            ]
-        },
+	"pages": [ 
+		//pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		// #ifdef H5
+		/* {
+			"path": "pages/tabBar/firstPage/firstPage",
+			"style": {
+				"navigationBarTitleText": "",
+				"app-plus": {
+					"titleView": false,
+					"titleNView": {
+						"type": "transparent"
+					}
+				}
+			}
+		}, */
+		//#endif
 		{
-		    "root": "pages/ReimbursementRequest",
-		    "pages": [
-		        {
-		            "path": "list/general",
-		            "style": {
-		                "navigationBarTitleText": "报销申请"
-		            }
-		        },
-				{
-				    "path": "form/form",
-				    "style": {
-				        "navigationBarTitleText": "报销申请"
-				    }
-				},
-		        {
-		            "path": "detail/cadetail",
-		            "style": {
-		                "navigationBarTitleText": "报销申请"
-		            }
-		        }
-		    ]
+			"path": "pages/tabBar/firstPage/firstPage",
+			"style": {
+				"navigationBarTitleText": "欢迎使用"
+			}
 		},
 		{
-		    "root": "pages/RepaymentRequest",
-		    "pages": [
-		        {
-		            "path": "list/list",
-		            "style": {
-		                "navigationBarTitleText": "还款申请"
-		            }
-		        },
-				{
-				    "path": "form/form",
-				    "style": {
-				        "navigationBarTitleText": "还款申请"
-				    }
-				},
-		        {
-		            "path": "detail/detail",
-		            "style": {
-		                "navigationBarTitleText": "还款申请"
-		            }
-		        }
-		    ]
-		},
-        {
-            "root": "pages/BorrowRequest",
-            "pages": [
-                {
-                    "path": "rfform/rfform",
-                    "style": {
-                        "navigationBarTitleText": "借款申请"
-                    }
-                },
-                {
-                    "path": "rflist/rflist",
-                    "style": {
-                        "navigationBarTitleText": "借款申请"
-                    }
-                },
-                {
-                    "path": "rfdetail/rfdetail",
-                    "style": {
-                        "navigationBarTitleText": "借款申请"
-                    }
-                }
-            ]
-        },
-		{
-		    "root": "pages/BusinesstravelRequest",
-		    "pages": [
-		        {
-		            "path": "list/list",
-		            "style": {
-		                "navigationBarTitleText": "差旅费报销申请"
-		            }
-		        },
-				{
-				    "path": "form/form",
-				    "style": {
-				        "navigationBarTitleText": "差旅费报销申请"
-				    }
-				},
-		        {
-		            "path": "detail/detail",
-		            "style": {
-		                "navigationBarTitleText": "差旅费报销申请"
-		            }
-		        }
-		    ]
+			"path": "pages/tabBar/personpage/personpage",
+			"style": {
+				"navigationBarTitleText": "个人中心"
+			}
 		},
 		{
-		    "root": "pages/xiaohaoReim",
-		    "pages": [
-		        {
-		            "path": "list/list",
-		            "style": {
-		                "navigationBarTitleText": "消耗申请"
-		            }
-		        },
-				{
-				    "path": "form/form",
-				    "style": {
-				        "navigationBarTitleText": "消耗申请"
-				    }
-				},
-		        {
-		            "path": "detail/detail",
-		            "style": {
-		                "navigationBarTitleText": "消耗申请"
-		            }
-		        }
-		    ]
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
 		},
-        {
-            "root": "pages/ApprovalNote",
-            "pages": [
-                {
-                    "path": "ApprovalNoteList",
-                    "style": {}
-                },
-                {
-                    "path": "ReceiptPage/ReceiptPage",
-                    "style": {
-                        "app-plus": {
-                            "navigationBarTitleText": "确认订单",
-                            "titleNView": {
-                                "autoBackButton": false,
-                                "buttons": [
-                                    {
-                                        "float": "left",
-                                        "type": "back"
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                },
-                {
-                    //审批处理模板
-                    "path": "ApprovalHandle",
-                    "style": {}
-                }
-            ]
-        },
-        {
-            "root": "pages/meeting",
-            "pages": [
-                {
-                    "path": "meetingroomlist",
-                    "style": {
-                        "navigationBarTitleText": "预约会议室",
-                        "app-plus": {
-                            "bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突 (小程序无法取消)
-                        }
-                    }
-                },
-                {
-                    "path": "meetinglist",
-                    "style": {
-                        "navigationBarTitleText": "会议列表",
-                        "app-plus": {
-                            "bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突 (小程序无法取消)
-                        }
-                    }
-                },
-                {
-                    "path": "meeting",
-                    "style": {
-                        "navigationBarTitleText": "会议",
-                        "app-plus": {
-                            "bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突 (小程序无法取消)
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "root": "pages/task",
-            "pages": [
-                {
-                    "path": "tasklist/tasklist",
-                    "style": {
-                        /* "enablePullDownRefresh": true */
-                    }
-                },
-                {
-                    "path": "taskdetail/taskdetail",
-                    "style": {}
-                }
-            ]
-        }
-    ],
-    "tabBar": {
-        "color": "#7A7E83",
-        "selectedColor": "#007AFF",
-        "borderStyle": "black",
-        "backgroundColor": "#F8F8F8",
-        "list": [
-            {
-                "pagePath": "pages/tabBar/firstPage/firstPage",
-                "iconPath": "static/template.png",
-                "selectedIconPath": "static/templateHL.png",
-                "text": "菜单"
-            },
-			{
-			    "pagePath": "pages/Attendance/CheckInOut/CheckInOut",
-			    "iconPath": "static/location.png",
-			    "selectedIconPath": "static/locationfill.png",
-			    "text": "打卡"
+		{
+			"path": "pages/person/personpage",
+			"style": {}
+		}, {
+			"path": "pages/Attendance/CheckInOut/CheckInOut",
+			"style": {}
+		}
+	],
+	"subPackages": [{
+			"root": "pages/costApp",
+			"pages": [{
+					"path": "caform/caform",
+					"style": {
+						"navigationBarTitleText": "支出申请"
+					}
+				},
+				{
+					"path": "calist/calist",
+					"style": {
+						"navigationBarTitleText": "支出申请历史"
+					}
+				},
+				{
+					"path": "cadetail/cadetail",
+					"style": {
+						"navigationBarTitleText": "支出申请历史"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/costReim",
+			"pages": [{
+					"path": "list/list",
+					"style": {
+						"navigationBarTitleText": "历史申请"
+					}
+				},
+				{
+					"path": "form/form",
+					"style": {
+						"navigationBarTitleText": "费用报销"
+					}
+				},
+				{
+					"path": "detail/detail",
+					"style": {
+						"navigationBarTitleText": "费用报销详情"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/ReimbursementRequest",
+			"pages": [{
+					"path": "list/general",
+					"style": {
+						"navigationBarTitleText": "报销申请"
+					}
+				},
+				{
+					"path": "form/form",
+					"style": {
+						"navigationBarTitleText": "报销申请"
+					}
+				},
+				{
+					"path": "detail/cadetail",
+					"style": {
+						"navigationBarTitleText": "报销申请"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/RepaymentRequest",
+			"pages": [{
+					"path": "list/list",
+					"style": {
+						"navigationBarTitleText": "还款申请"
+					}
+				},
+				{
+					"path": "form/form",
+					"style": {
+						"navigationBarTitleText": "还款申请"
+					}
+				},
+				{
+					"path": "detail/detail",
+					"style": {
+						"navigationBarTitleText": "还款申请"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/BorrowRequest",
+			"pages": [{
+					"path": "rfform/rfform",
+					"style": {
+						"navigationBarTitleText": "借款申请"
+					}
+				},
+				{
+					"path": "rflist/rflist",
+					"style": {
+						"navigationBarTitleText": "借款申请"
+					}
+				},
+				{
+					"path": "rfdetail/rfdetail",
+					"style": {
+						"navigationBarTitleText": "借款申请"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/BusinesstravelRequest",
+			"pages": [{
+					"path": "list/list",
+					"style": {
+						"navigationBarTitleText": "差旅费报销申请"
+					}
+				},
+				{
+					"path": "form/form",
+					"style": {
+						"navigationBarTitleText": "差旅费报销申请"
+					}
+				},
+				{
+					"path": "detail/detail",
+					"style": {
+						"navigationBarTitleText": "差旅费报销申请"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/xiaohaoReim",
+			"pages": [{
+					"path": "list/list",
+					"style": {
+						"navigationBarTitleText": "消耗申请"
+					}
+				},
+				{
+					"path": "form/form",
+					"style": {
+						"navigationBarTitleText": "消耗申请"
+					}
+				},
+				{
+					"path": "detail/detail",
+					"style": {
+						"navigationBarTitleText": "消耗申请"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/ApprovalNote",
+			"pages": [{
+					"path": "ApprovalNoteList",
+					"style": {}
+				},
+				{
+					"path": "ReceiptPage/ReceiptPage",
+					"style": {
+						"app-plus": {
+							"navigationBarTitleText": "确认订单",
+							"titleNView": {
+								"autoBackButton": false,
+								"buttons": [{
+									"float": "left",
+									"type": "back"
+								}]
+							}
+						}
+					}
+				},
+				{
+					//审批处理模板
+					"path": "ApprovalHandle",
+					"style": {}
+				}
+			]
+		},
+		{
+			"root": "pages/meeting",
+			"pages": [{
+					"path": "meetingroomlist",
+					"style": {
+						"navigationBarTitleText": "预约会议室",
+						"app-plus": {
+							"bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突 (小程序无法取消)
+						}
+					}
+				},
+				{
+					"path": "meetinglist",
+					"style": {
+						"navigationBarTitleText": "会议列表",
+						"app-plus": {
+							"bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突 (小程序无法取消)
+						}
+					}
+				},
+				{
+					"path": "meeting",
+					"style": {
+						"navigationBarTitleText": "会议",
+						"app-plus": {
+							"bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突 (小程序无法取消)
+						}
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/task",
+			"pages": [{
+					"path": "tasklist/tasklist",
+					"style": {
+						/* "enablePullDownRefresh": true */
+					}
+				},
+				{
+					"path": "taskdetail/taskdetail",
+					"style": {}
+				}
+			]
+		}
+	],
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#007AFF",
+		"borderStyle": "black",
+		"backgroundColor": "#F8F8F8",
+		"list": [{
+				"pagePath": "pages/tabBar/firstPage/firstPage",
+				"iconPath": "static/template.png",
+				"selectedIconPath": "static/templateHL.png",
+				"text": "菜单"
 			},
-            {
-                "pagePath": "pages/tabBar/personpage/personpage",
-                "iconPath": "static/mime.png",
-                "selectedIconPath": "static/mimeHL.png",
-                "text": "我的"
-            }
-        ]
-    },
-    "globalStyle": {
-        "navigationBarBackgroundColor": "#39b54a",
-        "navigationBarTitleText": "SmartOffice",
-        "navigationStyle": "custom",
-        "navigationBarTextStyle": "white"
-    }
+			{
+				"pagePath": "pages/Attendance/CheckInOut/CheckInOut",
+				"iconPath": "static/location.png",
+				"selectedIconPath": "static/locationfill.png",
+				"text": "打卡"
+			},
+			{
+				"pagePath": "pages/tabBar/personpage/personpage",
+				"iconPath": "static/mime.png",
+				"selectedIconPath": "static/mimeHL.png",
+				"text": "我的"
+			}
+		]
+	},
+	"globalStyle": {
+		"navigationBarBackgroundColor": "#39b54a",
+		"navigationBarTitleText": "SmartOffice",
+		"navigationStyle": "custom",
+		"navigationBarTextStyle": "white"
+	}
 }

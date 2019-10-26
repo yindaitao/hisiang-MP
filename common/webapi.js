@@ -1,8 +1,8 @@
 var websiteUrl = "https://oa.magicbox.net.cn"; // "https://so.magicdata.co";
-/* http://localhost:60201 */
+/* http://localhost:53367 */
 /* http://oa.magicbox.net.cn */
 /* http://192.168.0.109:8080 */
-/* http://oa.magicbox.net.cn*/
+/* https://oa.magicbox.net.cn*/
 /* https://so.magicdata.co */
 module.exports = {
 	/* 接口根目录 */

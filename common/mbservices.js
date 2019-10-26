@@ -137,8 +137,11 @@ module.exports = {
 	 */
 	"Request": function(url, method, data, success, fail) {
 		if (!this.validateAccessTokenSync('JSUserInfo')) {
-			uni.reLaunch({
+			/* uni.reLaunch({
 				url: '/pages/login/login'
+			}) */
+			uni.reLaunch({
+				url: '/pages/tabBar/firstPage/firstPage'
 			})
 			return false;
 		}

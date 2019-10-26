@@ -13,8 +13,8 @@
 						Vue.prototype.CustomBar = e.statusBarHeight + 45;
 					};
 					// #endif
-					
-					
+
+
 					// #ifdef MP-WEIXIN
 					Vue.prototype.StatusBar = e.statusBarHeight;
 					let custom = wx.getMenuButtonBoundingClientRect();
@@ -124,8 +124,8 @@
 			updateManager.onUpdateFailed(function(res) {
 				// 新的版本下载失败
 				uni.showModal({
-					title:'更新提示',
-					content:'更新失败,请重试'
+					title: '更新提示',
+					content: '更新失败,请重试'
 				})
 			});
 			//#endif
@@ -162,6 +162,68 @@
 		},
 		onShow: function() {
 			console.log('App Show')
+			// #ifdef MP-WEIXIN
+			console.log(this.$store.state.access_token);
+			if (this.$store.state.access_token === null) {
+				uni.login({
+					provider: 'weixin',
+					success: (res) => {
+						console.log('授权进来了11111');
+						console.log(res);
+						/* 开始自动登录 */
+						uni.request({
+							url: this.$webapi.login,
+							method: "POST",
+							header: {
+								"content-type": "application/x-www-form-urlencoded;charset=utf-8",
+								Authorization: "Basic bWFnaWM6MTIzNA=="
+							},
+							data: {
+								grant_type: "password",
+								username: "",
+								password: "",
+								Scope: [JSON.stringify({
+									Flag: 1,
+									Code: res.code,
+									ClientInfo: ""
+								})],
+							},
+							success: result => {
+								console.log('登陆成功了33333333333');
+								console.log(result);
+								if (result.statusCode != 200 || result.data.error === 'noBinding') {
+									console.log('888888888888');
+									result.data.UserId = null;
+									result.data.CompanyId = null;
+									result.data.OrganizationCode = null;
+									result.data.UserType = null;
+									result.data.access_token = null;
+								}
+								console.log('登陆成功了444444444');
+								this.$store.state.userId = result.data.UserId;
+								this.$store.state.companyId = result.data.CompanyId;
+								this.$store.state.organizationCode = result.data.OrganizationCode;
+								this.$store.state.userType = result.data.UserType;
+								this.$store.state.access_token = result.data.access_token;
+
+								let _this = this;
+								if (result.statusCode === 200) {
+									this.$mbservices.setStorageInfo(
+										"JSUserInfo",
+										result.data,
+										function(result) {}
+									);
+								}
+								console.log('登陆成功了6666666666666');
+							},
+							fail: function(error) {}
+						});
+						/* 结束自动登录 */
+					},
+					fail: (err) => {}
+				});
+			}
+			// #endif
 		},
 		onHide: function() {
 			console.log('App Hide')
