@@ -1,6 +1,6 @@
 <template>
 	<view class="ul-uni-tab-bar">
-		<custom>报销申请列表</custom>
+		<custom>差旅报销申请列表</custom>
 		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
@@ -46,21 +46,16 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.OrganizationName}}-{{list.Creator}}的{{$mbservices.isEmpty(list.CostTypeName)?"":list.CostTypeName}}报销
+								{{list.OrganizationName}}-{{list.Creator}}的{{list.CostTypeName}}报销
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
-								金额：{{list.Amount}}
-								<text v-if="list.PayType ==='BankToUser'"></text>
+								金额:{{list.Amount}}
 							</view>
 							<view class="text-gray text-sm">
 								<text class="icon-timefill margin-right-xs"></text>
 								{{list.DocDate}}
 							</view>
-							<!-- <view class="text-gray text-sm">
-								<text class="icon-coin margin-right-xs"></text>
-								RMB:{{list.Amount}}
-							</view> -->
 						</view>
 						<view class="action" v-if="list.Approve!=='No'||list.ApproveStatus==='Rejected'">
 							<view v-if="list.ApproveStatus==='Pending'" class="cu-tag round bg-olive light">{{list.AApproveStatus}}</view>
@@ -180,13 +175,13 @@
 		methods: {
 			goDetail(item) {
 				uni.navigateTo({
-					url: "/pages/GeneralReim/detail/cadetail?data=" + JSON.stringify(item)
+					url: "/pages/costReim/detail/detail?data=" + JSON.stringify(item)
 				});
 			},
 			editItem(item) {
 				console.log(item);
 				uni.navigateTo({
-					url: "/pages/GeneralReim/form/form?flag=modify&data=" + JSON.stringify(item)
+					url: "/pages/costReim/form/form?flag=modify&data=" + JSON.stringify(item)
 				});
 			},
 			deleteItem(item) {
@@ -303,7 +298,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getReimList,
+					this.$webapi.getBusinesstravelReimList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
@@ -391,7 +386,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getReimList,
+					this.$webapi.getBusinesstravelReimList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
@@ -473,7 +468,7 @@
 			},
 			addWorkOrder() {
 				uni.navigateTo({
-					url: "/pages/GeneralReim/form/form"
+					url: "/pages/BusinesstravelRequest/form/form"
 				});
 			},
 

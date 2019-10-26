@@ -91,7 +91,7 @@
             ]
         },
 		{
-		    "root": "pages/GeneralReim",
+		    "root": "pages/ReimbursementRequest",
 		    "pages": [
 		        {
 		            "path": "list/general",
@@ -114,7 +114,7 @@
 		    ]
 		},
 		{
-		    "root": "pages/paymoneyReim",
+		    "root": "pages/RepaymentRequest",
 		    "pages": [
 		        {
 		            "path": "list/list",
@@ -137,7 +137,7 @@
 		    ]
 		},
         {
-            "root": "pages/ReseFund",
+            "root": "pages/BorrowRequest",
             "pages": [
                 {
                     "path": "rfform/rfform",
@@ -160,7 +160,7 @@
             ]
         },
 		{
-		    "root": "pages/TravellReim",
+		    "root": "pages/BusinesstravelRequest",
 		    "pages": [
 		        {
 		            "path": "list/list",

@@ -89,27 +89,27 @@
 		methods: {
 			itemClick(e) {
 				switch (e.currentTarget.id) {
-					case "GeneralReim":
+					case "ReimbursementRequest":
 						uni.navigateTo({
-							url: "/pages/GeneralReim/list/general",
+							url: "/pages/ReimbursementRequest/list/general",
 							title: "普通报销申请"
 						});
 						break;
 					case "lendmoneyReim":
 						uni.navigateTo({
-							url: "/pages/ReseFund/rflist/rflist",
+							url: "/pages/BorrowRequest/rflist/rflist",
 							title: "借款申请"
 						});
 						break;
-					case "paymoneyReim":
+					case "RepaymentRequest":
 						uni.navigateTo({
-							url: "/pages/paymoneyReim/list/list",
+							url: "/pages/RepaymentRequest/list/list",
 							title: "还款申请"
 						});
 						break;
-					case "TravellReim":
+					case "BusinesstravelRequest":
 						uni.navigateTo({
-							url: "/pages/TravellReim/list/list",
+							url: "/pages/BusinesstravelRequest/list/list",
 							title: "差旅费报销申请"
 						});
 						break;

@@ -125,7 +125,7 @@
 		methods: {
 			goDetail(item) {
 				uni.navigateTo({
-					url: "/pages/paymoneyReim/detail/detail?data=" + JSON.stringify(item)
+					url: "/pages/RepaymentRequest/detail/detail?data=" + JSON.stringify(item)
 				});
 			},
 			newShowGetBorrowRequestList:async function(params){
@@ -286,7 +286,7 @@
 			},
 			addWorkOrder() {
 				uni.navigateTo({
-					url: "/pages/paymoneyReim/form/form"
+					url: "/pages/RepaymentRequest/form/form"
 				});
 			},
 			makeParams() {
@@ -361,7 +361,7 @@
 			},
 			editItem(item) {
 				uni.navigateTo({
-					url: "/pages/ReseFund/rfform/rfform?flag=modify&data=" + JSON.stringify(item)
+					url: "/pages/BorrowRequest/rfform/rfform?flag=modify&data=" + JSON.stringify(item)
 				});
 			},
 			deleteItem(item) {
