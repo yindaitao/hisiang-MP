@@ -94,19 +94,19 @@
 		    "root": "pages/ReimbursementRequest",
 		    "pages": [
 		        {
-		            "path": "list/general",
+		            "path": "ReimRequestlist/ReimRequestlist",
 		            "style": {
 		                "navigationBarTitleText": "报销申请"
 		            }
 		        },
 				{
-				    "path": "form/form",
+				    "path": "ReimRequestform/ReimRequestform",
 				    "style": {
 				        "navigationBarTitleText": "报销申请"
 				    }
 				},
 		        {
-		            "path": "detail/cadetail",
+		            "path": "ReimRequestdetail/ReimRequestdetail",
 		            "style": {
 		                "navigationBarTitleText": "报销申请"
 		            }
@@ -117,19 +117,19 @@
 		    "root": "pages/RepaymentRequest",
 		    "pages": [
 		        {
-		            "path": "list/list",
+		            "path": "RepaymentRequestlist/RepaymentRequestlist",
 		            "style": {
 		                "navigationBarTitleText": "还款申请"
 		            }
 		        },
 				{
-				    "path": "form/form",
+				    "path": "RepaymentRequestform/RepaymentRequestform",
 				    "style": {
 				        "navigationBarTitleText": "还款申请"
 				    }
 				},
 		        {
-		            "path": "detail/detail",
+		            "path": "RepaymentRequestdetail/RepaymentRequestdetail",
 		            "style": {
 		                "navigationBarTitleText": "还款申请"
 		            }
@@ -140,19 +140,19 @@
             "root": "pages/BorrowRequest",
             "pages": [
                 {
-                    "path": "rfform/rfform",
+                    "path": "BorrowRequestform/BorrowRequestform",
                     "style": {
                         "navigationBarTitleText": "借款申请"
                     }
                 },
                 {
-                    "path": "rflist/rflist",
+                    "path": "BorrowRequestlist/BorrowRequestlist",
                     "style": {
                         "navigationBarTitleText": "借款申请"
                     }
                 },
                 {
-                    "path": "rfdetail/rfdetail",
+                    "path": "BorrowRequestdetail/BorrowRequestdetail",
                     "style": {
                         "navigationBarTitleText": "借款申请"
                     }
@@ -163,19 +163,19 @@
 		    "root": "pages/BusinesstravelRequest",
 		    "pages": [
 		        {
-		            "path": "list/list",
+		            "path": "BusinesstravelRequestlist/BusinesstravelRequestlist",
 		            "style": {
 		                "navigationBarTitleText": "差旅费报销申请"
 		            }
 		        },
 				{
-				    "path": "form/form",
+				    "path": "BusinesstravelRequestform/BusinesstravelRequestform",
 				    "style": {
 				        "navigationBarTitleText": "差旅费报销申请"
 				    }
 				},
 		        {
-		            "path": "detail/detail",
+		            "path": "BusinesstravelRequestdetail/BusinesstravelRequestdetail",
 		            "style": {
 		                "navigationBarTitleText": "差旅费报销申请"
 		            }

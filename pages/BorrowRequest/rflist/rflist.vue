@@ -129,7 +129,7 @@
 		methods: {
 			goDetail(item) {
 				uni.navigateTo({
-					url: "/pages/BorrowRequest/rfdetail/rfdetail?data=" + JSON.stringify(item)
+					url: "/pages/BorrowRequest/BorrowRequestdetail/BorrowRequestdetail?data=" + JSON.stringify(item)
 				});
 			},
 			newShowGetBorrowRequestList:async function(params){
@@ -292,7 +292,7 @@
 			},
 			addWorkOrder() {
 				uni.navigateTo({
-					url: "/pages/BorrowRequest/rfform/rfform"
+					url: "/pages/BorrowRequest/BorrowRequestform/BorrowRequestform"
 				});
 			},
 			makeParams() {
@@ -367,7 +367,7 @@
 			},
 			editItem(item) {
 				uni.navigateTo({
-					url: "/pages/BorrowRequest/rfform/rfform?flag=modify&data=" + JSON.stringify(item)
+					url: "/pages/BorrowRequest/BorrowRequestform/BorrowRequestform?flag=modify&data=" + JSON.stringify(item)
 				});
 			},
 			deleteItem(item) {

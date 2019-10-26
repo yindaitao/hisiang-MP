@@ -91,25 +91,25 @@
 				switch (e.currentTarget.id) {
 					case "ReimbursementRequest":
 						uni.navigateTo({
-							url: "/pages/ReimbursementRequest/list/general",
+							url: "/pages/ReimbursementRequest/ReimRequestlist/ReimRequestlist",
 							title: "普通报销申请"
 						});
 						break;
 					case "lendmoneyReim":
 						uni.navigateTo({
-							url: "/pages/BorrowRequest/rflist/rflist",
+							url: "/pages/BorrowRequest/BorrowRequestlist/BorrowRequestlist",
 							title: "借款申请"
 						});
 						break;
 					case "RepaymentRequest":
 						uni.navigateTo({
-							url: "/pages/RepaymentRequest/list/list",
+							url: "/pages/RepaymentRequest/RepaymentRequestlist/RepaymentRequestlist",
 							title: "还款申请"
 						});
 						break;
 					case "BusinesstravelRequest":
 						uni.navigateTo({
-							url: "/pages/BusinesstravelRequest/list/list",
+							url: "/pages/BusinesstravelRequest/BusinesstravelRequestlist/BusinesstravelRequestlist",
 							title: "差旅费报销申请"
 						});
 						break;

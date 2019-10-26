@@ -1,11 +1,11 @@
 <template>
 	<view class="ul-uni-tab-bar">
-		<custom>还款申请列表</custom>
+		<custom>报销申请列表</custom>
 		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
 				<input @focus="InputFocus" @blur="InputBlur" @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词"
-				 confirm-type="search" :value="searchValue">
+				 confirm-type="search" :value="searchValue" />
 			</view>
 			<view class="action">
 				<button class="cu-btn icon" @click="doSearch">
@@ -18,9 +18,23 @@
 				</button>
 			</view>
 		</view>
-		<!-- 列表部分 -->
+		<view v-if="isMultiSelect" class="cu-bar search bg-white">
+			<view class="action">
+				<button class="cu-btn bg-grey shadow-blur round" @click="allSelectOrNo">{{allSeleStatus?'全选':'全不选'}}</button>
+			</view>
+			<view class="action">
+				<button class="cu-btn bg-grey shadow-blur round" @click="selectOther">反选</button>
+			</view>
+			<view class="action">
+				<button class="cu-btn bg-grey shadow-blur round" @click="deleteSelect">删除</button>
+			</view>
+			<view class="action">
+				<button class="cu-btn bg-grey shadow-blur round" @click="cancelSelModel">取消</button>
+			</view>
+		</view>
 		<view class="ul-swiper-box" style="margin-top: 2upx;">
-			<scroll-view scroll-y @scrolltolower="loadMore()" style="width: 100%;margin-bottom: 10px;" :style="{'height':scrollBarHeight+'px'}">
+			<scroll-view scroll-y @scrolltolower="loadMore" style="width: 100%;margin-bottom: 10px;" :style="{'height':scrollBarHeight+'px'}">
+				<!-- :style="{'height':scrollBarHeight+'px'}" -->
 				<view class="cu-list menu">
 					<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-for="(list,index) in dataList" :key="index"
 					 @touchstart="ListTouchStart(index,$event)" @touchmove="ListTouchMove(index,$event)" @touchend="ListTouchEnd(index,$event)" :data-target="'move-box-' + index"
@@ -32,19 +46,21 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.OrganizationName}}-{{list.Creator}}的还款申请
+								{{list.OrganizationName}}-{{list.Creator}}的{{$mbservices.isEmpty(list.CostTypeName)?"":list.CostTypeName}}报销
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
-								还款金额:{{list.Amount}}
+								金额：{{list.Amount}}
+								<text v-if="list.PayType ==='BankToUser'"></text>
 							</view>
 							<view class="text-gray text-sm">
 								<text class="icon-timefill margin-right-xs"></text>
-								{{list.CreateDate}}
+								{{list.DocDate}}
 							</view>
-							<view class="text-gray text-sm">
-
-							</view>
+							<!-- <view class="text-gray text-sm">
+								<text class="icon-coin margin-right-xs"></text>
+								RMB:{{list.Amount}}
+							</view> -->
 						</view>
 						<view class="action" v-if="list.Approve!=='No'||list.ApproveStatus==='Rejected'">
 							<view v-if="list.ApproveStatus==='Pending'" class="cu-tag round bg-olive light">{{list.AApproveStatus}}</view>
@@ -61,50 +77,71 @@
 		</view>
 	</view>
 </template>
-
 <script>
 	export default {
+		components: {},
 		data() {
 			return {
 				isMultiSelect: false,
-				searchValue: "",
-				scrollBarHeight: 0,
-				modalName: null,
+				allSeleStatus: true,
+				pattern: {
+					color: "#7A7E83",
+					backgroundColor: "#fff",
+					selectedColor: "#007AFF",
+					buttonColor: "#007AFF"
+				},
+				content: [{
+						iconPath: "/static/component.png",
+						selectedIconPath: "/static/componentHL.png",
+						text: "添加",
+						active: false
+					},
+					{
+						iconPath: "/static/api.png",
+						selectedIconPath: "/static/apiHL.png",
+						text: "API",
+						active: false
+					},
+					{
+						iconPath: "/static/template.png",
+						selectedIconPath: "/static/templateHL.png",
+						text: "模版",
+						active: false
+					}
+				],
+				//title: 'tag',
+				type: "default",
+				inverted: false,
 				dataList: [],
 				pageIndex: 0,
+				scrollBarHeight: 0,
+				modalName: null,
 				listTouchStart: 0,
 				listTouchDirection: null,
 				isFirstLoad: true,
 				searchParams: [],
+				searchValue: "",
 				isLoadMore: false
 			};
 		},
-		onReachBottom() {
-			this.searchParams = [];
-			this.searchValue = "";
-			this.pageIndex = 0;
-			this.newShowGetBorrowRequestList();
-			uni.stopPullDownRefresh();
-		},
-		onPullDownRefresh() {
-			this.searchParams = [];
-			this.searchValue = "";
-			this.pageIndex = 0;
-			this.newShowGetBorrowRequestList();
+		onNavigationBarButtonTap(e) {
+			uni.navigateTo({
+				url: "/pages/workorder/woform/woform"
+			});
 		},
 		onShow() {
 			/* if (!this.isFirstLoad) {
 				this.pageIndex = parseInt(this.pageIndex) - 1;
-				this.newShowGetBorrowRequestList();
+				this.newShowGetReimList();
 			} */
 			if(this.$mbservices.getIsRefresh())
 			{
 				this.pageIndex = 0; // parseInt(this.pageIndex) - 1;
 				this.$mbservices.setIsRefresh(false);
-				this.newShowGetBorrowRequestList();
+				this.newShowGetReimList();
 			}
-			
 			this.isFirstLoad = false;
+			this.isLoadMore = false;
 		},
 		onLoad() {
 			//#ifdef MP-WEIXIN
@@ -115,20 +152,126 @@
 			query.exec(function(res) {
 				res[0].top; // #the-id节点的上边界坐标
 				res[1].scrollTop; // 显示区域的竖直滚动位置
-				_this.scrollBarHeight =
-					uni.getSystemInfoSync().screenHeight - _this.CustomBar - res[0].height;
+				_this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - _this.CustomBar - res[0].height;
 			});
 			//#endif
+			//this.dataList = [];
 			/*加载数据*/
-			this.getBorrowRequestList();
+			this.getReimList();
+		},
+		onReachBottom() {
+			this.searchParams = [];
+			this.searchValue = "";
+			this.pageIndex = 0;
+			//this.dataList = [];
+			this.newShowGetReimList();
+			/* setTimeout(() => {
+				uni.stopPullDownRefresh();
+			}, 1000) */
+			uni.stopPullDownRefresh();
+		},
+		onPullDownRefresh() {
+			this.searchParams = [];
+			this.searchValue = "";
+			this.pageIndex = 0;
+			//this.dataList = [];
+			this.newShowGetReimList();
 		},
 		methods: {
 			goDetail(item) {
 				uni.navigateTo({
-					url: "/pages/RepaymentRequest/detail/detail?data=" + JSON.stringify(item)
+					url: "/pages/ReimbursementRequest/ReimRequestdetail/ReimRequestdetail?data=" + JSON.stringify(item)
 				});
 			},
-			newShowGetBorrowRequestList:async function(params){
+			editItem(item) {
+				console.log(item);
+				uni.navigateTo({
+					url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=modify&data=" + JSON.stringify(item)
+				});
+			},
+			deleteItem(item) {
+				this.modalName = null;
+				var _this = this;
+				uni.showModal({
+					title: "操作提示",
+					content: "确定删除选中项?",
+					success(res) {
+						if (res.confirm) {
+							item.UIStatus = "Modify";
+							_this.$mbservices.Request(
+								_this.$webapi.deleteCostItem,
+								"POST",
+								item,
+								function(succ) {
+									if (succ.statusCode === 200) {
+										var cache = [];
+										_this.dataList.forEach(_item => {
+											if (_item != item) {
+												cache.push(_item);
+											}
+										});
+										_this.dataList = [];
+										cache.forEach(_item => {
+											_this.dataList.push(_item);
+										});
+									}
+								},
+								function(err) {
+									console.log(err);
+								}
+							);
+						}
+					}
+				});
+			},
+			searchInput(e) {
+				this.searchValue = e.detail.value;
+			},
+			doSearch(e) {
+				//this.dataList = [];
+				this.makeParams();
+				this.pageIndex = 0;
+				this.getReimList(this.searchParams);
+			},
+			loadMore() {
+				if (this.searchValue != undefined && this.searchValue.length > 0) {
+					this.makeParams();
+				}
+				this.isLoadMore = true;
+				this.newShowGetReimList(this.searchParams);
+			},
+			makeParams() {
+				if (this.$mbservices.isEmpty(this.searchValue)) {
+					this.searchParams=[];
+					return false;
+				}
+				this.searchParams = [{
+						FieldName: "DocEntry",
+						Operation: "CONTAIN",
+						ConditionValue: this.searchValue,
+						Relationship: "OR"
+					},
+					{
+						FieldName: "DocNum",
+						Operation: "CONTAIN",
+						ConditionValue: this.searchValue,
+						Relationship: "OR"
+					},
+					{
+						FieldName: "Remarks",
+						Operation: "CONTAIN",
+						ConditionValue: this.searchValue,
+						Relationship: "OR"
+					},
+					{
+						FieldName: "Amount",
+						Operation: "CONTAIN",
+						ConditionValue: this.searchValue,
+						Relationship: "OR"
+					}
+				];
+			},
+			newShowGetReimList: async function(params) {
 				this.pageIndex = parseInt(this.pageIndex) + 1;
 				var ajaxJSON = {
 					pageIndex: this.pageIndex,
@@ -141,6 +284,11 @@
 						}],
 						LoadChildren: "NoLoad",
 						Conditions: [{
+							FieldName: "CreatorId",
+							Operation: "EQUAL",
+							ConditionValue: parseInt(uni.getStorageSync("JSUserInfo").UserId),
+							Relationship: "AND"
+						},{
 							FieldName: "Canceled",
 							Operation: "EQUAL",
 							ConditionValue: "N",
@@ -155,11 +303,10 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getpaymentRequestReimList,
+					this.$webapi.getReimList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
-						console.log(ret);
 						if (!ret.data.data) {
 							_this.dataList = [];
 							uni.showToast({
@@ -167,7 +314,8 @@
 							});
 							return false;
 						}
-						var _cacheList=[];
+						console.log(ret.data.data);
+						var _cacheList = [];
 						ret.data.data.forEach(item => {
 							item.radchecked = false;
 							if (item.ApproveStatus === "Pending") {
@@ -183,7 +331,6 @@
 							//_this.dataList.push(item);
 							_cacheList.push(item);
 						});
-						//_this.dataList=_cacheList;
 						if (_this.isLoadMore) {
 							if (_cacheList.length <= 0) {
 								_this.pageIndex = parseInt(_this.pageIndex) - 1;
@@ -194,6 +341,7 @@
 						} else {
 							_this.dataList = _cacheList;
 						}
+
 					},
 					function(ret) {
 						uni.showToast({
@@ -208,7 +356,7 @@
 					}
 				);
 			},
-			getBorrowRequestList(params) {
+			getReimList(params) {
 				uni.showLoading({
 					title: "拼命加载中..."
 				});
@@ -224,6 +372,11 @@
 						}],
 						LoadChildren: "NoLoad",
 						Conditions: [{
+							FieldName: "CreatorId",
+							Operation: "EQUAL",
+							ConditionValue: parseInt(uni.getStorageSync("JSUserInfo").UserId),
+							Relationship: "AND"
+						},{
 							FieldName: "Canceled",
 							Operation: "EQUAL",
 							ConditionValue: "N",
@@ -238,11 +391,10 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getpaymentRequestReimList,
+					this.$webapi.getReimList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
-						console.log(ret);
 						if (!ret.data.data) {
 							_this.dataList = [];
 							uni.showToast({
@@ -250,6 +402,8 @@
 							});
 							return false;
 						}
+						console.log('aaaaaaaaaaaaaaaaa');
+						console.log(ret.data.data);
 						setTimeout(() => {
 							var _cacheList=[];
 							ret.data.data.forEach(item => {
@@ -284,52 +438,45 @@
 					}
 				);
 			},
-			addWorkOrder() {
-				uni.navigateTo({
-					url: "/pages/RepaymentRequest/form/form"
+			allSelectOrNo(e) {
+				this.allSeleStatus = !this.allSeleStatus;
+				if (!this.allSeleStatus) {
+					this.dataList.forEach(item => {
+						item.radchecked = true;
+					});
+				} else {
+					this.dataList.forEach(item => {
+						item.radchecked = false;
+					});
+				}
+			},
+			selectOther(e) {
+				this.dataList.forEach(item => {
+					item.radchecked = !item.radchecked;
 				});
 			},
-			makeParams() {
-				if (this.$mbservices.isEmpty(this.searchValue)) {
-					this.searchParams=[];
-					return false;
-				}
-				this.searchParams = [{
-						FieldName: "DocEntry",
-						Operation: "CONTAIN",
-						ConditionValue: this.searchValue,
-						Relationship: "OR"
-					},
-					{
-						FieldName: "Remarks",
-						Operation: "CONTAIN",
-						ConditionValue: this.searchValue,
-						Relationship: "OR"
-					},
-					{
-						FieldName: "Amount",
-						Operation: "CONTAIN",
-						ConditionValue: this.searchValue,
-						Relationship: "OR"
-					}
-				];
+			deleteSelect(e) {},
+			cancelSelModel(e) {
+				this.isMultiSelect = false;
 			},
-			searchInput(e) {
-				this.searchValue = e.detail.value;
+			radioClick(item) {
+				item.radchecked = !item.radchecked;
 			},
-			doSearch(e) {
-				//this.dataList = [];
-				this.makeParams();
-				this.pageIndex = 0;
-				this.getBorrowRequestList(this.searchParams);
+			actionView(item) {
+				this.isMultiSelect = true;
+				return true;
+				item.radchecked = true;
+				uni.showActionSheet({
+					itemList: ["编辑", "删除"],
+					success: e => {}
+				});
 			},
-			loadMore() {
-				if (this.searchValue != undefined && this.searchValue.length > 0) {
-					this.makeParams();
-				}
-				this.isLoadMore = true;
-				this.newShowGetBorrowRequestList(this.searchParams);
+			addWorkOrder() {
+				uni.navigateTo({
+					url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform"
+				});
 			},
+
 			// ListTouch触摸开始
 			ListTouchStart(indx, e) {
 				if (this.dataList[indx].Approve === "Yes"&&(this.dataList[indx].ApproveStatus==='Pending'||this.dataList[indx].ApproveStatus==='Approved')) {
@@ -339,7 +486,7 @@
 			},
 
 			// ListTouch计算方向
-			ListTouchMove(indx, e) {
+			ListTouchMove(indx,e) {
 				if (this.dataList[indx].Approve === "Yes"&&(this.dataList[indx].ApproveStatus==='Pending'||this.dataList[indx].ApproveStatus==='Approved')) {
 					return false;
 				}
@@ -348,7 +495,7 @@
 			},
 
 			// ListTouch计算滚动
-			ListTouchEnd(indx, e) {
+			ListTouchEnd(indx,e) {
 				if (this.dataList[indx].Approve === "Yes"&&(this.dataList[indx].ApproveStatus==='Pending'||this.dataList[indx].ApproveStatus==='Approved')) {
 					return false;
 				}
@@ -358,48 +505,6 @@
 					this.modalName = null;
 				}
 				this.listTouchDirection = null;
-			},
-			editItem(item) {
-				uni.navigateTo({
-					url: "/pages/BorrowRequest/rfform/rfform?flag=modify&data=" + JSON.stringify(item)
-				});
-			},
-			deleteItem(item) {
-				this.modalName = null;
-				var _this = this;
-				uni.showModal({
-					title: "操作提示",
-					content: "确定删除选中项?",
-					success(res) {
-						if (res.confirm) {
-							item.UIStatus = "Delete";
-							item.Canceled = "Yes";
-							_this.$mbservices.Request(
-								_this.$webapi.submitBorrowRequest,
-								"POST",
-								item,
-								function(succ) {
-									console.log(succ);
-									if (succ.statusCode === 200) {
-										var cache = [];
-										_this.dataList.forEach(_item => {
-											if (_item != item) {
-												cache.push(_item);
-											}
-										});
-										_this.dataList = [];
-										cache.forEach(_item => {
-											_this.dataList.push(_item);
-										});
-									}
-								},
-								function(err) {
-									console.log(err);
-								}
-							);
-						}
-					}
-				});
 			}
 		}
 	};
