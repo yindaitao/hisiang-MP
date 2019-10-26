@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<custom>消耗申请</custom>
+		<custom>差旅报销申请</custom>
 		<view class="cu-bar bg-white solid-bottom" style="position: fixed;display: flex;z-index: 2;z-index: 999;width: 100%;">
 			<view class="action">
 				<text class="icon-redpacket text-orange"></text>
@@ -44,6 +44,34 @@
 				</radio-group>
 			</view>
 		</view>
+		<view class="cu-modal" :class="modalNameType=='RadioModalType'?'show':''" @tap="hideModalType">
+			<view class="cu-dialog" @tap.stop="">
+				<radio-group class="block" @change="RadioTypeChange">
+					<view class="cu-list menu text-left">
+						<view class="cu-item" v-for="(item,index) in DetailTypeList" :key="index">
+							<label class="flex justify-between align-center flex-sub">
+								<view class="flex-sub">{{item.Name}}</view>
+								<radio class="round" :class="radio2==item.Code?'checked':''" :checked="radio2==item.Code?true:false" :value="item.Code"></radio>
+							</label>
+						</view>
+					</view>
+				</radio-group>
+			</view>
+		</view>
+		<view class="cu-modal" :class="modalNameTraffic=='RadioModalTraffic'?'show':''" @tap="hideModalTraffic">
+			<view class="cu-dialog" @tap.stop="">
+				<radio-group class="block" @change="RadioTrafficChange">
+					<view class="cu-list menu text-left">
+						<view class="cu-item" v-for="(item,index) in TrafficTypeList" :key="index">
+							<label class="flex justify-between align-center flex-sub">
+								<view class="flex-sub">{{item.Name}}</view>
+								<radio class="round" :class="radio3==item.Code?'checked':''" :checked="radio3==item.Code?true:false" :value="item.Code"></radio>
+							</label>
+						</view>
+					</view>
+				</radio-group>
+			</view>
+		</view>
 		<view class="ul-swiper-box margin-top" style="margin-top: 50px;">
 			<form>
 				<view class="cu-form-group" readonly>
@@ -65,8 +93,13 @@
 				<view class="cu-form-group">
 					<view class="title">费用类型</view>
 					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
-						<view class="picker">{{CostType[indexCostType].Name}}</view>
+						<view class="picker">{{CostType[indexCostType]}}</view>
 					</picker>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">开户名</view>
+					<input placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)" :value="itemData.AccountName">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">账户(卡号)</view>
@@ -79,20 +112,39 @@
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
+					<view class="title">出差天数</view>
+					<input placeholder="出差天数" name="input" style="text-align: right;" @input="inputNumDays($event)" :value="itemData.Days">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">出差补贴金额</view>
+					<input placeholder="出差补贴金额" name="input" style="text-align: right;" @input="inputNumAllowanceAmount($event)"
+					 :value="itemData.AllowanceAmount">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">出差事由</view>
+				</view>
+				<view class="cu-form-group">
+					<textarea @input="textareaInputReasons" :class="itemData.Reasons?'value':''" maxlength="-1" :disabled="modalName!=null"
+					 placeholder-class="placeholder" data-placeholder="在此输入出差事由" :value="itemData.Reasons" />
+					</view>
+				<view class="cu-form-group">
 					<view class="title">备注</view>
-					<!-- <view class="action">
-						<view>已输入({{!this.$mbservices.isEmpty(itemData.Remarks)?itemData.Remarks.length:0}})个字符</view>
-					</view> -->
 				</view>
 				<view class="cu-form-group">
 					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
 					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
-					</view>
+				</view>
 				<block v-for="(item,index) in formList" :key="index">
 					<view class="cu-bar bg-gray solid-bottom margin-top">
 						<view class="action">
 							<text class="icon-title text-orange"></text>
 							报销明细({{item.id}})
+						</view>
+						<view class="action">
+							<text class="cu-tag round bg-blue light" data-target="RadioModalType" @tap="showModalType(item.id,$event)">{{item.DetailTypeName}}</text>
+							<text v-if="false" class="icon-roundclosefill text-orange"></text>
 						</view>
 						<view class="action" v-if="formList.length!=1">
 							<button class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
@@ -112,12 +164,10 @@
 							<view class="cu-tag round bg-blue light">{{item.bigjine}}</view>
 						</view>
 					</view>
-					<view class="cu-form-group">
-						<view class="title">申请日期</view>
-						<picker v-bind:id="item.id" v-bind:name="item.id" mode="date" :value="item.itemDate" :start="startDate" :end="endDate"
-						 @change="bindDateChange(item,$event)">
-							<view class="picker">{{item.itemDate}}</view>
-						</picker>
+					<view class="cu-form-group" readonly>
+						<view class="title">报销日期</view>
+						<text class="cu-tag round bg-gray light">{{formatDate(time)}}</text>
+						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group">
 						<view class="title">报销类型</view>
@@ -125,15 +175,39 @@
 							<view class="picker">{{arrayType[item.itemOptionIndex]}}</view>
 						</picker>
 					</view>
-					<view class="cu-form-group">
-						<view class="title">明细备注</view>
-						<!-- <view class="action">
-							<view>已输入({{!this.$mbservices.isEmpty(itemData.Remarks)?item.itemReason.length:0}})个字符</view>
-						</view> -->
+					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
+						<view class="title">出发日期</view>
+						<picker mode="date" :value="item.DocDateStart" :start="startDate" :end="endDate" @change="bindDateStartChange(item,$event)">
+							<view class="picker">{{item.DocDateStart}}</view>
+						</picker>
+					</view>
+					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
+						<view class="title">出发地点</view>
+						<input placeholder="出发地点" name="input" style="text-align: right;" @input="inputNumStartPlace(item,$event)" :value="item.StartPlace">
+						<text v-if="false" class="icon-roundclosefill text-orange"></text>
+					</view>
+					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
+						<view class="title">到达日期</view>
+						<picker mode="date" :value="item.DocDateArrive" :start="startDate" :end="endDate" @change="bindDateArriveChange(item,$event)">
+							<view class="picker">{{item.DocDateArrive}}</view>
+						</picker>
+					</view>
+					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
+						<view class="title">到达地点</view>
+						<input placeholder="到达地点" name="input" style="text-align: right;" @input="inputNumArrivePlace(item,$event)" :value="item.ArrivePlace">
+						<text v-if="false" class="icon-roundclosefill text-orange"></text>
+					</view>
+					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
+						<view class="title">交通工具</view>
+						<text class="cu-tag round bg-blue light" data-target="RadioModalTraffic" @tap="showModalTraffic(item.id,$event)">{{item.TrafficTypeName}}</text>
+						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group">
-						<textarea @input="textareaInput" :class="item.itemReason?'value':''" v-bind:id="item.id" v-bind:name="item.id"
-						 maxlength="-1" :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入明细备注" :value="item.itemReason" />
+						<view class="title">明细备注</view>
+					</view>
+					<view class="cu-form-group">
+						<textarea @input="textareaInput(item,$event)" :class="item.Remarks1?'value':''"
+						 maxlength="-1" :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入明细备注" :value="item.Remarks1" />
 						</view>
           <!-- 图片开始 -->
           <view class="cu-bar bg-white">
@@ -180,14 +254,61 @@ export default {
 			indexPayType:2,
 			indexCostType: 0,
 			radio: 'radio1',
+			radio2:'radio2',
+			radio3:'radio3',
 			invCompanys:[],
-			CostType:[],
+			CostType:["请选择"],
+			CostTypeList: [],
+			DetailTypeList:[{
+				Code: "Traffic",
+				Name:"交通费",
+			},{
+				Code: "Other",
+				Name:"其它",
+			}],
+			TrafficTypeList:[{
+				Code:"Gaotie",
+				Name:"高铁"
+			},{
+				Code:"Aircraft",
+				Name:"飞机"
+			},{
+				Code:"Huoche",
+				Name:"火车"
+			},{
+				Code:"Bus",
+				Name:"客车"
+			},{
+				Code:"Ship",
+				Name:"轮船"
+			},{
+				Code:"Taxi",
+				Name:"出租车"
+			},{
+				Code:"PublicBus",
+				Name:"公交车"
+			},{
+				Code:"Zuche",
+				Name:"自驾租赁"
+			},{
+				Code:"Myself",
+				Name:"自驾私车"
+			},{
+				Code:"Common",
+				Name:"自驾公车"
+			},{
+				Code:"Other",
+				Name:"其他工具"
+			}],
       modalName: null,
+	  modalNameType: null,
+	  modalNameTraffic:null,
       resourceArray: ["选项一", "选项二", "选项三"],
       arrayType: ["选项一", "选项二", "选项三"],
       indexType: 0,
       enddate: "",
       themeColor: "",
+			time: Date.parse(new Date()),
 
       /*图片*/
       imageList: [],
@@ -198,12 +319,21 @@ export default {
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
 			itemData:{DocEntry:"",indexPayType:2,AccountNumber:"",AcceptingUnit:"",PayType:"银行转账",Remarks:"","InvCompanyId":"","InvCompanyName":"请选择",
-			CostType: [],CostTypeCode:"",CostTypeName:""},
+			CostType: [],CostTypeCode:"",CostTypeName:"",Reasons:"",Days:"",AllowanceAmount:"",AccountName:"",},
       formList: [
         {
           id: 1,
           name: "张三",
           jine: "",
+		  DocDateStart:this.getDate({format: true}),
+		  DocDateArrive:this.getDate({format: true}),
+		  StartPlace:"",
+		  ArrivePlace:"",
+		  Remarks1:"",
+		  DetailType:"",
+		  DetailTypeName:"请选择明细类型",
+		  TrafficType:"",
+		  TrafficTypeName:"请选择交通工具",
           itemDate: "请选择",
           itemOptionIndex: 0,
           itemOptionText: "",
@@ -216,7 +346,9 @@ export default {
       totalJine: "0.00",
       editflag: false,
       editItem: {},
-      isDoSteps: false
+      isDoSteps: false,
+	  DetailId:0,
+	  TrafficId:0,
     };
   },
   computed: {
@@ -228,6 +360,22 @@ export default {
     }
   },
   methods: {
+	  //获取当前时间
+	             formatDate: function (value) {
+	                 let date = new Date(value);
+	                 let y = date.getFullYear();
+	                 let MM = date.getMonth() + 1;
+	                 MM = MM < 10 ? ('0' + MM) : MM;
+	                 let d = date.getDate();
+	                 d = d < 10 ? ('0' + d) : d;
+	                 let h = date.getHours();
+	                 h = h < 10 ? ('0' + h) : h;
+	                 let m = date.getMinutes();
+	                 m = m < 10 ? ('0' + m) : m;
+	                 let s = date.getSeconds();
+	                 s = s < 10 ? ('0' + s) : s;
+	                 return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
+	             },
 		getInvCompany:async function(){
 			//invCompanys
 			var ajaxJSON={
@@ -264,17 +412,50 @@ export default {
 		RadioChange(e) {
 			this.radio = e.detail.value;
 			this.itemData.InvCompanyId=e.detail.value;
-			//this.itemData.InvCompanyName=this.
 			this.invCompanys.forEach(item=>{
 				if(item.Code===e.detail.value)
 				{
 					this.itemData.InvCompanyName=item.Name;
 				}
 			})
-			console.log(e);
+			this.modalName = null;
+			this.radio = "";
+		},
+		RadioTypeChange(e) {
+			this.radio2 = e.detail.value;
+			this.formList[this.DetailId-1].DetailType=e.detail.value;
+			console.log(this.formList[this.DetailId-1].DetailType)
+			this.DetailTypeList.forEach(item=>{
+				if(item.Code===e.detail.value)
+				{
+					this.formList[this.DetailId-1].DetailTypeName=item.Name;
+				}
+			})
+			this.modalNameType = null;
+			this.radio2 = "";
+		},
+		RadioTrafficChange(e) {
+			this.radio3 = e.detail.value;
+			this.formList[this.TrafficId-1].TrafficType=e.detail.value;
+			this.TrafficTypeList.forEach(item=>{
+				if(item.Code===e.detail.value)
+				{
+					this.formList[this.TrafficId-1].TrafficTypeName=item.Name;
+				}
+			})
+			this.modalNameTraffic = null;
+			this.radio3 = "";
 		},
 		showModal1(e) {
 			this.modalName = e.currentTarget.dataset.target;
+		},
+		showModalType(ID,e) {
+			this.DetailId = ID;
+			this.modalNameType = e.currentTarget.dataset.target;
+		},
+		showModalTraffic(ID,e) {
+			this.TrafficId = ID;
+			this.modalNameTraffic = e.currentTarget.dataset.target;
 		},
     showModal(e) {
 			if(this.$mbservices.isEmpty(this.itemData.InvCompanyId))
@@ -287,6 +468,14 @@ export default {
 			}
 			if(this.itemData.PayType==="银行转账")
 			{
+				if(this.$mbservices.isEmpty(this.itemData.AccountName))
+				{
+					uni.showToast({
+						title:'请输入开户名',
+						icon:'none'
+					});
+					return false;
+				}
 				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
 				{
 					uni.showToast({
@@ -327,15 +516,6 @@ export default {
           isNull_ = true;
           content = "请输入报销金额";
         }
-        if (
-          _item.itemDate === "" ||
-          _item.itemDate === undefined ||
-          _item.itemDate === null ||
-          _item.itemDate === "请选择"
-        ) {
-          isNull_ = true;
-          content = "请选择报销时间";
-        }
       });
       if (isNull_) {
         uni.showToast({ title: content, icon: "none" });
@@ -346,6 +526,12 @@ export default {
     hideModal(e) {
       this.modalName = null;
     },
+	hideModalType(e) {
+	  this.modalNameType = null;
+	},
+	hideModalTraffic(e) {
+	  this.modalNameTraffic = null;
+	},
     onlySave() {
       this.modalName = null;
       this.isDoSteps = false;
@@ -376,29 +562,60 @@ export default {
           path = path.substr(0, path.length - 1);
         }
         _indx = parseInt(_indx) + 1;
-        var lineItem = {
-          LineNum: _indx,
-          ObjType: "Reimbursement",
-          Remarks: _item.itemReason,
-          Amount: parseFloat(_item.jine).toFixed(2),
-          Imgs: path,
-          DocDate: _item.itemDate,
-          ReimbursementTypeCode:
-            _this.resourceArray[_item.itemOptionIndex].ReimbursementTypeCode,
-          ReimbursementTypeName: _this.arrayType[_item.itemOptionIndex],
-          Canceled: "N",
-          Closed: "N",
-          LineStatus: "O",
-          UIStatus: "New"
-        };
+		var lineItem = {};
+		if(_item.DetailType === 'Traffic'){
+			lineItem = {
+			  LineNum: _indx,
+			  ObjectType: "BusinessTravelRequest",
+			  Remarks: _item.Remarks1,
+			  DocDateStart:_item.DocDateStart,
+			  DocDateArrive: _item.DocDateArrive,
+			  StartPlace: _item.StartPlace,
+			  ArrivePlace: _item.ArrivePlace,
+			  TrafficType: _item.TrafficType,
+			  DetailType: _item.DetailType,
+			  Amount: parseFloat(_item.jine).toFixed(2),
+			  Imgs: path,
+			  DocDate: _this.formatDate(),
+			  ReimbursementTypeCode: "JTF",
+			  ReimbursementTypeName: "交通费",
+			  Canceled: "N",
+			  Closed: "N",
+			  LineStatus: "O",
+			  UIStatus: "New"
+			};
+		}else{
+			lineItem = {
+			  LineNum: _indx,
+			  ObjectType: "BusinessTravelRequest",
+			  Remarks: _item.Remarks1,
+			  DocDateStart:_item.DocDateStart,
+			  DocDateArrive: _item.DocDateArrive,
+			  StartPlace: _item.StartPlace,
+			  ArrivePlace: _item.ArrivePlace,
+			  TrafficType: _item.TrafficType,
+			  DetailType: _item.DetailType,
+			  Amount: parseFloat(_item.jine).toFixed(2),
+			  Imgs: path,
+			  DocDate: _this.formatDate(),
+			  ReimbursementTypeCode:
+			    _this.resourceArray[_item.itemOptionIndex].ReimbursementTypeCode,
+			  ReimbursementTypeName: _this.arrayType[_item.itemOptionIndex],
+			  Canceled: "N",
+			  Closed: "N",
+			  LineStatus: "O",
+			  UIStatus: "New"
+			};
+		}
         if (_this.editflag) {
           lineItem.DocEntry = _item.DocEntry;
         }
         _lines.push(lineItem);
       });
       var ajaxJSON = {};
+	  var Amount = 0;
       if (_this.editflag) {
-        _this.editEntitysList[0].ReimbursementRequestLines.forEach(
+        _this.editEntitysList[0].BusinessTravelRequestLines.forEach(
           _calcuItem => {
             var _ishave = false;
             _lines.forEach(__option => {
@@ -421,30 +638,36 @@ export default {
           }
         );
         _this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
-        (_this.editEntitysList[0].ApproveStatus = "Pending"),
+        (_this.editEntitysList[0].ApproveStatus = "Pending");
+		_this.totalJine = parseFloat(parseFloat(_this.totalJine) + parseFloat(_this.itemData.AllowanceAmount));
           (_this.editEntitysList[0].Amount = parseFloat(
             _this.totalJine
           ).toFixed(2));
-		  (_this.editEntitysList[0].ReimbursementAmount = parseFloat(
-		    _this.totalJine
-		  ).toFixed(2));
 				_this.editEntitysList[0].PayType=_this.itemData.PayType;
-				_this.editEntitysList[0].AccountNumber=_this.itemData.AccountNumber;
-				_this.editEntitysList[0].AcceptingUnit=_this.itemData.AcceptingUnit;
+				_this.editEntitysList[0].AccountCode=_this.itemData.AccountNumber;
+				_this.editEntitysList[0].Bank=_this.itemData.AcceptingUnit;
+				_this.editEntitysList[0].AccountName=_this.itemData.AccountName;
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
 				_this.editEntitysList[0].InvCompanyId=_this.itemData.InvCompanyId;
 				_this.editEntitysList[0].InvOrganizationCode=uni.getStorageSync("JSUserInfo").OrganizationCode;
 				_this.editEntitysList[0].InvOrganizationName=uni.getStorageSync("JSUserInfo").OrganizationName;
 				_this.editEntitysList[0].CostTypeCode= _this.itemData.CostTypeCode;
 				_this.editEntitysList[0].CostTypeName=_this.itemData.CostTypeName;
+				_this.editEntitysList[0].Reasons=_this.itemData.Reasons;
+				_this.editEntitysList[0].Days=_this.itemData.Days;
+				_this.editEntitysList[0].AllowanceAmount=_this.itemData.AllowanceAmount;
         _this.editEntitysList[0].UIStatus = "Modify";
         ajaxJSON = _this.editEntitysList[0];
       } else {
+		  _this.totalJine = parseFloat(parseFloat(_this.totalJine) + parseFloat(_this.itemData.AllowanceAmount));
         ajaxJSON = {
           DocNum: this.itemData.DocEntry,
-          ObjType: "Reimbursement",
+          ObjType: "BusinessTravelRequest",
           CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
           Remarks: _this.itemData.Remarks,
+		  Reasons: _this.itemData.Reasons,
+		  Days: _this.itemData.Days,
+		  AllowanceAmount: _this.itemData.AllowanceAmount,
           Approve: _this.isDoSteps ? "Yes" : "No",
           ApproveStatus: "Pending",
           Canceled: "No",
@@ -452,26 +675,29 @@ export default {
           Amount: parseFloat(_this.totalJine).toFixed(2),
           Attachment: "",
           Imgs: "",
-          DocDate: _this.getDate(),
+          DocDate: _this.formatDate(),
           OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 					CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
 					PayType:_this.itemData.PayType,
-					AccountNumber:_this.itemData.AccountNumber,
-					AcceptingUnit:_this.itemData.AcceptingUnit,
+					AccountCode: _this.itemData.AccountNumber,
+					 Bank: _this.itemData.AcceptingUnit,
           ReimbursementTypeID: "",
 		  InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  InvOrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 		  CostTypeCode: _this.itemData.CostTypeCode,
 		  CostTypeName: _this.itemData.CostTypeName,
+		  ReimbursementAmount: 1897,
 		  ReimbursementAmount: parseFloat(_this.totalJine).toFixed(2),
 					InvCompanyId:_this.itemData.InvCompanyId,
-          ReimbursementRequestLines: _lines,
-          UIStatus: "New"
+          BusinessTravelRequestLines: _lines,
+          UIStatus: "New",
         };
       }
+	  console.log("ajaxjsonajaxjsonajaxjsonajaxjsonajaxjson")
+	  console.log(ajaxJSON)
       var requestUrl = _this.editflag
-        ? _this.$webapi.updateCostItem
-        : _this.$webapi.submitCostForm;
+        ? _this.$webapi.saveBusinesstravelRequest
+        : _this.$webapi.saveBusinesstravelRequest;
 				var _$this=_this;
       _this.$mbservices.Request(
         requestUrl,
@@ -529,12 +755,20 @@ export default {
       });
       this.totalJine = _cache.toString();
     },
-    textareaInput(e) {
-      this.formList[parseInt(e.target.id) - 1].itemReason = e.detail.value;
+    textareaInput(item,e) {
+      item.Remarks1 = e.detail.value;
     },
     addOption(e) {
       this.formList.push({
         id: this.formList.length + 1,
+		DetailType:"",
+		DetailTypeName:"请选择明细类型",
+		TrafficType:"",
+		TrafficTypeName:"请选择交通工具",
+		DocDateStart:this.getDate({format: true}),
+		DocDateArrive:this.getDate({format: true}),
+		StartPlace:"",
+		ArrivePlace:"",
         name: "",
         jine: "",
         itemDate: "请选择",
@@ -582,13 +816,17 @@ export default {
 			this.itemData.indexPayType=e.target.value;
 			this.itemData.PayType=this.PayType[this.indexPayType];
 			
-			if (this.PayType[this.indexPayType] != "银行转账") {this.itemData.AcceptingUnit=this.PayType[this.indexPayType];}
-		    else {this.itemData.AcceptingUnit="";}
+			if (this.PayType[this.indexPayType] != "银行转账") {this.itemData.Bank=this.PayType[this.indexPayType];}
+		    else {this.itemData.Bank="";}
 		},
 		bindPickerChange2: function(e) {
 			this.indexCostType = e.target.value;
-			this.itemData.CostTypeCode = this.CostType[this.indexCostType].Code;
-			this.itemData.CostTypeName = this.CostType[this.indexCostType].Name;
+			for(var i in this.CostTypeList){
+				if(this.CostType[this.indexCostType] === this.CostTypeList[i].Name){
+					this.itemData.CostTypeCode = this.CostTypeList[i].Code;
+					this.itemData.CostTypeName = this.CostType[this.indexCostType];
+				}
+			}
 		},
 		getCostType:async function(){
 			var ajaxJSON={
@@ -598,12 +836,17 @@ export default {
 				Parameter: {
 				  LoadChildren: "NoLoad",
 				  Conditions: [
+						{ 
+							ConditionValue: "Y",
+							FieldName: "Activated",
+							Operation: "EQUAL",
+							Relationship: "AND",
+							},
 				    {
-				      FieldName: "Activated",
-				      Operation: "EQUAL",
-				      ConditionValue: "Y",
-				      Relationship: "AND"
-				    }
+							ConditionValue: "F",
+							FieldName: "Type",
+							Operation: "EQUAL",
+							Relationship: "AND"}
 				  ]
 				}
 			};
@@ -611,18 +854,19 @@ export default {
 				if(res.data.RecordCount>0)
 				{
 					res.data.data.forEach(item =>{
-						this.CostType.push({
-							Name:item.Name,
-							Code:item.Code
-						})
+						this.CostType.push(item.Name)
+						this.CostTypeList.push(item)
 					})
 				}
 				
 			},err=>{})
 		},
-    bindDateChange: function(item, e) {
-      item.itemDate = e.target.value;
+    bindDateStartChange: function(itemDate, e) {
+      itemDate.DocDateStart = e.target.value;
     },
+	bindDateArriveChange: function(itemDate, e) {
+	  itemDate.DocDateArrive = e.target.value;
+	},
     getDate(type) {
       const date = new Date();
 
@@ -843,8 +1087,8 @@ export default {
             item.Amount = parseFloat(item.Amount).toFixed(2);
 						//_$this.itemData.DocEntry=item.Amount;
 						_$this.itemData.PayType=item.PayType;
-						_$this.itemData.AccountNumber=item.AccountNumber;
-						_$this.itemData.AcceptingUnit=item.AcceptingUnit;
+						_$this.itemData.AccountCode=item.AccountCode;
+						_$this.itemData.Bank=item.Bank;
 						_$this.itemData.Remarks=item.Remarks;
 						_$this.PayType.forEach((_item,index)=>{
 											  if(_item===_this.itemData.PayType)
@@ -856,7 +1100,7 @@ export default {
 						});
             _this.formList = [];
             _this.totalJine = parseFloat(item.Amount).toFixed(2);
-            item.ReimbursementRequestLines.forEach((_item, _indx) => {
+            item.BusinessTravelRequestLines.forEach((_item, _indx) => {
 
               var _pathArr =
                 _item.Imgs != "undefined" &&
@@ -877,6 +1121,8 @@ export default {
                 id: parseInt(_indx) + 1,
                 DocEntry: _item.DocEntry,
                 name: "",
+				DetailType: _item.DetailType,
+				TrafficType: _item.TrafficType,
                 jine: parseFloat(_item.Amount)
                   .toFixed(2)
                   .toString(),
@@ -911,14 +1157,35 @@ export default {
         }
       );
     },
+	inputNumAN(event){
+		this.itemData.AccountName=event.detail.value;
+	},
 		inputNum11(event){
 			this.itemData.AccountNumber=event.detail.value;
 		},
 		inputNum22(event){
 			this.itemData.AcceptingUnit=event.detail.value;
 		},
+		inputNumDays(event){
+			this.itemData.Days=event.detail.value;
+		},
+		inputNumAllowanceAmount(event){
+			this.itemData.AllowanceAmount=event.detail.value;
+		},
+		inputNumArrivePlace(item,event){
+			item.ArrivePlace=event.detail.value;
+		},
+		inputNumStartPlace(item,event){
+			item.StartPlace=event.detail.value;
+		},
+		inputNumTrafficType(event){
+			this.itemData.TrafficType=event.detail.value;
+		},
 		textareaInput33(e) {
 		  this.itemData.Remarks = e.detail.value;
+		},
+		textareaInputReasons(e) {
+		  this.itemData.Reasons = e.detail.value;
 		}
   },
   onLoad(e) {
@@ -936,7 +1203,7 @@ export default {
     if(!this.editflag)
 		{
 			//最大编号
-			this.$mbservices.Request(this.$webapi.maxNumReimRequest,'GET',{},res=>{
+			this.$mbservices.Request(this.$webapi.maxNumBusinessTravelRequest,'GET',{},res=>{
 				this.itemData.DocEntry=res.data;
 			},null);
 		}

@@ -471,7 +471,7 @@ export default {
         };
       }
       var requestUrl = _this.editflag
-        ? _this.$webapi.updateCostItem
+        ? _this.$webapi.submitCostForm
         : _this.$webapi.submitCostForm;
 				var _$this=_this;
       _this.$mbservices.Request(

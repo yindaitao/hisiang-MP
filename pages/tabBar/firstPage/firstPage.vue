@@ -90,33 +90,33 @@
 		methods: {
 			itemClick(e) {
 				switch (e.currentTarget.id) {
-					case "ReimbursementRequest":
+					case "GeneralReim":
 						uni.navigateTo({
-							url: "/pages/ReimbursementRequest/list/general",
-							title: "普通报销申请"
+							url: "/pages/ReimbursementRequest/ReimRequestlist/ReimRequestlist",
+							title: "报销申请"
 						});
 						break;
 					case "lendmoneyReim":
 						uni.navigateTo({
-							url: "/pages/BorrowRequest/rflist/rflist",
+							url: "/pages/BorrowRequest/BorrowRequestlist/BorrowRequestlist",
 							title: "借款申请"
 						});
 						break;
-					case "RepaymentRequest":
+					case "paymoneyReim":
 						uni.navigateTo({
-							url: "/pages/RepaymentRequest/list/list",
+							url: "/pages/RepaymentRequest/RepaymentRequestlist/RepaymentRequestlist",
 							title: "还款申请"
 						});
 						break;
-					case "BusinesstravelRequest":
+					case "TravellReim":
 						uni.navigateTo({
-							url: "/pages/BusinesstravelRequest/list/list",
-							title: "差旅费报销申请"
+							url: "/pages/BusinesstravelRequest/BusinesstravelRequestlist/BusinesstravelRequestlist",
+							title: "差旅报销申请"
 						});
 						break;
 					case "xiaohaoReim":
 						uni.navigateTo({
-							url: "/pages/xiaohaoReim/list/list",
+							url: "/pages/DepleteRequest/DepleteRequestlist/DepleteRequestlist",
 							title: "消耗申请"
 						});
 						break;

@@ -75,13 +75,13 @@ module.exports = {
 	getItemBorrowRequest: websiteUrl + '/api/BorrowRequest/GetRecords',
 	/* 借款申请冲销明细 */
 	getBorrowRequestRepaymentDetail: websiteUrl + '/api/BorrowRequest/GetRepmentDetailRecords',
-	/* 差旅费报销申请最大编号 */
+	/* 差旅报销申请最大编号 */
 	maxNumBusinessTravelRequest: websiteUrl + '/api/BusinessTravelRequest/GetMaxDocEntry',
-	/* 获取差旅费报销申请列表 */
+	/* 获取差旅报销申请列表 */
 	getBusinesstravelReimList: websiteUrl + '/api/BusinessTravelRequest/GetRecords',
-	/* 差旅费报销申请、详情 */
+	/* 差旅报销申请、详情 */
 	getBusinesstravelRequestItemDetail: websiteUrl + '/api/BusinesstravelRequest/GetBusinesstravelRequestDetail',
-	/* 提交差旅费报销申请 */
+	/* 提交差旅报销申请 */
 	saveBusinesstravelRequest: websiteUrl + '/api/BusinessTravelRequest/Save',
 	/* 还款申请最大编号 */
 	maxNumpaymentRequest: websiteUrl + '/api/RepaymentRequest/GetMaxDocEntry',
@@ -97,6 +97,8 @@ module.exports = {
 	getAdvancePayRequestItemDetail: websiteUrl + '/api/AdvancePayRequest/GetAdvancePayRequestDetail',
 	/* 获取消耗申请列表 */
 	getDepleteRequestList: websiteUrl + '/api/Deplete/GetRecords',
+	/* 消耗申请最大编号 */
+	maxNumDepleteRequest: websiteUrl + '/api/DepleteDetails/GetMaxDocEntry',
 	// 在消耗申请中获取消耗管理
 	GetOpenDepletes: websiteUrl + '/api/Deplete/GetOpenDepletes',
 	/* 获取我的审核列表 */

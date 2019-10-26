@@ -1,8 +1,6 @@
 <template>
 	<view>
 		<callback :baseEntry="from" :backFrom="backFrom">我的审批列表</callback>
-		{{from}}<br />
-		{{backFrom}}
 		<scroll-view id="_tabBar" ref="_tabBar" scroll-x class="cu-bar bg-white nav text-center">
 			<button class="cu-btn icon bg-gray" style="position: absolute;left: 2px;" @tap="showModalSearch" data-target="DrawerModalR"><text
 				 class="icon-filter"><span></span></text></button>
@@ -151,13 +149,13 @@
 				],
 				checkbox: [{
 						value: 0,
-						name: "普通报销",
+						name: "报销",
 						checked: false,
 						hot: false
 					},
 					{
 						value: 1,
-						name: "差旅费报销",
+						name: "差旅报销",
 						checked: false,
 						hot: false
 					},
@@ -741,10 +739,10 @@
 								//业务类型
 								switch (item.BusinessType) {
 									case "ReimbursementRequest":
-										item.BBusinessType = "普通报销";
+										item.BBusinessType = "报销";
 										break;
 									case "BusinesstravelRequest":
-										item.BBusinessType = "差旅费报销";
+										item.BBusinessType = "差旅报销";
 										break;
 									case "BorrowRequest":
 										item.BBusinessType = "借款申请";
