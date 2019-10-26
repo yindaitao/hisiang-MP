@@ -419,7 +419,7 @@ export default {
 				}
 			})
 			this.modalName = null;
-			this.radio = null;
+			this.radio = "";
 		},
 		RadioTypeChange(e) {
 			this.radio2 = e.detail.value;
@@ -432,7 +432,7 @@ export default {
 				}
 			})
 			this.modalNameType = null;
-			this.radio2 = null;
+			this.radio2 = "";
 		},
 		RadioTrafficChange(e) {
 			this.radio3 = e.detail.value;
@@ -444,7 +444,7 @@ export default {
 				}
 			})
 			this.modalNameTraffic = null;
-			this.radio3 = null;
+			this.radio3 = "";
 		},
 		showModal1(e) {
 			this.modalName = e.currentTarget.dataset.target;
