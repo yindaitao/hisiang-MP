@@ -44,6 +44,23 @@
 				</radio-group>
 			</view>
 		</view>
+		<view class="cu-modal" :class="modalName=='RadioModalBaseEntry'?'show':''" @tap="hideModalBaseEntry" style="margin-top: 75px;">
+			<view class="cu-dialog" @tap.stop="">
+				<radio-group class="block" @change="RadioChangeBaseEntry">
+					<view class="cu-list menu text-left">
+						<view class="cu-item" v-for="(item,index) in DepletesList" :key="index">
+							<view class="cu-item">
+								<label class="flex justify-between align-center flex-sub">
+									<view class="flex-sub">消耗单{{item.DocEntry}}</view>
+									<radio class="round" :class="radio==item.DocEntry?'checked':''" :checked="radio==item.DocEntry?true:false"
+									 :value="item.DocEntry"></radio>
+								</label>
+							</view>
+						</view>
+					</view>
+				</radio-group>
+			</view>
+		</view>
 		<view class="ul-swiper-box margin-top" style="margin-top: 50px;">
 			<form>
 				<view class="cu-form-group" readonly>
@@ -58,6 +75,11 @@
 						<view class="picker">{{itemData.DocDate}}</view>
 					</picker>
 				</view>
+				<view class="cu-form-group" readonly>
+					<view class="title">消耗单号</view>
+					<text class="cu-tag round bg-blue light" data-target="RadioModalBaseEntry" @tap="showModalBaseEntry">{{itemData.BaseEntry}}</text>
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
 				<view class="cu-form-group">
 					<view class="title">用途</view>
 				</view>
@@ -65,13 +87,19 @@
 					<textarea @input="textareaInput" :class="itemData.itemReason?'value':''"
 					 maxlength="-1" :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入用途" :value="itemData.itemReason" />
 					</view>
-					<view class="cu-form-group">
+					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Quantity'">
+						<view class="title">数量</view>
+						<input placeholder="请输入数量" name="input" type="digit" style="text-align: right;" @input="inputQuantityNum(itemData,$event)"
+						 :value="itemData.num">
+						<text v-if="false" class="icon-roundclosefill text-orange"></text>
+					</view>
+					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Amount'">
 						<view class="title">金额</view>
 						<input placeholder="请输入金额" name="input" type="digit" style="text-align: right;" @input="inputNum(itemData,$event)"
 						 :value="item.jine">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
-					<view class="cu-form-group">
+					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Amount'">
 						<view class="title">大写金额</view>
 						<view class="action">
 							<view class="cu-tag round bg-blue light">{{item.bigjine}}</view>
@@ -144,6 +172,7 @@ export default {
     return {
 			indexCostType: 0,
 			radio: 'radio1',
+			radio2: 'radio2',
 			invCompanys:[],
 			CostType:[],
       modalName: null,
@@ -163,6 +192,7 @@ export default {
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
 	  itemData:{
 		  DocEntry:"",
+		  BaseEntry:"请选择",
 		  itemReason:"",
 		  Remarks:"",
 		  "InvCompanyId":"",
@@ -170,7 +200,10 @@ export default {
 		  CostType: [],
 		  CostTypeCode:"",
 		  CostTypeName:"",
-		  DocDate:this.getDate({format: true})},
+		  DocDate:this.getDate({format: true}),
+		  AdvanceType:"",
+	},
+	DepletesList:[],
       formList: [
         {
           id: 1,
@@ -242,6 +275,9 @@ export default {
 		showModal1(e) {
 			this.modalName = e.currentTarget.dataset.target;
 		},
+		showModalBaseEntry(e) {
+			this.modalName = e.currentTarget.dataset.target;
+		},
     showModal(e) {
 			if(this.$mbservices.isEmpty(this.itemData.InvCompanyId))
 			{
@@ -263,6 +299,21 @@ export default {
     hideModal(e) {
       this.modalName = null;
     },
+	hideModalBaseEntry(e) {
+	  this.modalName = null;
+	},
+	RadioChangeBaseEntry(e) {
+		this.radio2 = e.detail.value;
+		this.DepletesList.forEach(item=>{
+			if(item.DocEntry.toString()===e.detail.value.toString())
+			{
+				this.itemData.BaseEntry=item.DocEntry;
+				this.itemData.itemReason = item.Instructions;
+				this.itemData.AdvanceType = item.AdvanceType;
+			}
+		})
+		this.modalName = null;
+	},
     onlySave() {
       this.modalName = null;
       this.isDoSteps = false;
@@ -310,11 +361,11 @@ export default {
       } else {
         ajaxJSON = {
 		  ObjectType: "DepleteDetails",
-		  DocNum: this.itemData.DocEntry,
-		  BaseEntry: this.itemData.DocEntry,  //消耗品管理单号
+		  DocNum: _this.itemData.DocEntry,
+		  BaseEntry: _this.itemData.DocEntry,  //消耗品管理单号
 		  BaseType: "Deplete",
-		  Instructions: "7777",
-		  AdvanceType: "Amount",
+		  Instructions: _this.itemData.Instructions,
+		  AdvanceType: _this.itemData.AdvanceType,
 		  AmountOrQuantity: 10,
           CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
           Remarks: _this.itemData.Remarks,
@@ -380,16 +431,17 @@ export default {
         item.bigjine = this.$mbservices.smalltoBIG(item.jine);
         this.totalJine = "0.00"; //parseFloat(parseFloat(this.totalJine) +parseFloat(item.jine)).toFixed(2);
         var cacheJIne = "0.00";
-        this.formList.forEach(_item => {
-          cacheJIne = parseFloat(
+        cacheJIne = parseFloat(
             parseFloat(cacheJIne) + parseFloat(_item.jine)
           ).toFixed(2);
-        });
         this.totalJine = cacheJIne;
       } else {
         item.bigjine = "";
       }
     },
+	inputQuantityNum(itemData, event) {
+	  itemData.num = event.detail.value;
+	},
     onKeyInput: function(event) {
       this.formList[parseInt(event.target.id) - 1].jine = event.detail.value;
       var _cache = 0;
@@ -399,7 +451,7 @@ export default {
       this.totalJine = _cache.toString();
     },
     textareaInput(e) {
-      this.formList[parseInt(e.target.id) - 1].itemReason = e.detail.value;
+      this.itemData.itemReason = e.detail.value;
     },
     bindPickerChange: function(e) {
       this.indexType = e.target.value;
@@ -737,6 +789,13 @@ export default {
 			  Conditions: []
 			}
 		};
+		this.$mbservices.Request(this.$webapi.GetOpenDepletes,"POST",ajaxJSON,res=>{
+			if(res.data.RecordCount>0)
+			{
+				this.DepletesList=res.data.data;
+			}
+			
+		},err=>{})
 	}
   },
   onLoad(e) {
@@ -762,6 +821,8 @@ export default {
 		this.getInvCompany();
 		// 费用类型
 		this.getCostType();
+		// 在消耗申请中获取消耗管理
+		this.GetOpenDepletes();
     /* 初始化报销类型 */
     var ajaxJSON = {
       pageIndex: 0,
