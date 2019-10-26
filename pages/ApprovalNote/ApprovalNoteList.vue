@@ -151,13 +151,13 @@
 				],
 				checkbox: [{
 						value: 0,
-						name: "普通报销",
+						name: "报销",
 						checked: false,
 						hot: false
 					},
 					{
 						value: 1,
-						name: "差旅费报销",
+						name: "差旅报销",
 						checked: false,
 						hot: false
 					},
@@ -741,10 +741,10 @@
 								//业务类型
 								switch (item.BusinessType) {
 									case "ReimbursementRequest":
-										item.BBusinessType = "普通报销";
+										item.BBusinessType = "报销";
 										break;
 									case "BusinesstravelRequest":
-										item.BBusinessType = "差旅费报销";
+										item.BBusinessType = "差旅报销";
 										break;
 									case "BorrowRequest":
 										item.BBusinessType = "借款申请";

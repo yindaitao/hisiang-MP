@@ -165,40 +165,40 @@
 		        {
 		            "path": "BusinesstravelRequestlist/BusinesstravelRequestlist",
 		            "style": {
-		                "navigationBarTitleText": "差旅费报销申请"
+		                "navigationBarTitleText": "差旅报销申请"
 		            }
 		        },
 				{
 				    "path": "BusinesstravelRequestform/BusinesstravelRequestform",
 				    "style": {
-				        "navigationBarTitleText": "差旅费报销申请"
+				        "navigationBarTitleText": "差旅报销申请"
 				    }
 				},
 		        {
 		            "path": "BusinesstravelRequestdetail/BusinesstravelRequestdetail",
 		            "style": {
-		                "navigationBarTitleText": "差旅费报销申请"
+		                "navigationBarTitleText": "差旅报销申请"
 		            }
 		        }
 		    ]
 		},
 		{
-		    "root": "pages/xiaohaoReim",
+		    "root": "pages/DepleteRequest",
 		    "pages": [
 		        {
-		            "path": "list/list",
+		            "path": "DepleteRequestlist/DepleteRequestlist",
 		            "style": {
 		                "navigationBarTitleText": "消耗申请"
 		            }
 		        },
 				{
-				    "path": "form/form",
+				    "path": "DepleteRequestform/DepleteRequestform",
 				    "style": {
 				        "navigationBarTitleText": "消耗申请"
 				    }
 				},
 		        {
-		            "path": "detail/detail",
+		            "path": "DepleteRequestdetail/DepleteRequestdetail",
 		            "style": {
 		                "navigationBarTitleText": "消耗申请"
 		            }
