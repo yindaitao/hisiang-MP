@@ -175,13 +175,13 @@
 		methods: {
 			goDetail(item) {
 				uni.navigateTo({
-					url: "/pages/costReim/detail/detail?data=" + JSON.stringify(item)
+					url: "/pages/DepleteRequest/DepleteRequestdetail/DepleteRequestdetail?data=" + JSON.stringify(item)
 				});
 			},
 			editItem(item) {
 				console.log(item);
 				uni.navigateTo({
-					url: "/pages/costReim/form/form?flag=modify&data=" + JSON.stringify(item)
+					url: "/pages/DepleteRequest/DepleteRequestform/DepleteRequestform?flag=modify&data=" + JSON.stringify(item)
 				});
 			},
 			deleteItem(item) {
@@ -468,7 +468,7 @@
 			},
 			addWorkOrder() {
 				uni.navigateTo({
-					url: "/pages/costReim/form/form"
+					url: "/pages/DepleteRequest/DepleteRequestform/DepleteRequestform"
 				});
 			},
 

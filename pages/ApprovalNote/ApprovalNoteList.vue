@@ -1,8 +1,6 @@
 <template>
 	<view>
 		<callback :baseEntry="from" :backFrom="backFrom">我的审批列表</callback>
-		{{from}}<br />
-		{{backFrom}}
 		<scroll-view id="_tabBar" ref="_tabBar" scroll-x class="cu-bar bg-white nav text-center">
 			<button class="cu-btn icon bg-gray" style="position: absolute;left: 2px;" @tap="showModalSearch" data-target="DrawerModalR"><text
 				 class="icon-filter"><span></span></text></button>

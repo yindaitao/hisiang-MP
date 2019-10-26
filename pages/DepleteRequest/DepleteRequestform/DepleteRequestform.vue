@@ -51,58 +51,23 @@
 					<text class="cu-tag round bg-gray light">{{itemData.DocEntry}}</text>
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
-				<view class="cu-form-group" readonly>
-					<view class="title">公司</view>
-					<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1">{{itemData.InvCompanyName}}</text>
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
 				<view class="cu-form-group">
-					<view class="title">支付方式</view>
-					<picker @change="bindPickerChange1" :value="indexPayType" :range="PayType">
-						<view class="picker">{{PayType[indexPayType]}}</view>
+					<view class="title">申请日期</view>
+					<picker mode="date" :value="itemData.DocDate" :start="startDate" :end="endDate"
+					 @change="bindDateChange(itemData,$event)">
+						<view class="picker">{{itemData.DocDate}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
-					<view class="title">费用类型</view>
-					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
-						<view class="picker">{{CostType[indexCostType].Name}}</view>
-					</picker>
+					<view class="title">用途</view>
 				</view>
 				<view class="cu-form-group">
-					<view class="title">账户(卡号)</view>
-					<input placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">受理单位(银行)</view>
-					<input placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">备注</view>
-					<!-- <view class="action">
-						<view>已输入({{!this.$mbservices.isEmpty(itemData.Remarks)?itemData.Remarks.length:0}})个字符</view>
-					</view> -->
-				</view>
-				<view class="cu-form-group">
-					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
-					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
-					</view>
-				<block v-for="(item,index) in formList" :key="index">
-					<view class="cu-bar bg-gray solid-bottom margin-top">
-						<view class="action">
-							<text class="icon-title text-orange"></text>
-							报销明细({{item.id}})
-						</view>
-						<view class="action" v-if="formList.length!=1">
-							<button class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
-								<text class="icon-roundclosefill" style="font-size: 2em;color:red;"></text>
-							</button>
-						</view>
+					<textarea @input="textareaInput" :class="itemData.itemReason?'value':''"
+					 maxlength="-1" :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入用途" :value="itemData.itemReason" />
 					</view>
 					<view class="cu-form-group">
-						<view class="title">报销金额</view>
-						<input placeholder="请输入报销金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
+						<view class="title">金额</view>
+						<input placeholder="请输入金额" name="input" type="digit" style="text-align: right;" @input="inputNum(itemData,$event)"
 						 :value="item.jine">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
@@ -112,29 +77,33 @@
 							<view class="cu-tag round bg-blue light">{{item.bigjine}}</view>
 						</view>
 					</view>
-					<view class="cu-form-group">
-						<view class="title">申请日期</view>
-						<picker v-bind:id="item.id" v-bind:name="item.id" mode="date" :value="item.itemDate" :start="startDate" :end="endDate"
-						 @change="bindDateChange(item,$event)">
-							<view class="picker">{{item.itemDate}}</view>
-						</picker>
+				<view class="cu-form-group">
+					<view class="title">费用类型</view>
+					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
+						<view class="picker">{{CostType[indexCostType].Name}}</view>
+					</picker>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">费用明细</view>
+					<picker @change="bindPickerChange" :value="item.itemOptionIndex" :range="arrayType">
+						<view class="picker">{{arrayType[item.itemOptionIndex]}}</view>
+					</picker>
+				</view>
+				<view class="cu-form-group" readonly>
+					<view class="title">公司</view>
+					<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1">{{itemData.InvCompanyName}}</text>
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">备注</view>
+				</view>
+				<view class="cu-form-group">
+					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
+					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
 					</view>
-					<view class="cu-form-group">
-						<view class="title">报销类型</view>
-						<picker v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange" :value="item.itemOptionIndex" :range="arrayType">
-							<view class="picker">{{arrayType[item.itemOptionIndex]}}</view>
-						</picker>
-					</view>
-					<view class="cu-form-group">
-						<view class="title">明细备注</view>
-						<!-- <view class="action">
-							<view>已输入({{!this.$mbservices.isEmpty(itemData.Remarks)?item.itemReason.length:0}})个字符</view>
-						</view> -->
-					</view>
-					<view class="cu-form-group">
-						<textarea @input="textareaInput" :class="item.itemReason?'value':''" v-bind:id="item.id" v-bind:name="item.id"
-						 maxlength="-1" :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入明细备注" :value="item.itemReason" />
-						</view>
+				<block v-for="(item,index) in formList" :key="index">
+					
+					
           <!-- 图片开始 -->
           <view class="cu-bar bg-white">
             <view class="action">选择图片</view>
@@ -154,9 +123,6 @@
           </view>
           <!-- 图片结束 -->
         </block>
-        <uni-view class="uni-card-link margin-top" style="text-align: center;min-height: 100upx;top: 10px;">
-          <i class="icon-add" @tap="addOption">增加&nbsp;&nbsp;报销明细</i>
-        </uni-view>
       </form>
     </view>
   </view>
@@ -176,8 +142,6 @@ export default {
   },
   data() {
     return {
-			PayType:['支付宝支付', '微信支付', '银行转账','现金支付'],
-			indexPayType:2,
 			indexCostType: 0,
 			radio: 'radio1',
 			invCompanys:[],
@@ -197,17 +161,19 @@ export default {
       sizeType: ["压缩", "原图", "压缩或原图"],
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-			itemData:{DocEntry:"",indexPayType:2,AccountNumber:"",AcceptingUnit:"",PayType:"银行转账",Remarks:"","InvCompanyId":"","InvCompanyName":"请选择",
-			CostType: [],CostTypeCode:"",CostTypeName:""},
+	  itemData:{
+		  DocEntry:"",
+		  itemReason:"",
+		  Remarks:"",
+		  "InvCompanyId":"",
+		  "InvCompanyName":"请选择",
+		  CostType: [],
+		  CostTypeCode:"",
+		  CostTypeName:"",
+		  DocDate:this.getDate({format: true})},
       formList: [
         {
           id: 1,
-          name: "张三",
-          jine: "",
-          itemDate: "请选择",
-          itemOptionIndex: 0,
-          itemOptionText: "",
-          itemReason: "",
           imageList: [],
           bigjine: ""
         }
@@ -285,58 +251,9 @@ export default {
 				});
 				return false;
 			}
-			if(this.itemData.PayType==="银行转账")
-			{
-				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
-				{
-					uni.showToast({
-						title:'请输入银行卡号',
-						icon:'none'
-					});
-					return false;
-				}
-				if(this.$mbservices.isEmpty(this.itemData.AcceptingUnit))
-				{
-					uni.showToast({
-						title:'请输入受理银行',
-						icon:'none'
-					});
-					return false;
-				}
-			}
-			if(this.itemData.PayType!=="银行转账"&&this.itemData.PayType!=="现金支付")
-			{
-				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
-				{
-					uni.showToast({
-						title:'请输入收款账户',
-						icon:'none'
-					});
-					return false;
-				}
-			}
 			
       var isNull_ = false;
       var content = "";
-      this.formList.forEach(_item => {
-        if (
-          _item.jine === "" ||
-          _item.jine === undefined ||
-          _item.jine === null
-        ) {
-          isNull_ = true;
-          content = "请输入报销金额";
-        }
-        if (
-          _item.itemDate === "" ||
-          _item.itemDate === undefined ||
-          _item.itemDate === null ||
-          _item.itemDate === "请选择"
-        ) {
-          isNull_ = true;
-          content = "请选择报销时间";
-        }
-      });
       if (isNull_) {
         uni.showToast({ title: content, icon: "none" });
         return false;
@@ -361,7 +278,6 @@ export default {
       uni.showLoading({
         title: "正在提交..."
       });
-      var _lines = new Array();
       var _indx = 0;
       _this.formList.forEach(_item => {
         var path = "";
@@ -375,62 +291,14 @@ export default {
         if (path.length > 0 && path.lastIndexOf("|") > 0) {
           path = path.substr(0, path.length - 1);
         }
-        _indx = parseInt(_indx) + 1;
-        var lineItem = {
-          LineNum: _indx,
-          ObjType: "Reimbursement",
-          Remarks: _item.itemReason,
-          Amount: parseFloat(_item.jine).toFixed(2),
-          Imgs: path,
-          DocDate: _item.itemDate,
-          ReimbursementTypeCode:
-            _this.resourceArray[_item.itemOptionIndex].ReimbursementTypeCode,
-          ReimbursementTypeName: _this.arrayType[_item.itemOptionIndex],
-          Canceled: "N",
-          Closed: "N",
-          LineStatus: "O",
-          UIStatus: "New"
-        };
-        if (_this.editflag) {
-          lineItem.DocEntry = _item.DocEntry;
-        }
-        _lines.push(lineItem);
       });
       var ajaxJSON = {};
       if (_this.editflag) {
-        _this.editEntitysList[0].ReimbursementRequestLines.forEach(
-          _calcuItem => {
-            var _ishave = false;
-            _lines.forEach(__option => {
-              if (_calcuItem.DocEntry === __option.DocEntry) {
-                _calcuItem.UIStatus = "Modify";
-                _calcuItem.Amount = __option.Amount;
-                _calcuItem.ReimbursementTypeCode =
-                  __option.ReimbursementTypeCode;
-                _calcuItem.ReimbursementTypeName =
-                  __option.ReimbursementTypeName;
-                (_calcuItem.Remarks = __option.Remarks),
-                  (_calcuItem.Imgs = __option.Imgs);
-                _calcuItem.DocDate = __option.DocDate;
-                _ishave = true;
-              }
-            });
-            if (!_ishave) {
-              _calcuItem.UIStatus = "Delete";
-            }
-          }
-        );
         _this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
         (_this.editEntitysList[0].ApproveStatus = "Pending"),
-          (_this.editEntitysList[0].Amount = parseFloat(
-            _this.totalJine
-          ).toFixed(2));
 		  (_this.editEntitysList[0].ReimbursementAmount = parseFloat(
 		    _this.totalJine
 		  ).toFixed(2));
-				_this.editEntitysList[0].PayType=_this.itemData.PayType;
-				_this.editEntitysList[0].AccountNumber=_this.itemData.AccountNumber;
-				_this.editEntitysList[0].AcceptingUnit=_this.itemData.AcceptingUnit;
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
 				_this.editEntitysList[0].InvCompanyId=_this.itemData.InvCompanyId;
 				_this.editEntitysList[0].InvOrganizationCode=uni.getStorageSync("JSUserInfo").OrganizationCode;
@@ -441,31 +309,32 @@ export default {
         ajaxJSON = _this.editEntitysList[0];
       } else {
         ajaxJSON = {
-          DocNum: this.itemData.DocEntry,
-          ObjType: "Reimbursement",
+		  ObjectType: "DepleteDetails",
+		  DocNum: this.itemData.DocEntry,
+		  BaseEntry: this.itemData.DocEntry,  //消耗品管理单号
+		  BaseType: "Deplete",
+		  Instructions: "7777",
+		  AdvanceType: "Amount",
+		  AmountOrQuantity: 10,
           CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
           Remarks: _this.itemData.Remarks,
           Approve: _this.isDoSteps ? "Yes" : "No",
           ApproveStatus: "Pending",
           Canceled: "No",
           Closed: "No",
-          Amount: parseFloat(_this.totalJine).toFixed(2),
           Attachment: "",
-          Imgs: "",
           DocDate: _this.getDate(),
           OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
-					CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
-					PayType:_this.itemData.PayType,
-					AccountNumber:_this.itemData.AccountNumber,
-					AcceptingUnit:_this.itemData.AcceptingUnit,
-          ReimbursementTypeID: "",
+		  CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
 		  InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  InvOrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 		  CostTypeCode: _this.itemData.CostTypeCode,
 		  CostTypeName: _this.itemData.CostTypeName,
-		  ReimbursementAmount: parseFloat(_this.totalJine).toFixed(2),
-					InvCompanyId:_this.itemData.InvCompanyId,
-          ReimbursementRequestLines: _lines,
+		  ReimbursementTypeCode: "BYF",
+		  ReimbursementTypeName: "搬运费",
+		  InvCompanyId:_this.itemData.InvCompanyId,
+		  UserId: null,
+		  UserName: null,
           UIStatus: "New"
         };
       }
@@ -532,42 +401,6 @@ export default {
     textareaInput(e) {
       this.formList[parseInt(e.target.id) - 1].itemReason = e.detail.value;
     },
-    addOption(e) {
-      this.formList.push({
-        id: this.formList.length + 1,
-        name: "",
-        jine: "",
-        itemDate: "请选择",
-        itemOptionIndex: 0,
-        itemOptionText: this.arrayType[0],
-        itemReason: "",
-        imageList: [],
-        bigjine: ""
-      });
-    },
-    deleteOption(e) {
-      if (this.formList.length === 1) {
-        return false;
-      }
-      var cache = new Array();
-      this.formList.forEach(item => {
-        if (item.id != e.id) {
-          cache.push(item);
-        }
-      });
-      this.formList = [];
-      var index = 1;
-      var _cache = 0;
-      cache.forEach(item => {
-        item.id = index;
-        _cache = (
-          parseFloat(item.jine === "" ? "0.00" : item.jine) + parseFloat(_cache)
-        ).toFixed(2);
-        this.formList.push(item);
-        index++;
-      });
-      this.totalJine = _cache;
-    },
     bindPickerChange: function(e) {
       this.indexType = e.target.value;
       this.formList[parseInt(e.target.id) - 1].itemOptionIndex = parseInt(
@@ -577,14 +410,6 @@ export default {
         parseInt(e.target.value)
       ];
     },
-		bindPickerChange1: function(e) {
-			this.indexPayType=e.target.value;
-			this.itemData.indexPayType=e.target.value;
-			this.itemData.PayType=this.PayType[this.indexPayType];
-			
-			if (this.PayType[this.indexPayType] != "银行转账") {this.itemData.AcceptingUnit=this.PayType[this.indexPayType];}
-		    else {this.itemData.AcceptingUnit="";}
-		},
 		bindPickerChange2: function(e) {
 			this.indexCostType = e.target.value;
 			this.itemData.CostTypeCode = this.CostType[this.indexCostType].Code;
@@ -620,12 +445,11 @@ export default {
 				
 			},err=>{})
 		},
-    bindDateChange: function(item, e) {
-      item.itemDate = e.target.value;
+    bindDateChange: function(itemData, e) {
+      itemData.DocDate = e.target.value;
     },
     getDate(type) {
       const date = new Date();
-
       let year = date.getFullYear();
       let month = date.getMonth() + 1;
       let day = date.getDate();
@@ -842,18 +666,7 @@ export default {
             }
             item.Amount = parseFloat(item.Amount).toFixed(2);
 						//_$this.itemData.DocEntry=item.Amount;
-						_$this.itemData.PayType=item.PayType;
-						_$this.itemData.AccountNumber=item.AccountNumber;
-						_$this.itemData.AcceptingUnit=item.AcceptingUnit;
 						_$this.itemData.Remarks=item.Remarks;
-						_$this.PayType.forEach((_item,index)=>{
-											  if(_item===_this.itemData.PayType)
-											  {
-												  _this.indexPayType=index;
-												  _this.itemData.indexPayType=index;
-													
-											  }
-						});
             _this.formList = [];
             _this.totalJine = parseFloat(item.Amount).toFixed(2);
             item.ReimbursementRequestLines.forEach((_item, _indx) => {
@@ -911,15 +724,20 @@ export default {
         }
       );
     },
-		inputNum11(event){
-			this.itemData.AccountNumber=event.detail.value;
-		},
-		inputNum22(event){
-			this.itemData.AcceptingUnit=event.detail.value;
-		},
-		textareaInput33(e) {
+	textareaInput33(e) {
 		  this.itemData.Remarks = e.detail.value;
-		}
+	},
+	GetOpenDepletes(){
+		var ajaxJSON={
+			pageIndex: 1,
+			rowsPerPage: "10000",
+			type: "Initialize",
+			Parameter: {
+			  LoadChildren: "NoLoad",
+			  Conditions: []
+			}
+		};
+	}
   },
   onLoad(e) {
 		/* 初始值 */
@@ -936,7 +754,7 @@ export default {
     if(!this.editflag)
 		{
 			//最大编号
-			this.$mbservices.Request(this.$webapi.maxNumReimRequest,'GET',{},res=>{
+			this.$mbservices.Request(this.$webapi.maxNumDepleteRequest,'GET',{},res=>{
 				this.itemData.DocEntry=res.data;
 			},null);
 		}

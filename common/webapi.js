@@ -97,6 +97,8 @@ module.exports = {
 	getAdvancePayRequestItemDetail: websiteUrl + '/api/AdvancePayRequest/GetAdvancePayRequestDetail',
 	/* 获取消耗申请列表 */
 	getDepleteRequestList: websiteUrl + '/api/Deplete/GetRecords',
+	/* 消耗申请最大编号 */
+	maxNumDepleteRequest: websiteUrl + '/api/DepleteDetails/GetMaxDocEntry',
 	// 在消耗申请中获取消耗管理
 	GetOpenDepletes: websiteUrl + '/api/Deplete/GetOpenDepletes',
 	/* 获取我的审核列表 */
