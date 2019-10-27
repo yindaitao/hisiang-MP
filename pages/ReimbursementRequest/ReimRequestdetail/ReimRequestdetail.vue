@@ -50,7 +50,7 @@
 					<!-- <view class="cu-tag bg-blue" style="position:absolute;top: 10px;right: 10px;">费用报销明细({{NumArray[index1]}})</view> -->
 					<view class="content padding-tb-sm">
 						<view>
-							<text class="icon-list text-blue margin-right-xs"></text>{{item.ExpendTypeName}}/{{item.Amount}}&nbsp;&nbsp;开票公司:{{item.InvCompanyName}}</view>
+							<text class="icon-list text-blue margin-right-xs"></text>{{item.CostTypeName}}/{{item.Amount}}&nbsp;&nbsp;开票公司:{{item.InvCompanyName}}</view>
 						<view class="text-gray text-sm">
 							<text class="icon-timefill margin-right-xs"></text> {{item.PayType}}&nbsp;&nbsp;{{item.AccountNumber}}&nbsp;&nbsp;{{item.AcceptingUnit}}</view>
 						<view class="text-gray text-sm">
@@ -170,17 +170,16 @@
 					title: '拼命加载中...'
 				});
 				var _this = this;
-				this.$mbservices.Request(this.$webapi.getExpendRequestList, 'POST', ajaxJSON, function(ret) {
+				this.$mbservices.Request(this.$webapi.getReimList, 'POST', ajaxJSON, function(ret) {
 					if (!ret.data.data) {
 						uni.showToast({
 							title: '查无数据'
 						});
 						return false;
 					}
-					console.log(ret)
+					console.log(ret.data.data)
 					_this.entitys = [];
 					ret.data.data.forEach((item) => {
-						console.log("可以进来");
 						if (item.ApproveStatus === 'Pending') {
 							item.AApproveStatus = "待审核";
 						}
@@ -215,6 +214,7 @@
 		onLoad(e) {
 			try{
 				this.itemData = JSON.parse(e.data);
+				console.log(this.itemData)
 			}catch(e){
 				//TODO handle the exception
 				if (this.$mbservices.isEmpty(e.data)) {

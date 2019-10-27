@@ -100,11 +100,15 @@ module.exports = {
 	/* 预支申请、详情 */
 	getAdvancePayRequestItemDetail: websiteUrl + '/api/AdvancePayRequest/GetAdvancePayRequestDetail',
 	/* 获取消耗申请列表 */
-	getDepleteRequestList: websiteUrl + '/api/Deplete/GetRecords',
+	getDepleteRequestList: websiteUrl + '/api/DepleteDetails/GetRecords',
 	/* 消耗申请最大编号 */
 	maxNumDepleteRequest: websiteUrl + '/api/DepleteDetails/GetMaxDocEntry',
 	// 在消耗申请中获取消耗管理
 	GetOpenDepletes: websiteUrl + '/api/Deplete/GetOpenDepletes',
+	// 消耗申请中获取费用明细
+	GetReimbursementType: websiteUrl + '/api/ReimbursementType/GetRecords',
+	// 保存消耗申请
+	submitDepleteRequestList: websiteUrl + '/api/DepleteDetails/Save',
 	/* 获取我的审核列表 */
 	getApprovalNotesList: websiteUrl + '/api/ApprovalNote/GetApprovalNotes',
 	// 获取可用会议室列表

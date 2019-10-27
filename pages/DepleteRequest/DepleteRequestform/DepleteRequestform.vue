@@ -96,25 +96,25 @@
 					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Amount'">
 						<view class="title">金额</view>
 						<input placeholder="请输入金额" name="input" type="digit" style="text-align: right;" @input="inputNum(itemData,$event)"
-						 :value="item.jine">
+						 :value="itemData.jine">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Amount'">
 						<view class="title">大写金额</view>
 						<view class="action">
-							<view class="cu-tag round bg-blue light">{{item.bigjine}}</view>
+							<view class="cu-tag round bg-blue light">{{itemData.bigjine}}</view>
 						</view>
 					</view>
 				<view class="cu-form-group">
 					<view class="title">费用类型</view>
 					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
-						<view class="picker">{{CostType[indexCostType].Name}}</view>
+						<view class="picker">{{CostType[indexCostType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">费用明细</view>
-					<picker @change="bindPickerChange" :value="item.itemOptionIndex" :range="arrayType">
-						<view class="picker">{{arrayType[item.itemOptionIndex]}}</view>
+					<picker @change="bindPickerChange3" :value="indexReimbursementType" :range="ReimbursementType">
+						<view class="picker">{{ReimbursementType[indexReimbursementType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group" readonly>
@@ -171,10 +171,14 @@ export default {
   data() {
     return {
 			indexCostType: 0,
+			indexReimbursementType:0,
 			radio: 'radio1',
 			radio2: 'radio2',
 			invCompanys:[],
-			CostType:[],
+			CostType:["请选择"],
+			CostTypeList:[],
+			ReimbursementType:["请选择"],
+			ReimbursementTypeList:[],
       modalName: null,
       resourceArray: ["选项一", "选项二", "选项三"],
       arrayType: ["选项一", "选项二", "选项三"],
@@ -200,8 +204,13 @@ export default {
 		  CostType: [],
 		  CostTypeCode:"",
 		  CostTypeName:"",
+		  ReimbursementType: [],
+		  ReimbursementTypeCode:"",
+		  ReimbursementTypeName:"",
 		  DocDate:this.getDate({format: true}),
 		  AdvanceType:"",
+		  jine:"",
+		  bigjine:"",
 	},
 	DepletesList:[],
       formList: [
@@ -270,6 +279,7 @@ export default {
 					this.itemData.InvCompanyName=item.Name;
 				}
 			})
+			this.modalName = null
 			console.log(e);
 		},
 		showModal1(e) {
@@ -303,13 +313,45 @@ export default {
 	  this.modalName = null;
 	},
 	RadioChangeBaseEntry(e) {
+		var _this = this;
 		this.radio2 = e.detail.value;
+		console.log(this.DepletesList)
 		this.DepletesList.forEach(item=>{
 			if(item.DocEntry.toString()===e.detail.value.toString())
 			{
-				this.itemData.BaseEntry=item.DocEntry;
-				this.itemData.itemReason = item.Instructions;
-				this.itemData.AdvanceType = item.AdvanceType;
+				_this.itemData.BaseEntry=item.DocEntry;
+				_this.itemData.itemReason = item.Instructions;
+				_this.itemData.AdvanceType = item.AdvanceType;
+				_this.itemData.CostTypeCode = item.CostTypeCode;
+				for(var index in _this.CostType){
+					if (_this.CostType[index] === item.CostTypeName) {
+						_this.indexCostType = index;
+					}
+				}
+				_this.itemData.CostTypeName = item.CostTypeName;
+				_this.itemData.ReimbursementTypeCode = item.ReimbursementTypeCode;
+				for(var index in _this.ReimbursementType){
+					if (_this.ReimbursementType[index] === item.ReimbursementTypeName) {
+						_this.indexReimbursementType = index;
+					}
+				}
+				_this.itemData.ReimbursementTypeName = item.ReimbursementTypeName; 
+				_this.itemData.jine = item.OpenAmount;
+				if (parseFloat(_this.itemData.jine).toFixed(2) > 0) {
+				  _this.itemData.bigjine = this.$mbservices.smalltoBIG(_this.itemData.jine);
+				  this.totalJine = "0.00"; //parseFloat(parseFloat(this.totalJine) +parseFloat(item.jine)).toFixed(2);
+				  var cacheJIne = "0.00";
+				  cacheJIne = parseFloat(
+				      parseFloat(cacheJIne) + parseFloat(_this.itemData.jine)
+				    ).toFixed(2);
+				  this.totalJine = cacheJIne;
+				} else {
+				  _this.itemData.bigjine = "";
+				}
+				if(_this.itemData.AdvanceType === 'Quantity'){
+					_this.itemData.num = item.OpenAmount;
+					// 存疑
+				}
 			}
 		})
 		this.modalName = null;
@@ -347,7 +389,7 @@ export default {
       if (_this.editflag) {
         _this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
         (_this.editEntitysList[0].ApproveStatus = "Pending"),
-		  (_this.editEntitysList[0].ReimbursementAmount = parseFloat(
+		  (_this.editEntitysList[0].AmountOrQuantity = parseFloat(
 		    _this.totalJine
 		  ).toFixed(2));
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
@@ -356,17 +398,21 @@ export default {
 				_this.editEntitysList[0].InvOrganizationName=uni.getStorageSync("JSUserInfo").OrganizationName;
 				_this.editEntitysList[0].CostTypeCode= _this.itemData.CostTypeCode;
 				_this.editEntitysList[0].CostTypeName=_this.itemData.CostTypeName;
+				_this.editEntitysList[0].ReimbursementTypeCode= _this.itemData.ReimbursementTypeCode;
+				_this.editEntitysList[0].ReimbursementTypeName=_this.itemData.ReimbursementTypeName;
+				_this.editEntitysList[0].Instructions=_this.itemData.itemReason;
+				_this.editEntitysList[0].AmountOrQuantity=parseFloat(_this.totalJine).toFixed(2);
         _this.editEntitysList[0].UIStatus = "Modify";
         ajaxJSON = _this.editEntitysList[0];
       } else {
         ajaxJSON = {
 		  ObjectType: "DepleteDetails",
 		  DocNum: _this.itemData.DocEntry,
-		  BaseEntry: _this.itemData.DocEntry,  //消耗品管理单号
+		  BaseEntry: _this.itemData.DocEntry,
 		  BaseType: "Deplete",
-		  Instructions: _this.itemData.Instructions,
+		  Instructions: _this.itemData.itemReason,
 		  AdvanceType: _this.itemData.AdvanceType,
-		  AmountOrQuantity: 10,
+		  AmountOrQuantity: parseFloat(_this.totalJine).toFixed(2),
           CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
           Remarks: _this.itemData.Remarks,
           Approve: _this.isDoSteps ? "Yes" : "No",
@@ -381,17 +427,20 @@ export default {
 		  InvOrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 		  CostTypeCode: _this.itemData.CostTypeCode,
 		  CostTypeName: _this.itemData.CostTypeName,
-		  ReimbursementTypeCode: "BYF",
-		  ReimbursementTypeName: "搬运费",
+		  ReimbursementTypeCode: _this.itemData.ReimbursementTypeCode,
+		  ReimbursementTypeName: _this.itemData.ReimbursementTypeName,
 		  InvCompanyId:_this.itemData.InvCompanyId,
 		  UserId: null,
 		  UserName: null,
           UIStatus: "New"
         };
+		if(_this.itemData.AdvanceType === 'Quantity'){
+			ajaxJSON.AmountOrQuantity = itemData.num;
+		}
       }
       var requestUrl = _this.editflag
-        ? _this.$webapi.updateCostItem
-        : _this.$webapi.submitCostForm;
+        ? _this.$webapi.submitDepleteRequestList
+        : _this.$webapi.submitDepleteRequestList;
 				var _$this=_this;
       _this.$mbservices.Request(
         requestUrl,
@@ -425,18 +474,18 @@ export default {
         }
       );
     },
-    inputNum(item, event) {
-      item.jine = event.detail.value;
-      if (parseFloat(item.jine).toFixed(2) > 0) {
-        item.bigjine = this.$mbservices.smalltoBIG(item.jine);
+    inputNum(itemData, event) {
+      itemData.jine = event.detail.value;
+      if (parseFloat(itemData.jine).toFixed(2) > 0) {
+        itemData.bigjine = this.$mbservices.smalltoBIG(itemData.jine);
         this.totalJine = "0.00"; //parseFloat(parseFloat(this.totalJine) +parseFloat(item.jine)).toFixed(2);
         var cacheJIne = "0.00";
         cacheJIne = parseFloat(
-            parseFloat(cacheJIne) + parseFloat(_item.jine)
+            parseFloat(cacheJIne) + parseFloat(itemData.jine)
           ).toFixed(2);
         this.totalJine = cacheJIne;
       } else {
-        item.bigjine = "";
+        itemData.bigjine = "";
       }
     },
 	inputQuantityNum(itemData, event) {
@@ -464,8 +513,21 @@ export default {
     },
 		bindPickerChange2: function(e) {
 			this.indexCostType = e.target.value;
-			this.itemData.CostTypeCode = this.CostType[this.indexCostType].Code;
-			this.itemData.CostTypeName = this.CostType[this.indexCostType].Name;
+			for(var i in this.CostTypeList){
+				if(this.CostType[this.indexCostType] === this.CostTypeList[i].Name){
+					this.itemData.CostTypeCode = this.CostTypeList[i].Code;
+					this.itemData.CostTypeName = this.CostType[this.indexCostType];
+				}
+			}
+		},
+		bindPickerChange3: function(e) {
+			this.indexReimbursementType = e.target.value;
+			for(var i in this.ReimbursementTypeList){
+				if(this.ReimbursementType[this.indexReimbursementType] === this.ReimbursementTypeList[i].ReimbursementTypeName){
+					this.itemData.ReimbursementTypeCode = this.ReimbursementTypeList[i].ReimbursementTypeCode;
+					this.itemData.ReimbursementTypeName = this.ReimbursementType[this.indexReimbursementType];
+				}
+			}
 		},
 		getCostType:async function(){
 			var ajaxJSON={
@@ -488,10 +550,36 @@ export default {
 				if(res.data.RecordCount>0)
 				{
 					res.data.data.forEach(item =>{
-						this.CostType.push({
-							Name:item.Name,
-							Code:item.Code
-						})
+						this.CostType.push(item.Name)
+						this.CostTypeList.push(item)
+					})
+				}
+				
+			},err=>{})
+		},
+		GetReimbursementType:async function(){
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
+			this.$mbservices.Request(this.$webapi.GetReimbursementType,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					res.data.data.forEach(item =>{
+						this.ReimbursementType.push(item.ReimbursementTypeName)
+						this.ReimbursementTypeList.push(item)
 					})
 				}
 				
@@ -823,6 +911,8 @@ export default {
 		this.getCostType();
 		// 在消耗申请中获取消耗管理
 		this.GetOpenDepletes();
+		// 在消耗申请中获取费用明细
+		this.GetReimbursementType();
     /* 初始化报销类型 */
     var ajaxJSON = {
       pageIndex: 0,
