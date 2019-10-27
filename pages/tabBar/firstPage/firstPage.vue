@@ -241,57 +241,90 @@
 				});
 			},
 			autoLogin() {
+				/* 开始自动登录 */
 				uni.request({
-					url: this.$webapi.login,
+					url: this.$webapi.getLoginOpenId,
 					method: "POST",
 					header: {
 						"content-type": "application/x-www-form-urlencoded;charset=utf-8",
 						Authorization: "Basic bWFnaWM6MTIzNA=="
 					},
 					data: {
-						grant_type: "password",
-						username: "",
-						password: "",
-						Scope: [JSON.stringify({
-							Flag: 1,
-							Code: this.Code,
-							ClientInfo: ""
-						})],
+						Code: this.Code
 					},
 					success: result => {
-						if (result.statusCode !== 200 || result.data.error === 'noBinding') {
-							uni.showToast({
-								title: result.data.error_description,
-								icon: "none"
-							});
-							uni.reLaunch({
-								url: "/pages/login/login"
-							});
-							return false;
-						}
-						this.$store.state.userId = result.data.UserId;
-						this.$store.state.companyId = result.data.CompanyId;
-						this.$store.state.organizationCode = result.data.OrganizationCode;
-						this.$store.state.userType = result.data.UserType;
-						this.$store.state.access_token = result.data.access_token;
-						let _this = this;
-						this.$mbservices.setStorageInfo(
-							"JSUserInfo",
-							result.data,
-							function(result) {
+						console.log('登陆成功了33333333333');
+						console.log(result);
+						if (result.data.RecordCount > 0) {
+							let OrherInfo = {};
+							if (result.data.data.UserInfo === null) {
 								uni.reLaunch({
-									url: "/pages/tabBar/firstPage/firstPage",
-									complete: function(e) {}
-								});
+									url: '/pages/login/login?data=' + result.data.data.Openid
+								})
+								return;
 							}
-						);
+							if (result.data.data.Openid === result.data.data.UserInfo.WechatOpenID_MP) {
+								//是同一个人
+								OrherInfo.IsFirst = false;
+								OrherInfo.Openid = result.data.data.Openid;
+								uni.request({
+									url: this.$webapi.login,
+									method: "POST",
+									header: {
+										"content-type": "application/x-www-form-urlencoded;charset=utf-8",
+										Authorization: "Basic bWFnaWM6MTIzNA=="
+									},
+									data: {
+										grant_type: "password",
+										username: result.data.data.UserInfo.UserCode,
+										password: result.data.data.UserInfo.Password,
+										Scope: [JSON.stringify({
+											Flag: 1,
+											Code: "",
+											OtherInfo: OrherInfo
+										})],
+									},
+									success: ace => {
+										console.log('WWWWWWWWWWWWWWWWWWWW');
+										console.log(ace);
+										this.$store.state.userId = ace.data.UserId;
+										this.$store.state.companyId = ace.data.CompanyId;
+										this.$store.state.organizationCode = ace.data.OrganizationCode;
+										this.$store.state.userType = ace.data.UserType;
+										this.$store.state.access_token = ace.data.access_token;
+
+										let _this = this;
+										if (ace.statusCode === 200) {
+											uni.reLaunch({
+												url:'/pages/tabBar/firstPage/firstPage'
+											})
+											
+											this.$mbservices.setStorageInfo(
+												"JSUserInfo",
+												ace.data,
+												function(ace1) {}
+											);
+										}
+										console.log('登陆成功了6666666666666');
+									},
+									fail: err => {}
+								});
+							} else {
+								//不是同一个微信号
+								uni.reLaunch({
+									url: '/pages/login/login?data=' + res.data.data.Openid
+								})
+							}
+						} else {
+							uni.showToast({
+								title: '获取用户信息异常,请联系管理员',
+								duration: 5000
+							})
+						}
 					},
-					fail: function(error) {
-						uni.showModal({
-							title: "失败:" + JSON.stringify(error)
-						});
-					}
+					fail: function(error) {}
 				});
+				/* 结束自动登录 */
 			}
 		},
 		onShow() {
@@ -303,6 +336,7 @@
 			/* 菜单组合 */
 			var _this = this;
 			if (this.$store.state.access_token !== null) {
+				console.log('UUUUUUUUUUUUUUUUUUUU');
 				this.getApprovalNote();
 				this.getBacklog();
 				uni.showLoading({

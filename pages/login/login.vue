@@ -32,7 +32,8 @@
 		computed: {
 			...mapState(["hasLogin"])
 		},
-		onLoad() {
+		onLoad(e) {
+			this.Openid = e.data;
 			uni.getProvider({
 				service: "oauth",
 				success: e => {
@@ -71,6 +72,7 @@
 		},
 		data() {
 			return {
+				Openid: '',
 				Code: '',
 				logininfo: {
 					loading: false,
@@ -108,6 +110,10 @@
 				uni.login({
 					provider: __this.providerList[0].id,
 					success: res => {
+						let OrherInfo = {};
+						OrherInfo.IsFirst = true;
+						OrherInfo.Openid = this.Openid;
+						OrherInfo.Avatar = this.headerImg;
 						uni.request({
 							url: __this.$webapi.login,
 							method: "POST",
@@ -122,10 +128,12 @@
 								Scope: [JSON.stringify({
 									Flag: 1,
 									Code: res.code,
-									OtherInfo: __this.headerImg
+									OtherInfo: OrherInfo
 								})],
 							},
 							success: result => {
+								console.log('登录返回');
+								console.log(result);
 								if (result.statusCode != 200) {
 									uni.showToast({
 										title: result.data.error_description,

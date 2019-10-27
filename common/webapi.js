@@ -7,6 +7,10 @@ var websiteUrl = "https://oa.magicbox.net.cn"; // "https://so.magicdata.co";
 module.exports = {
 	/* 接口根目录 */
 	webroot: websiteUrl,
+	/* 图片上传路径 */
+	uploadFilePath: websiteUrl + '/api/Upload/PostImage',
+	/* 拿Code换去OpenId */
+	getLoginOpenId: websiteUrl + '/api/WeChat/GetMiniProgramOpenId',
 	/* 登录 */
 	login: websiteUrl + '/Token',
 	/* 根据用户id获取用户信息 */
@@ -111,4 +115,10 @@ module.exports = {
 	getApprovalNote: websiteUrl + "/api/ApprovalNote/GetRecordCounter",
 	//获取待办事项未读
 	getBacklog: websiteUrl + "/api/Backlog/GetRecords",
+	/* 腾讯地图逆地址 */
+	getAddressByLatLong: websiteUrl + '/api/WorkRecord/GetAddressByLatLong',
+	/* 保存打卡记录 */
+	saveWorkRecord: websiteUrl + '/api/WorkRecord/SaveEntity',
+	/* 获取今天的打卡记录 */
+	getWorkRecords: websiteUrl + '/api/WorkRecord/GetRecordsList'
 }

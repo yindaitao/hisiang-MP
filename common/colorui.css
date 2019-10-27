@@ -3960,3 +3960,30 @@ scroll-view.cu-steps .cu-item {
 .text-shadow {
 	text-shadow: 2rpx 4rpx 6rpx rgba(0, 0, 0, 0.4);
 }
+
+/* 动画 */
+[class*=animation-] {
+    animation-duration: .5s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both
+}
+
+.animation-fade {
+    animation-name: fade;
+    animation-duration: .8s;
+    animation-timing-function: linear
+}
+
+.animation-reverse {
+    animation-direction: reverse
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0
+    }
+
+    100% {
+        opacity: 1
+    }
+}
