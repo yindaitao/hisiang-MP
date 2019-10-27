@@ -156,14 +156,14 @@
 									}
 								);
 
-								__this.logininfo.loading = false;
+								__this.logininfo.loading = true;
 							},
 							fail: function(error) {
 								__this.logininfo.loading = false;
 								uni.showModal({
 									title: "失败:" + JSON.stringify(error)
 								});
-								__this.logininfo.loading = false;
+								__this.logininfo.loading = true;
 							}
 						});
 					},

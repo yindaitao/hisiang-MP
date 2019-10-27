@@ -46,11 +46,15 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.OrganizationName}}-{{list.Creator}}的{{list.CostTypeName}}报销
+								{{list.InvOrganizationName}}-{{list.Creator}}的{{list.CostTypeName}}消耗申请
 							</view>
-							<view>
+							<view v-if="list.AdvanceType === 'Amount'">
 								<text class="icon-title text-orange"></text>
-								金额:{{list.Amount}}
+								金额:{{list.AmountOrQuantity}}
+							</view>
+							<view v-if="list.AdvanceType === 'Quantity'">
+								<text class="icon-title text-orange"></text>
+								数量:{{list.AmountOrQuantity}}
 							</view>
 							<view class="text-gray text-sm">
 								<text class="icon-timefill margin-right-xs"></text>
@@ -127,13 +131,13 @@
 		onShow() {
 			/* if (!this.isFirstLoad) {
 				this.pageIndex = parseInt(this.pageIndex) - 1;
-				this.newShowGetReimList();
+				this.newShowgetDepleteRequestList();
 			} */
 			if(this.$mbservices.getIsRefresh())
 			{
 				this.pageIndex = 0; // parseInt(this.pageIndex) - 1;
 				this.$mbservices.setIsRefresh(false);
-				this.newShowGetReimList();
+				this.newShowgetDepleteRequestList();
 			}
 			this.isFirstLoad = false;
 			this.isLoadMore = false;
@@ -152,14 +156,14 @@
 			//#endif
 			//this.dataList = [];
 			/*加载数据*/
-			this.getReimList();
+			this.getDepleteRequestList();
 		},
 		onReachBottom() {
 			this.searchParams = [];
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowGetReimList();
+			this.newShowgetDepleteRequestList();
 			/* setTimeout(() => {
 				uni.stopPullDownRefresh();
 			}, 1000) */
@@ -170,7 +174,7 @@
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowGetReimList();
+			this.newShowgetDepleteRequestList();
 		},
 		methods: {
 			goDetail(item) {
@@ -226,14 +230,14 @@
 				//this.dataList = [];
 				this.makeParams();
 				this.pageIndex = 0;
-				this.getReimList(this.searchParams);
+				this.getDepleteRequestList(this.searchParams);
 			},
 			loadMore() {
 				if (this.searchValue != undefined && this.searchValue.length > 0) {
 					this.makeParams();
 				}
 				this.isLoadMore = true;
-				this.newShowGetReimList(this.searchParams);
+				this.newShowgetDepleteRequestList(this.searchParams);
 			},
 			makeParams() {
 				if (this.$mbservices.isEmpty(this.searchValue)) {
@@ -266,7 +270,7 @@
 					}
 				];
 			},
-			newShowGetReimList: async function(params) {
+			newShowgetDepleteRequestList: async function(params) {
 				this.pageIndex = parseInt(this.pageIndex) + 1;
 				var ajaxJSON = {
 					pageIndex: this.pageIndex,
@@ -298,7 +302,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getReimList,
+					this.$webapi.getDepleteRequestList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
@@ -351,7 +355,7 @@
 					}
 				);
 			},
-			getReimList(params) {
+			getDepleteRequestList(params) {
 				uni.showLoading({
 					title: "拼命加载中..."
 				});
@@ -386,7 +390,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getReimList,
+					this.$webapi.getDepleteRequestList,
 					"POST",
 					ajaxJSON,
 					function(ret) {

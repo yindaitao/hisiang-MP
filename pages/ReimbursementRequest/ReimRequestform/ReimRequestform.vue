@@ -176,13 +176,44 @@ export default {
   },
   data() {
     return {
-			PayType:['支付宝支付', '微信支付', '银行转账','现金支付'],
-			indexPayType:2,
+			PayType:["请选择支付方式"],
+			indexPayType:0,
 			indexCostType: 0,
 			radio: 'radio1',
 			invCompanys:[],
 			CostType:["请选择"],
 			CostTypeList:[],
+			PayTypeList:[{
+				Code:"ToRequestUser",
+				Name:"转账给申请人",
+			},
+			{
+				Code:"ToThirdUser",
+				Name:"转账给第三人(需备注)",
+			},
+			{
+				Code:"BankToUser",
+				Name:"银行转账(需备注)",
+			},
+			{
+				Code:"MoneyToUser",
+				Name:"现金支付给申请人",
+			},{
+				Code:"ToUserByInvonice",
+				Name:"按发票汇款",
+			},{
+				Code:"ToBank",
+				Name:"银行托收",
+			},{
+				Code:"RequestCheque",
+				Name:"申请支票",
+			},{
+				Code:"OtherMoneyPay",
+				Name:"其他现金支付",
+			},{
+				Code:"OtherBankPay",
+				Name:"其他银行汇款",
+			}],
       modalName: null,
       resourceArray: ["选项一", "选项二", "选项三"],
       arrayType: ["选项一", "选项二", "选项三"],
@@ -265,7 +296,6 @@ export default {
 		RadioChange(e) {
 			this.radio = e.detail.value;
 			this.itemData.InvCompanyId=e.detail.value;
-			//this.itemData.InvCompanyName=this.
 			this.invCompanys.forEach(item=>{
 				if(item.Code===e.detail.value)
 				{
@@ -470,6 +500,8 @@ export default {
           UIStatus: "New"
         };
       }
+	  console.log("ajaxjson")
+	  console.log(ajaxJSON)
       var requestUrl = _this.editflag
         ? _this.$webapi.submitCostForm
         : _this.$webapi.submitCostForm;
@@ -580,6 +612,12 @@ export default {
     },
 		bindPickerChange1: function(e) {
 			this.indexPayType=e.target.value;
+			for(var i in this.PayTypeList){
+				if(this.PayType[this.indexPayType] === this.PayTypeList[i].Name){
+					this.itemData.Code = this.PayTypeList[i].Code;
+					this.itemData.Name = this.PayType[this.indexPayType];
+				}
+			}
 			this.itemData.indexPayType=e.target.value;
 			this.itemData.PayType=this.PayType[this.indexPayType];
 			

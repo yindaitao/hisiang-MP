@@ -96,13 +96,13 @@
 					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Amount'">
 						<view class="title">金额</view>
 						<input placeholder="请输入金额" name="input" type="digit" style="text-align: right;" @input="inputNum(itemData,$event)"
-						 :value="item.jine">
+						 :value="itemData.jine">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Amount'">
 						<view class="title">大写金额</view>
 						<view class="action">
-							<view class="cu-tag round bg-blue light">{{item.bigjine}}</view>
+							<view class="cu-tag round bg-blue light">{{itemData.bigjine}}</view>
 						</view>
 					</view>
 				<view class="cu-form-group">
@@ -209,6 +209,8 @@ export default {
 		  ReimbursementTypeName:"",
 		  DocDate:this.getDate({format: true}),
 		  AdvanceType:"",
+		  jine:"",
+		  bigjine:"",
 	},
 	DepletesList:[],
       formList: [
@@ -277,6 +279,7 @@ export default {
 					this.itemData.InvCompanyName=item.Name;
 				}
 			})
+			this.modalName = null
 			console.log(e);
 		},
 		showModal1(e) {
@@ -310,15 +313,45 @@ export default {
 	  this.modalName = null;
 	},
 	RadioChangeBaseEntry(e) {
+		var _this = this;
 		this.radio2 = e.detail.value;
+		console.log(this.DepletesList)
 		this.DepletesList.forEach(item=>{
 			if(item.DocEntry.toString()===e.detail.value.toString())
 			{
-				this.itemData.BaseEntry=item.DocEntry;
-				this.itemData.itemReason = item.Instructions;
-				this.itemData.AdvanceType = item.AdvanceType;
-				this.itemData.CostTypeCode = item.CostTypeCode;
-				this.itemData.CostTypeName = item.CostTypeName;
+				_this.itemData.BaseEntry=item.DocEntry;
+				_this.itemData.itemReason = item.Instructions;
+				_this.itemData.AdvanceType = item.AdvanceType;
+				_this.itemData.CostTypeCode = item.CostTypeCode;
+				for(var index in _this.CostType){
+					if (_this.CostType[index] === item.CostTypeName) {
+						_this.indexCostType = index;
+					}
+				}
+				_this.itemData.CostTypeName = item.CostTypeName;
+				_this.itemData.ReimbursementTypeCode = item.ReimbursementTypeCode;
+				for(var index in _this.ReimbursementType){
+					if (_this.ReimbursementType[index] === item.ReimbursementTypeName) {
+						_this.indexReimbursementType = index;
+					}
+				}
+				_this.itemData.ReimbursementTypeName = item.ReimbursementTypeName; 
+				_this.itemData.jine = item.OpenAmount;
+				if (parseFloat(_this.itemData.jine).toFixed(2) > 0) {
+				  _this.itemData.bigjine = this.$mbservices.smalltoBIG(_this.itemData.jine);
+				  this.totalJine = "0.00"; //parseFloat(parseFloat(this.totalJine) +parseFloat(item.jine)).toFixed(2);
+				  var cacheJIne = "0.00";
+				  cacheJIne = parseFloat(
+				      parseFloat(cacheJIne) + parseFloat(_this.itemData.jine)
+				    ).toFixed(2);
+				  this.totalJine = cacheJIne;
+				} else {
+				  _this.itemData.bigjine = "";
+				}
+				if(_this.itemData.AdvanceType === 'Quantity'){
+					_this.itemData.num = item.OpenAmount;
+					// 存疑
+				}
 			}
 		})
 		this.modalName = null;
@@ -356,7 +389,7 @@ export default {
       if (_this.editflag) {
         _this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
         (_this.editEntitysList[0].ApproveStatus = "Pending"),
-		  (_this.editEntitysList[0].ReimbursementAmount = parseFloat(
+		  (_this.editEntitysList[0].AmountOrQuantity = parseFloat(
 		    _this.totalJine
 		  ).toFixed(2));
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
@@ -367,6 +400,8 @@ export default {
 				_this.editEntitysList[0].CostTypeName=_this.itemData.CostTypeName;
 				_this.editEntitysList[0].ReimbursementTypeCode= _this.itemData.ReimbursementTypeCode;
 				_this.editEntitysList[0].ReimbursementTypeName=_this.itemData.ReimbursementTypeName;
+				_this.editEntitysList[0].Instructions=_this.itemData.itemReason;
+				_this.editEntitysList[0].AmountOrQuantity=parseFloat(_this.totalJine).toFixed(2);
         _this.editEntitysList[0].UIStatus = "Modify";
         ajaxJSON = _this.editEntitysList[0];
       } else {
@@ -375,9 +410,9 @@ export default {
 		  DocNum: _this.itemData.DocEntry,
 		  BaseEntry: _this.itemData.DocEntry,
 		  BaseType: "Deplete",
-		  Instructions: _this.itemData.Instructions,
+		  Instructions: _this.itemData.itemReason,
 		  AdvanceType: _this.itemData.AdvanceType,
-		  AmountOrQuantity: 10,
+		  AmountOrQuantity: parseFloat(_this.totalJine).toFixed(2),
           CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
           Remarks: _this.itemData.Remarks,
           Approve: _this.isDoSteps ? "Yes" : "No",
@@ -399,6 +434,9 @@ export default {
 		  UserName: null,
           UIStatus: "New"
         };
+		if(_this.itemData.AdvanceType === 'Quantity'){
+			ajaxJSON.AmountOrQuantity = itemData.num;
+		}
       }
       var requestUrl = _this.editflag
         ? _this.$webapi.submitDepleteRequestList
@@ -436,18 +474,18 @@ export default {
         }
       );
     },
-    inputNum(item, event) {
-      item.jine = event.detail.value;
-      if (parseFloat(item.jine).toFixed(2) > 0) {
-        item.bigjine = this.$mbservices.smalltoBIG(item.jine);
+    inputNum(itemData, event) {
+      itemData.jine = event.detail.value;
+      if (parseFloat(itemData.jine).toFixed(2) > 0) {
+        itemData.bigjine = this.$mbservices.smalltoBIG(itemData.jine);
         this.totalJine = "0.00"; //parseFloat(parseFloat(this.totalJine) +parseFloat(item.jine)).toFixed(2);
         var cacheJIne = "0.00";
         cacheJIne = parseFloat(
-            parseFloat(cacheJIne) + parseFloat(_item.jine)
+            parseFloat(cacheJIne) + parseFloat(itemData.jine)
           ).toFixed(2);
         this.totalJine = cacheJIne;
       } else {
-        item.bigjine = "";
+        itemData.bigjine = "";
       }
     },
 	inputQuantityNum(itemData, event) {
@@ -485,8 +523,8 @@ export default {
 		bindPickerChange3: function(e) {
 			this.indexReimbursementType = e.target.value;
 			for(var i in this.ReimbursementTypeList){
-				if(this.ReimbursementType[this.indexReimbursementType] === this.ReimbursementTypeList[i].Name){
-					this.itemData.ReimbursementTypeCode = this.ReimbursementTypeList[i].Code;
+				if(this.ReimbursementType[this.indexReimbursementType] === this.ReimbursementTypeList[i].ReimbursementTypeName){
+					this.itemData.ReimbursementTypeCode = this.ReimbursementTypeList[i].ReimbursementTypeCode;
 					this.itemData.ReimbursementTypeName = this.ReimbursementType[this.indexReimbursementType];
 				}
 			}
@@ -540,7 +578,7 @@ export default {
 				if(res.data.RecordCount>0)
 				{
 					res.data.data.forEach(item =>{
-						this.ReimbursementType.push(item.Name)
+						this.ReimbursementType.push(item.ReimbursementTypeName)
 						this.ReimbursementTypeList.push(item)
 					})
 				}
