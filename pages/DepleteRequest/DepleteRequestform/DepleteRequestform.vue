@@ -108,13 +108,13 @@
 				<view class="cu-form-group">
 					<view class="title">费用类型</view>
 					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
-						<view class="picker">{{CostType[indexCostType].Name}}</view>
+						<view class="picker">{{CostType[indexCostType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">费用明细</view>
-					<picker @change="bindPickerChange" :value="item.itemOptionIndex" :range="arrayType">
-						<view class="picker">{{arrayType[item.itemOptionIndex]}}</view>
+					<picker @change="bindPickerChange3" :value="indexReimbursementType" :range="ReimbursementType">
+						<view class="picker">{{ReimbursementType[indexReimbursementType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group" readonly>
@@ -171,10 +171,14 @@ export default {
   data() {
     return {
 			indexCostType: 0,
+			indexReimbursementType:0,
 			radio: 'radio1',
 			radio2: 'radio2',
 			invCompanys:[],
-			CostType:[],
+			CostType:["请选择"],
+			CostTypeList:[],
+			ReimbursementType:["请选择"],
+			ReimbursementTypeList:[],
       modalName: null,
       resourceArray: ["选项一", "选项二", "选项三"],
       arrayType: ["选项一", "选项二", "选项三"],
@@ -200,6 +204,9 @@ export default {
 		  CostType: [],
 		  CostTypeCode:"",
 		  CostTypeName:"",
+		  ReimbursementType: [],
+		  ReimbursementTypeCode:"",
+		  ReimbursementTypeName:"",
 		  DocDate:this.getDate({format: true}),
 		  AdvanceType:"",
 	},
@@ -310,6 +317,8 @@ export default {
 				this.itemData.BaseEntry=item.DocEntry;
 				this.itemData.itemReason = item.Instructions;
 				this.itemData.AdvanceType = item.AdvanceType;
+				this.itemData.CostTypeCode = item.CostTypeCode;
+				this.itemData.CostTypeName = item.CostTypeName;
 			}
 		})
 		this.modalName = null;
@@ -356,13 +365,15 @@ export default {
 				_this.editEntitysList[0].InvOrganizationName=uni.getStorageSync("JSUserInfo").OrganizationName;
 				_this.editEntitysList[0].CostTypeCode= _this.itemData.CostTypeCode;
 				_this.editEntitysList[0].CostTypeName=_this.itemData.CostTypeName;
+				_this.editEntitysList[0].ReimbursementTypeCode= _this.itemData.ReimbursementTypeCode;
+				_this.editEntitysList[0].ReimbursementTypeName=_this.itemData.ReimbursementTypeName;
         _this.editEntitysList[0].UIStatus = "Modify";
         ajaxJSON = _this.editEntitysList[0];
       } else {
         ajaxJSON = {
 		  ObjectType: "DepleteDetails",
 		  DocNum: _this.itemData.DocEntry,
-		  BaseEntry: _this.itemData.DocEntry,  //消耗品管理单号
+		  BaseEntry: _this.itemData.DocEntry,
 		  BaseType: "Deplete",
 		  Instructions: _this.itemData.Instructions,
 		  AdvanceType: _this.itemData.AdvanceType,
@@ -381,8 +392,8 @@ export default {
 		  InvOrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 		  CostTypeCode: _this.itemData.CostTypeCode,
 		  CostTypeName: _this.itemData.CostTypeName,
-		  ReimbursementTypeCode: "BYF",
-		  ReimbursementTypeName: "搬运费",
+		  ReimbursementTypeCode: _this.itemData.ReimbursementTypeCode,
+		  ReimbursementTypeName: _this.itemData.ReimbursementTypeName,
 		  InvCompanyId:_this.itemData.InvCompanyId,
 		  UserId: null,
 		  UserName: null,
@@ -390,8 +401,8 @@ export default {
         };
       }
       var requestUrl = _this.editflag
-        ? _this.$webapi.updateCostItem
-        : _this.$webapi.submitCostForm;
+        ? _this.$webapi.submitDepleteRequestList
+        : _this.$webapi.submitDepleteRequestList;
 				var _$this=_this;
       _this.$mbservices.Request(
         requestUrl,
@@ -464,8 +475,21 @@ export default {
     },
 		bindPickerChange2: function(e) {
 			this.indexCostType = e.target.value;
-			this.itemData.CostTypeCode = this.CostType[this.indexCostType].Code;
-			this.itemData.CostTypeName = this.CostType[this.indexCostType].Name;
+			for(var i in this.CostTypeList){
+				if(this.CostType[this.indexCostType] === this.CostTypeList[i].Name){
+					this.itemData.CostTypeCode = this.CostTypeList[i].Code;
+					this.itemData.CostTypeName = this.CostType[this.indexCostType];
+				}
+			}
+		},
+		bindPickerChange3: function(e) {
+			this.indexReimbursementType = e.target.value;
+			for(var i in this.ReimbursementTypeList){
+				if(this.ReimbursementType[this.indexReimbursementType] === this.ReimbursementTypeList[i].Name){
+					this.itemData.ReimbursementTypeCode = this.ReimbursementTypeList[i].Code;
+					this.itemData.ReimbursementTypeName = this.ReimbursementType[this.indexReimbursementType];
+				}
+			}
 		},
 		getCostType:async function(){
 			var ajaxJSON={
@@ -488,10 +512,36 @@ export default {
 				if(res.data.RecordCount>0)
 				{
 					res.data.data.forEach(item =>{
-						this.CostType.push({
-							Name:item.Name,
-							Code:item.Code
-						})
+						this.CostType.push(item.Name)
+						this.CostTypeList.push(item)
+					})
+				}
+				
+			},err=>{})
+		},
+		GetReimbursementType:async function(){
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
+			this.$mbservices.Request(this.$webapi.GetReimbursementType,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					res.data.data.forEach(item =>{
+						this.ReimbursementType.push(item.Name)
+						this.ReimbursementTypeList.push(item)
 					})
 				}
 				
@@ -823,6 +873,8 @@ export default {
 		this.getCostType();
 		// 在消耗申请中获取消耗管理
 		this.GetOpenDepletes();
+		// 在消耗申请中获取费用明细
+		this.GetReimbursementType();
     /* 初始化报销类型 */
     var ajaxJSON = {
       pageIndex: 0,
