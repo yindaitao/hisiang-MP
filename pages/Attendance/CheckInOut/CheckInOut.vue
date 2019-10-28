@@ -42,7 +42,7 @@
 						<view class="cu-form-group text-left" style="background-color: rgba(0,0,0,0);">
 							<view class="grid col-4 grid-square flex-sub">
 								<view class="padding-xs bg-img" :style="'background-image:url(' + _item +')'" v-for="(_item,_idx) in item.PicPaths"
-								 :key="_idx" @tap="ViewImage" :data-url="_item">
+								 :key="_idx" @tap="ViewImage1(item.PicPaths,_idx)" :data-url="_item">
 								</view>
 							</view>
 						</view>
@@ -326,6 +326,12 @@
 				uni.previewImage({
 					urls: this.imgList,
 					current: e.currentTarget.dataset.url
+				});
+			},
+			ViewImage1(arr,idx) {
+				uni.previewImage({
+					urls: arr,
+					current: arr[idx]
 				});
 			},
 			DelImg(e) {
