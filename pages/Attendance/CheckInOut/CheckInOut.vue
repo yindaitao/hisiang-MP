@@ -21,43 +21,30 @@
 					</button>
 				</view>
 			</view>
-			<view class="cu-timeline" style="background-color: rgba(0,0,0,0);">
-				<view class="cu-time">第1次打卡</view>
+			<view class="cu-timeline" style="background-color: rgba(0,0,0,0);" v-for="(item,index) in WorkRecords" :key="index">
+				<view class="cu-time">第{{index+1}}次打卡</view>
 				<view class="cu-item">
 					<view class="content">
 						<view class="cu-capsule radius" style="background-color: rgba(0,0,0,0);">
-							<view class="cu-tag bg-cyan">上午</view>
-							<view class="cu-tag line-cyan">10:00:35</view>
+							<view class="cu-tag bg-cyan">{{getMornAfter(item.CheckDatetime)}}</view>
+							<view class="cu-tag line-cyan">{{getCheckTime(item.CheckDatetime)}}</view>
 						</view>
 						<view class="margin-top">
-							<text class="icon-locationfill"></text>山东省济南市槐荫区金科城西城西进时代B座附近
+							<text class="icon-locationfill"></text>{{item.RecordAddress}}附近
+						</view>
+					</view>
+					<view class="content" v-if="item.RecordRemarks.length>0">{{item.RecordRemarks}}</view>
+					<view class="content" v-if="item.PicPaths.length>0">
+						<view class="cu-form-group text-left" style="background-color: rgba(0,0,0,0);">
+							<view class="grid col-4 grid-square flex-sub">
+								<view class="padding-xs bg-img" :style="'background-image:url(' + _item +')'" v-for="(_item,_idx) in item.PicPaths"
+								 :key="_idx" @tap="ViewImage" :data-url="_item">
+								</view>
+							</view>
 						</view>
 					</view>
 				</view>
-				<view class="cu-time">第2次打卡</view>
-				<view class="cu-item">
-					<view class="content">
-						<view class="cu-capsule radius" style="background-color: rgba(0,0,0,0);">
-							<view class="cu-tag bg-cyan">上午</view>
-							<view class="cu-tag line-cyan">11:10:05</view>
-						</view>
-						<view class="margin-top">
-							<text class="icon-locationfill"></text>山东省济南市槐荫区金科城西城西进时代B座附近
-						</view>
-					</view>
-				</view>
-				<view class="cu-time">第3次打卡</view>
-				<view class="cu-item">
-					<view class="content">
-						<view class="cu-capsule radius" style="background-color: rgba(0,0,0,0);">
-							<view class="cu-tag bg-cyan">上午</view>
-							<view class="cu-tag line-cyan">10:00:35</view>
-						</view>
-						<view class="margin-top">
-							<text class="icon-locationfill"></text>山东省济南市槐荫区金科城西城西进时代B座附近
-						</view>
-					</view>
-				</view>
+
 			</view>
 			<view class="cu-modal" :class="modalName==='ConfirmModal'?'show':''">
 				<view class="cu-dialog" @tap.stop="" style="width: 280px;max-width: 280px;">
@@ -120,7 +107,9 @@
 				animation: '',
 				imgList: [],
 				modalName: null,
-				currentArea: {},
+				currentArea: {
+					address: '位置'
+				},
 				latitude: 36.645008,
 				longitude: 116.915131,
 				covers: [{
@@ -145,7 +134,8 @@
 					//#endif
 				}],
 				PicPaths: [],
-				WorkRecords: []
+				WorkRecords: [],
+				RecordPicPathArr: []
 			}
 		},
 		onLoad(e) {
@@ -156,9 +146,43 @@
 			}, 1000);
 			// #endif
 			this.isGetLocation()
-			//this.getWorkRecords();
+			this.getWorkRecords();
 		},
 		methods: {
+			getImgPathArr(path) {
+				console.log('解析图片路径进来了');
+				let arr = [];
+				if (path.toString().lastIndexOf(',') <= -1 && this.$mbservices.isEmpty(path)) {
+					return arr;
+				}
+				if (path.toString().lastIndexOf(',') <= -1 && !this.$mbservices.isEmpty(path)) {
+					return arr.push(this.$webapi.webroot + '/' + path);
+				}
+				if (path.toString().lastIndexOf(',') > -1) {
+					let cArr = path.toString().split(',');
+					cArr.forEach(item => {
+						arr.push(this.$webapi.webroot + '/' + item);
+					})
+				}
+				console.log('看下返回值');
+				console.log(arr);
+				return arr;
+			},
+			getCheckTime(value) {
+				let str = '';
+				str = this.$mbservices.formatDateTime(value, 'hh:mm:ss');
+				return str;
+			},
+			getMornAfter(value) {
+				let num = this.$mbservices.formatDateTime(value, 'hh');
+				if (parseInt(num) > 12) {
+					return '下午'
+				}
+				if (parseInt(num) <= 12) {
+					return '上午'
+				}
+				return '未知'
+			},
 			submitData() {
 				this.modalName = null;
 				uni.showLoading({
@@ -189,6 +213,11 @@
 				};
 				this.$mbservices.Request(this.$webapi.saveWorkRecord, 'POST', data, res => {
 					uni.hideLoading()
+					console.log('这个呢');
+					console.log(res);
+					if (res.data.RecordCount > 0) {
+						this.getWorkRecords();
+					}
 					console.log(res);
 				}, err => {
 					uni.hideLoading()
@@ -200,27 +229,37 @@
 					PageIndex: 1,
 					RowsPerPage: "1000",
 					type: "Initialize",
-					LoadChildren: "Load",
-					Conditions: [{
-						FieldName: "UserId",
-						Operation: "EQUAL",
-						ConditionValue: uni.getStorageSync("JSUserInfo").UserId,
-						Relationship: "AND"
-					}, {
-						FieldName: "CheckDatetime",
-						Operation: "GRATER_EQUAL",
-						ConditionValue: this.$mbservices.formatDateTime(new Date(), 'yyyy/MM/dd') + ' 00:00:00',
-						Relationship: "AND"
-					}, {
-						FieldName: "CheckDatetime",
-						Operation: "LESS_EQUAL",
-						ConditionValue: this.$mbservices.formatDateTime(new Date(), 'yyyy/MM/dd') + ' 23:59:59',
-						Relationship: "AND"
-					}],
+					Parameter: {
+						LoadChildren: "NoLoad",
+						Conditions: [{
+							FieldName: "UserId",
+							Operation: "EQUAL",
+							ConditionValue: uni.getStorageSync("JSUserInfo").UserId,
+							Relationship: "AND"
+						}, {
+							FieldName: "CheckDatetime",
+							Operation: "GRATER_EQUAL",
+							ConditionValue: this.$mbservices.formatDateTime(new Date(), 'yyyy/MM/dd') + ' 00:00:00',
+							Relationship: "AND"
+						}, {
+							FieldName: "CheckDatetime",
+							Operation: "LESS_EQUAL",
+							ConditionValue: this.$mbservices.formatDateTime(new Date(), 'yyyy/MM/dd') + ' 23:59:59',
+							Relationship: "AND"
+						}],
+					}
+
 				};
 				this.$mbservices.Request(this.$webapi.getWorkRecords, 'POST', param, res => {
 					console.log('请求数据发挥的');
 					console.log(res);
+					if (res.data.RecordCount) {
+						this.WorkRecords = res.data.data;
+						this.WorkRecords.forEach(item => {
+							item.PicPaths = [];
+							item.PicPaths = this.getImgPathArr(item.RecordPicPath);
+						})
+					}
 				}, err => {
 					console.log(err);
 				})
@@ -230,6 +269,7 @@
 			},
 			RefreshAddress(e) {
 				this.isGetLocation()
+				this.getWorkRecords();
 			},
 			showModal(e) {
 				console.log('看看');
@@ -251,7 +291,7 @@
 							this.imgList = res.tempFilePaths
 						}
 						const tempFilePaths = res.tempFilePaths;
-						tempFilePaths.forEach(_item=>{
+						tempFilePaths.forEach(_item => {
 							uni.uploadFile({
 								url: this.$webapi.uploadFilePath, //仅为示例，非真实的接口地址
 								header: {
@@ -267,7 +307,7 @@
 									JSON.parse(uploadFileRes.data).forEach(item => {
 										this.PicPaths.push(item.filePath)
 									});
-							
+
 								}
 							});
 						})
