@@ -25,7 +25,7 @@
 				<text>{{item.name}}</text>
 			</view>
 		</view>
-		<official-account style="width: 300px;height: 84px;" bindload="">关注公众号</official-account>
+		<!-- <official-account style="width: 300px;height: 84px;" bindload="">关注公众号</official-account> -->
 	</view>
 </template>
 

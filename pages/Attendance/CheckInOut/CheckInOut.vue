@@ -26,8 +26,12 @@
 				<view class="cu-item">
 					<view class="content">
 						<view class="cu-capsule radius" style="background-color: rgba(0,0,0,0);">
-							<view class="cu-tag bg-cyan">{{getMornAfter(item.CheckDatetime)}}</view>
-							<view class="cu-tag line-cyan">{{getCheckTime(item.CheckDatetime)}}</view>
+							<view class="cu-tag bg-cyan" v-if="getMornAfter(item.CheckDatetime)==='上午'">{{getMornAfter(item.CheckDatetime)}}</view>
+							<view class="cu-tag bg-orange" v-if="getMornAfter(item.CheckDatetime)==='下午'">{{getMornAfter(item.CheckDatetime)}}</view>
+							<view class="cu-tag bg-red" v-if="getMornAfter(item.CheckDatetime)==='未知'">{{getMornAfter(item.CheckDatetime)}}</view>
+							<view class="cu-tag line-cyan" v-if="getMornAfter(item.CheckDatetime)==='上午'">{{getCheckTime(item.CheckDatetime)}}</view>
+							<view class="cu-tag line-orange" v-if="getMornAfter(item.CheckDatetime)==='下午'">{{getCheckTime(item.CheckDatetime)}}</view>
+							<view class="cu-tag line-red" v-if="getMornAfter(item.CheckDatetime)==='未知'">{{getCheckTime(item.CheckDatetime)}}</view>
 						</view>
 						<view class="margin-top">
 							<text class="icon-locationfill"></text>{{item.RecordAddress}}附近
@@ -50,16 +54,16 @@
 			<view class="cu-dialog" @tap.stop="" style="width: 280px;max-width: 280px;">
 				<view class="cu-item padding-lr-xl">
 					<view class="action text-bold text-xxl">确定打卡?</view>
-					<text class="line-grey"></text>
 					<view class="text-content">
 						<view class="text-left"><text class="text-bold">打卡时间:</text>{{TimeShow}}</view>
 						<view class="text-left"><text class="text-bold">打卡地点:</text><text class="text-sm">{{currentArea.address}}附近</text></view>
-						<view class="text-left margin-top-xs">
-							<textarea class="text" placeholder="请填写备注" @input="txtInput" style="height: 150px;min-height: 150px;width: 100%;"></textarea>
+						<view class="text-left">
+							<text class="text-bold">在此备注:</text>
+							<textarea class="text sm-border placeholder" :disabled="modalName===null" @input="txtInput" style="height: 150px;min-height: 150px;width: 100%;"></textarea>
 						</view>
 					</view>
 				</view>
-				<view class="cu-form-group text-left" style="background-color: rgba(0,0,0,0);">
+				<view class="cu-form-group text-left margin-top" style="background-color: rgba(0,0,0,0);">
 					<view class="grid col-4 grid-square flex-sub">
 						<view class="padding-xs bg-img" :style="'background-image:url(' + imgList[index] +')'" v-for="(item,index) in imgList"
 						 :key="index" @tap="ViewImage" :data-url="imgList[index]">
@@ -140,7 +144,7 @@
 		},
 		onLoad(e) {
 			//#ifdef MP-WEIXIN
-			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 50;
+			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 50 - 40;
 			setInterval(() => {
 				this.TimeShow = this.$mbservices.formatDateTime(new Date(), 'hh:mm:ss')
 			}, 1000);
@@ -216,6 +220,9 @@
 					console.log('这个呢');
 					console.log(res);
 					if (res.data.RecordCount > 0) {
+						this.txtContent = "";
+						this.imgList = [];
+						this.PicPaths = [];
 						this.getWorkRecords();
 					}
 					console.log(res);
