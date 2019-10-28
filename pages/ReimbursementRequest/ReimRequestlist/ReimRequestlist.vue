@@ -175,12 +175,15 @@
 		},
 		methods: {
 			goDetail(item) {
-				if(item){
-					console.log(item);
+				if(item.ApproveStatus === "Rejected"){
+					uni.navigateTo({
+						url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=modify&data=" + JSON.stringify(item)
+					});
+				}else if(item.ApproveStatus === "Approved" || item.ApproveStatus === "Pending"){
+					uni.navigateTo({
+						url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=Original&data=" + JSON.stringify(item)
+					});
 				}
-				uni.navigateTo({
-					url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=Original&data=" + JSON.stringify(item)
-				});
 			},
 			editItem(item) {
 				console.log(item);

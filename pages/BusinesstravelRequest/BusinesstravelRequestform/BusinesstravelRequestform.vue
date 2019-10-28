@@ -713,6 +713,7 @@ export default {
 					PayType:_this.itemData.PayTypeCode,
 					AccountCode: _this.itemData.AccountNumber,
 					 Bank: _this.itemData.AcceptingUnit,
+					 AccountName: _this.itemData.AccountName,
           ReimbursementTypeID: "",
 		  InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  InvOrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
