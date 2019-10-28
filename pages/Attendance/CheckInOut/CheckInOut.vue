@@ -44,44 +44,44 @@
 						</view>
 					</view>
 				</view>
-
 			</view>
-			<view class="cu-modal" :class="modalName==='ConfirmModal'?'show':''">
-				<view class="cu-dialog" @tap.stop="" style="width: 280px;max-width: 280px;">
-					<view class="cu-item padding-lr-xl">
-						<view class="action text-bold text-xxl">确定打卡?</view>
-						<text class="line-grey"></text>
-						<view class="text-content">
-							<view class="text-left"><text class="text-bold">打卡时间:</text>{{TimeShow}}</view>
-							<view class="text-left"><text class="text-bold">打卡地点:</text><text class="text-sm">{{currentArea.address}}附近</text></view>
-							<view class="text-left margin-top-xs">
-								<textarea class="" placeholder="请填写备注" @input="txtInput" style="height: 150px;min-height: 150px;width: 100%;"></textarea>
-							</view>
+		</scroll-view>
+		<view class="cu-modal" :class="modalName==='ConfirmModal'?'show':''">
+			<view class="cu-dialog" @tap.stop="" style="width: 280px;max-width: 280px;">
+				<view class="cu-item padding-lr-xl">
+					<view class="action text-bold text-xxl">确定打卡?</view>
+					<text class="line-grey"></text>
+					<view class="text-content">
+						<view class="text-left"><text class="text-bold">打卡时间:</text>{{TimeShow}}</view>
+						<view class="text-left"><text class="text-bold">打卡地点:</text><text class="text-sm">{{currentArea.address}}附近</text></view>
+						<view class="text-left margin-top-xs">
+							<textarea class="text" placeholder="请填写备注" @input="txtInput" style="height: 150px;min-height: 150px;width: 100%;"></textarea>
 						</view>
 					</view>
-					<view class="cu-form-group text-left" style="background-color: rgba(0,0,0,0);">
-						<view class="grid col-4 grid-square flex-sub">
-							<view class="padding-xs bg-img" :style="'background-image:url(' + imgList[index] +')'" v-for="(item,index) in imgList"
-							 :key="index" @tap="ViewImage" :data-url="imgList[index]">
-								<view class="cu-tag bg-red" @tap.stop="DelImg" :data-index="index">
-									<text class='icon-close'></text>
-								</view>
+				</view>
+				<view class="cu-form-group text-left" style="background-color: rgba(0,0,0,0);">
+					<view class="grid col-4 grid-square flex-sub">
+						<view class="padding-xs bg-img" :style="'background-image:url(' + imgList[index] +')'" v-for="(item,index) in imgList"
+						 :key="index" @tap="ViewImage" :data-url="imgList[index]">
+							<view class="cu-tag bg-red" @tap.stop="DelImg" :data-index="index">
+								<text class='icon-close'></text>
 							</view>
-							<view class="padding-xs solids" @tap="ChooseImage" v-if="imgList.length<4">
-								<text class='icon-cameraadd'></text>
-							</view>
+						</view>
+						<view class="padding-xs solids" @tap="ChooseImage" v-if="imgList.length<4">
+							<text class='icon-cameraadd'></text>
 						</view>
 					</view>
-					<view class="cu-bar solid-top">
-						<view class="action"></view>
-						<view class="action">
-							<button class="cu-btn round bg-blue" @tap="hideModal()">取消</button>
-						</view>
-						<view class="action solid-left">
-							<button class="cu-btn round bg-blue" @tap="submitData">确定</button>
-						</view>
-						<view class="action"></view>
-						<!-- <view class="flex solid-bottom padding justify-around">
+				</view>
+				<view class="cu-bar solid-top">
+					<view class="action"></view>
+					<view class="action">
+						<button class="cu-btn round bg-blue" @tap="hideModal()">取消</button>
+					</view>
+					<view class="action solid-left">
+						<button class="cu-btn round bg-blue" @tap="submitData">确定</button>
+					</view>
+					<view class="action"></view>
+					<!-- <view class="flex solid-bottom padding justify-around">
 						<view class=" padding-sm margin-xs" style="border-right: 1px solid #929292;">
 							<button class="cu-btn round">不打卡</button>
 						</view>
@@ -89,10 +89,10 @@
 							<button class="cu-btn round">确定</button>
 						</view>
 					</view> -->
-					</view>
 				</view>
 			</view>
-		</scroll-view>
+		</view>
+
 	</view>
 </template>
 

@@ -143,7 +143,7 @@
 			this.isFirstLoad = false;
 			this.isLoadMore = false;
 		},
-		onLoad() {
+		onLoad(e) {
 			//#ifdef MP-WEIXIN
 			const query = wx.createSelectorQuery();
 			query.select("#_tabBar").boundingClientRect();
