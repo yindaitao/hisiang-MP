@@ -101,16 +101,12 @@
 						<view class="picker">{{itemData.BackDate}}</view>
 					</picker>
 				</view>
-                <view class="cu-form-group">
-                    <view class="title">支付方式</view>
-                    <picker
-                        @change="bindPickerChange1"
-                        :value="indexPayType"
-                        :range="PayType"
-                    >
-                        <view class="picker">{{PayType[indexPayType]}}</view>
-                    </picker>
-                </view>
+				<view class="cu-form-group">
+					<view class="title">支付方式</view>
+					<picker @change="bindPickerChange1" :value="indexPayType" :range="PayType">
+						<view class="picker">{{PayType[indexPayType]}}</view>
+					</picker>
+				</view>
 				<view class="cu-form-group">
 					<view class="title">费用类型</view>
 					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
@@ -192,8 +188,40 @@ export default {
             BaseBorrowType: [],
             BorrowType: ["选项一", "选项二", "选项三"],
             indexBorrowType: 0,
-            PayType: ["支付宝支付", "微信支付", "银行转账", "现金支付"],
-            indexPayType: 2,
+            PayType:["请选择支付方式","转账给申请人","转账给第三人(需备注)","银行转账(需备注)","现金支付给申请人","按发票汇款","银行托收","申请支票",
+            "其他现金支付","其他银行汇款"],
+            indexPayType:0,
+			PayTypeList:[{
+				Code:"ToRequestUser",
+				Name:"转账给申请人",
+			},
+			{
+				Code:"ToThirdUser",
+				Name:"转账给第三人(需备注)",
+			},
+			{
+				Code:"BankToUser",
+				Name:"银行转账(需备注)",
+			},
+			{
+				Code:"MoneyToUser",
+				Name:"现金支付给申请人",
+			},{
+				Code:"ToUserByInvonice",
+				Name:"按发票汇款",
+			},{
+				Code:"ToBank",
+				Name:"银行托收",
+			},{
+				Code:"RequestCheque",
+				Name:"申请支票",
+			},{
+				Code:"OtherMoneyPay",
+				Name:"其他现金支付",
+			},{
+				Code:"OtherBankPay",
+				Name:"其他银行汇款",
+			}],
             isDoSteps: false,
             editflag: false,
             showPicker: false,
@@ -219,10 +247,11 @@ export default {
                 indexBorrowType: 0,
                 Amount: "",
                 bigjine: "零",
-                indexPayType: 2,
+                indexPayType:0,
                 AccountNumber: "",
                 AcceptingUnit: "",
-                PayType: "银行转账",
+				PayTypeCode:"",
+				PayTypeName:"请选择支付方式",
                 Remarks: "",
                 invoicetext: "",
 				BackDate:this.getDate({
@@ -232,9 +261,8 @@ export default {
 				InvOrganizationCode:"",
 				InvOrganizationName: "",
 				InvCompanyId :"",
+				"InvCompanyName":"请选择",
                 pics: [],
-				CostTypeCode:"",
-				CostTypeName:""
             },
             editItem: {}
         };
@@ -426,7 +454,7 @@ export default {
             if (_this.editflag) {
                 _this.itemData.Approve = _this.isDoSteps ? "Y" : "N";
                 //_this.itemData.BorrowTypeCode=_this.BaseBorrowType[_this.indexBorrowType].BorrowTypeCode;
-                _this.itemData.PayType = _this.itemData.PayType;
+                _this.itemData.PayTypeCoce = _this.itemData.PayTypeCode;
 				_this.itemData.BackDate = _this.itemData.BackDate;
 				_this.itemData.CostTypeCode = _this.itemData.CostTypeCode;
 				_this.itemData.CostTypeName = _this.itemData.CostTypeName;
@@ -451,7 +479,7 @@ export default {
                     OrganizationCode: uni.getStorageSync("JSUserInfo")
                         .OrganizationCode,
                     CompanyId: uni.getStorageSync("JSUserInfo").CompanyId,
-                    PayType: _this.itemData.PayType,
+                    PayType: _this.itemData.PayTypeCode,
 					BackDate: _this.itemData.BackDate,
 					CostTypeCode: _this.itemData.CostTypeCode,
 					CostTypeName: _this.itemData.CostTypeName,
@@ -464,6 +492,8 @@ export default {
                     UIStatus: "New"
                 };
             }
+			console.log("ajaxson")
+			console.log(ajaxJSON)
             var requestUrl = _this.$webapi.submitBorrowRequest;
             var _$this = _this;
             _this.$mbservices.Request(
@@ -540,7 +570,7 @@ export default {
                 });
                 return false;
             }
-            if (this.itemData.PayType === "银行转账") {
+            if (this.itemData.PayType === "BankToUser") {
                 if (this.$mbservices.isEmpty(this.itemData.AccountNumber)) {
                     uni.showToast({
                         title: "请输入银行卡号",
@@ -557,8 +587,8 @@ export default {
                 }
             }
             if (
-                this.itemData.PayType !== "银行转账" &&
-                this.itemData.PayType !== "现金支付"
+                this.itemData.PayType !== "BankToUser" &&
+                this.itemData.PayType !== "MoneyToUser"
             ) {
                 if (this.$mbservices.isEmpty(this.itemData.AccountNumber)) {
                     uni.showToast({
@@ -583,17 +613,19 @@ export default {
             this.itemData.indexBorrowType = e.target.value;
             console.log("也走了" + this.indexBorrowType);
         },
-        bindPickerChange1: function(e) {
-            this.indexPayType = e.target.value;
-            this.itemData.indexPayType = e.target.value;
-            this.itemData.PayType = this.PayType[this.indexPayType];
-
-            if (this.PayType[this.indexPayType] != "银行转账") {
-                this.itemData.AcceptingUnit = this.PayType[this.indexPayType];
-            } else {
-                this.itemData.AcceptingUnit = "";
-            }
-        },
+		bindPickerChange1: function(e) {
+			this.indexPayType=e.target.value;
+			this.itemData.indexPayType=e.target.value;
+			for(var i in this.PayTypeList){
+				if(this.PayType[this.indexPayType] === this.PayTypeList[i].Name){
+					this.itemData.PayTypeCode = this.PayTypeList[i].Code;
+					this.itemData.PayTypeName = this.PayType[this.indexPayType];
+				}
+			}
+			
+			// if (this.PayType[this.indexPayType] != "BankToUser") {this.itemData.AcceptingUnit=this.PayType[this.indexPayType];}
+		 //    else {this.itemData.AcceptingUnit="";}
+		},
         sourceTypeChange: function(e) {
             this.sourceTypeIndex = e.target.value;
         },
