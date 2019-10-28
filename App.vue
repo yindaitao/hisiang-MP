@@ -168,9 +168,6 @@
 				uni.login({
 					provider: 'weixin',
 					success: (res) => {
-						console.log('授权进来了11111');
-						console.log(res);
-
 						/* 开始自动登录 */
 						uni.request({
 							url: this.$webapi.getLoginOpenId,
@@ -183,8 +180,6 @@
 								Code: res.code
 							},
 							success: result => {
-								console.log('登陆成功了33333333333');
-								console.log(result);
 								if (result.data.RecordCount > 0) {
 									let OrherInfo = {};
 									if (result.data.data.UserInfo === null) {
@@ -215,8 +210,6 @@
 												})],
 											},
 											success: ace => {
-												console.log('WWWWWWWWWWWWWWWWWWWW');
-												console.log(ace);
 												this.$store.state.hasLogin = true;
 												this.$store.state.userId = ace.data.UserId;
 												this.$store.state.companyId = ace.data.CompanyId;
@@ -232,16 +225,17 @@
 														function(ace1) {}
 													);
 												}
-												console.log('登陆成功了777777777777777777777777777777');
-												console.log(this.$store);
 											},
 											fail: err => {}
 										});
 									} else {
 										//不是同一个微信号
-										uni.reLaunch({
-											url: '/pages/login/login?data=' + res.data.data.Openid
+										uni.showModal({
+											title: '与之前绑定账号不符，请联系管理员操作'
 										})
+										/* uni.reLaunch({
+											url: '/pages/login/login?data=' + res.data.data.Openid
+										}) */
 									}
 								} else {
 									uni.showToast({

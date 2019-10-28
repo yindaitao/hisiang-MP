@@ -218,7 +218,6 @@
 				this.$mbservices.Request(this.$webapi.getApprovalNote, 'POST', criteria, res => {
 					if (res.data.RecordCount > 0) {
 						_this.ApprovalBage = res.data.data;
-						console.log(_this.ApprovalBage)
 					}
 					uni.hideLoading()
 				}, err => {
@@ -250,8 +249,6 @@
 						Code: this.Code
 					},
 					success: result => {
-						console.log('登陆成功了33333333333');
-						console.log(result);
 						if (result.data.RecordCount > 0) {
 							let OrherInfo = {};
 							if (result.data.data.UserInfo === null) {
@@ -282,8 +279,6 @@
 										})],
 									},
 									success: ace => {
-										console.log('WWWWWWWWWWWWWWWWWWWW');
-										console.log(ace);
 										this.$store.state.userId = ace.data.UserId;
 										this.$store.state.companyId = ace.data.CompanyId;
 										this.$store.state.organizationCode = ace.data.OrganizationCode;
@@ -302,15 +297,17 @@
 												function(ace1) {}
 											);
 										}
-										console.log('登陆成功了6666666666666');
 									},
 									fail: err => {}
 								});
 							} else {
 								//不是同一个微信号
-								uni.reLaunch({
-									url: '/pages/login/login?data=' + res.data.data.Openid
+								uni.showModal({
+									title: '与之前绑定账号不符，请联系管理员操作'
 								})
+								/* uni.reLaunch({
+									url: '/pages/login/login?data=' + res.data.data.Openid
+								}) */
 							}
 						} else {
 							uni.showToast({
@@ -324,15 +321,11 @@
 				/* 结束自动登录 */
 			}
 		},
-		onShow() {
-			console.log('这个走也行');
-		},
 		onBackPress: e => {},
 		onLoad: function(e) {
 			/* 菜单组合 */
 			var _this = this;
 			if (this.$store.state.access_token !== null) {
-				console.log('UUUUUUUUUUUUUUUUUUUU');
 				this.getApprovalNote();
 				this.getBacklog();
 				uni.showLoading({
@@ -390,12 +383,12 @@
 								});
 							});
 						});
-						if(!this.$mbservices.isEmpty(e.data)){
+						if (!this.$mbservices.isEmpty(e.data)) {
 							if (JSON.parse(e.data).from === "ApprovalNoteList") {
 								uni.navigateTo({
 									url: '/pages/tabBar/firstPage/firstPage'
 								})
-							}else if(JSON.parse(e.data).from === "ApprovalHandle"){
+							} else if (JSON.parse(e.data).from === "ApprovalHandle") {
 								uni.navigateTo({
 									url: '/pages/ApprovalNote/ApprovalNoteList'
 								})
@@ -407,7 +400,6 @@
 						setTimeout(function() {
 							uni.hideLoading()
 						}, 3000);
-						console.log("失败：" + JSON.stringify(resultM));
 					}
 				});
 				console.log()
@@ -416,8 +408,6 @@
 				uni.login({
 					provider: 'weixin',
 					success: (res) => {
-						console.log('授权进来了');
-						console.log(res);
 						this.Code = res.code;
 						this.autoLogin();
 					},

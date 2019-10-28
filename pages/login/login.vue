@@ -89,7 +89,6 @@
 		methods: {
 			...mapMutations(["login"]),
 			handleLogin: function(e) {
-				console.log(e);
 				this.defaultHandlerLogin();
 			},
 			defaultHandlerLogin: function() {
@@ -110,70 +109,9 @@
 				uni.login({
 					provider: __this.providerList[0].id,
 					success: res => {
-						let OrherInfo = {};
-						OrherInfo.IsFirst = true;
-						OrherInfo.Openid = this.Openid;
-						OrherInfo.Avatar = this.headerImg;
-						uni.request({
-							url: __this.$webapi.login,
-							method: "POST",
-							header: {
-								"content-type": "application/x-www-form-urlencoded;charset=utf-8",
-								Authorization: "Basic bWFnaWM6MTIzNA=="
-							},
-							data: {
-								grant_type: "password",
-								username: __this.logininfo.userCode,
-								password: hex_md5.hxmd5(__this.logininfo.password),
-								Scope: [JSON.stringify({
-									Flag: 1,
-									Code: res.code,
-									OtherInfo: OrherInfo
-								})],
-							},
-							success: result => {
-								console.log('登录返回');
-								console.log(result);
-								if (result.statusCode != 200) {
-									uni.showToast({
-										title: result.data.error_description,
-										icon: "none"
-									});
-									__this.logininfo.loading = false;
-									return;
-								}
-								__this.acess_token = result.data.access_token;
-
-								this.$store.state.userId = result.data.UserId;
-								this.$store.state.companyId = result.data.CompanyId;
-								this.$store.state.organizationCode =
-									result.data.OrganizationCode;
-								this.$store.state.userType = result.data.UserType;
-								this.$store.state.access_token =
-									result.data.access_token;
-
-								let _this = __this;
-								this.$mbservices.setStorageInfo(
-									"JSUserInfo",
-									result.data,
-									function(result) {
-										uni.reLaunch({
-											url: "/pages/tabBar/firstPage/firstPage",
-											complete: function(e) {}
-										});
-									}
-								);
-
-								__this.logininfo.loading = true;
-							},
-							fail: function(error) {
-								__this.logininfo.loading = false;
-								uni.showModal({
-									title: "失败:" + JSON.stringify(error)
-								});
-								__this.logininfo.loading = true;
-							}
-						});
+						/* 验证是否让登录 */
+						console.log('验证是否让登录');
+						this.validateCanLogin(res.code)
 					},
 					fail: err => {
 						__this.logininfo.loading = false;
@@ -181,6 +119,120 @@
 							title: "登录提示",
 							content: "data: '" + JSON.stringify(err) + "'",
 							showCancel: false
+						});
+						__this.logininfo.loading = true;
+					}
+				});
+			},
+
+			validateCanLogin(code) {
+				uni.request({
+					url: this.$webapi.getLoginOpenId,
+					method: "POST",
+					header: {
+						"content-type": "application/x-www-form-urlencoded;charset=utf-8",
+						Authorization: "Basic bWFnaWM6MTIzNA=="
+					},
+					data: {
+						Code: code
+					},
+					success: result => {
+						
+						if (result.data.RecordCount > 0) {
+							if (result.data.data.UserInfo === null) {
+								this.Openid = result.data.data.Openid;
+								this.submitLoginAction(code);
+								return true;
+							}
+							let str = "";
+							if (result.data.data.Openid === result.data.data.UserInfo.WechatOpenID_MP&&result.data.data.UserInfo.UserCode.toLowerCase()===this.logininfo.userCode.toLowerCase()) {
+								this.Openid = result.data.data.Openid;
+								this.submitLoginAction(code);
+								return true;
+							} else {
+								uni.showModal({
+									title: '与之前绑定账号不符，请联系管理员解决'
+								})
+								this.logininfo.loading = false;
+								return false;
+							}
+						} else {
+							this.Openid = result.data.data.Openid;
+							this.submitLoginAction(code);
+							return true;
+						}
+					},
+					fail: err => {}
+				});
+			},
+			submitLoginAction(code) {
+				if (this.$mbservices.isEmpty(this.Openid)) {
+					uni.showModal({
+						title: '获取绑定数据异常,请重新尝试!'
+					})
+					return;
+				}
+				let __this = this;
+				let OrherInfo = {};
+				OrherInfo.IsFirst = true;
+				OrherInfo.Openid = this.Openid;
+				OrherInfo.Avatar = this.headerImg;
+				uni.request({
+					url: __this.$webapi.login,
+					method: "POST",
+					header: {
+						"content-type": "application/x-www-form-urlencoded;charset=utf-8",
+						Authorization: "Basic bWFnaWM6MTIzNA=="
+					},
+					data: {
+						grant_type: "password",
+						username: __this.logininfo.userCode,
+						password: hex_md5.hxmd5(__this.logininfo.password),
+						Scope: [JSON.stringify({
+							Flag: 1,
+							Code: code,
+							OtherInfo: OrherInfo
+						})],
+					},
+					success: result => {
+						console.log('登录返回');
+						console.log(result);
+						if (result.statusCode != 200) {
+							uni.showToast({
+								title: result.data.error_description,
+								icon: "none"
+							});
+							__this.logininfo.loading = false;
+							return;
+						}
+						__this.acess_token = result.data.access_token;
+
+						this.$store.state.userId = result.data.UserId;
+						this.$store.state.companyId = result.data.CompanyId;
+						this.$store.state.organizationCode =
+							result.data.OrganizationCode;
+						this.$store.state.userType = result.data.UserType;
+						this.$store.state.access_token =
+							result.data.access_token;
+
+						let _this = __this;
+						this.$mbservices.setStorageInfo(
+							"JSUserInfo",
+							result.data,
+							function(result) {
+								uni.reLaunch({
+									url: "/pages/tabBar/firstPage/firstPage",
+									complete: function(e) {}
+								});
+							}
+						);
+
+						__this.logininfo.loading = true;
+					},
+					fail: function(error) {
+						__this.logininfo.loading = false;
+						uni.showModal({
+							title: "失败:" + JSON.stringify(error)
 						});
 						__this.logininfo.loading = true;
 					}
