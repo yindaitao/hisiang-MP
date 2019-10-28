@@ -80,9 +80,6 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">备注</view>
-					<!-- <view class="action">
-						<view>已输入({{!this.$mbservices.isEmpty(itemData.Remarks)?itemData.Remarks.length:0}})个字符</view>
-					</view> -->
 				</view>
 				<view class="cu-form-group">
 					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
@@ -230,8 +227,8 @@ export default {
       sizeType: ["压缩", "原图", "压缩或原图"],
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-			itemData:{DocEntry:"",indexPayType:0,AccountNumber:"",AcceptingUnit:"",PayTypeCode:"",Remarks:"","InvCompanyId":"","InvCompanyName":"请选择",
-			CostType: [],CostTypeCode:"",CostTypeName:""},
+			itemData:{DocEntry:"",indexPayType:0,AccountNumber:"",AcceptingUnit:"",PayTypeCode:"",PayTypeName:"请选择支付方式",Remarks:"","InvCompanyId":uni.getStorageSync("JSUserInfo").CompanyId,
+			"InvCompanyName":uni.getStorageSync("JSUserInfo").CompanyName,CostType: [],CostTypeCode:"",CostTypeName:""},
       formList: [
         {
           id: 1,
@@ -303,6 +300,7 @@ export default {
 					this.itemData.InvCompanyName=item.Name;
 				}
 			})
+			this.modalName = null;
 			console.log(e);
 		},
 		showModal1(e) {
@@ -336,7 +334,7 @@ export default {
 					return false;
 				}
 			}
-			if(this.itemData.PayType!=="银行转账"&&this.itemData.PayType!=="现金支付")
+			if(this.itemData.PayTypeCode!=="BankToUser"&&this.itemData.PayTypeCode!=="MoneyToUser")
 			{
 				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
 				{
@@ -501,8 +499,6 @@ export default {
           UIStatus: "New"
         };
       }
-	  console.log("ajaxjson")
-	  console.log(ajaxJSON)
       var requestUrl = _this.editflag
         ? _this.$webapi.submitCostForm
         : _this.$webapi.submitCostForm;
@@ -613,17 +609,16 @@ export default {
     },
 		bindPickerChange1: function(e) {
 			this.indexPayType=e.target.value;
+			this.itemData.indexPayType=e.target.value;
 			for(var i in this.PayTypeList){
 				if(this.PayType[this.indexPayType] === this.PayTypeList[i].Name){
-					this.itemData.Code = this.PayTypeList[i].Code;
-					this.itemData.Name = this.PayType[this.indexPayType];
+					this.itemData.PayTypeCode = this.PayTypeList[i].Code;
+					this.itemData.PayTypeName = this.PayType[this.indexPayType];
 				}
 			}
-			this.itemData.indexPayType=e.target.value;
-			this.itemData.PayType=this.PayType[this.indexPayType];
 			
-			if (this.PayType[this.indexPayType] != "银行转账") {this.itemData.AcceptingUnit=this.PayType[this.indexPayType];}
-		    else {this.itemData.AcceptingUnit="";}
+			// if (this.PayType[this.indexPayType] != "BankToUser") {this.itemData.AcceptingUnit=this.PayType[this.indexPayType];}
+		 //    else {this.itemData.AcceptingUnit="";}
 		},
 		bindPickerChange2: function(e) {
 			this.indexCostType = e.target.value;
@@ -883,13 +878,12 @@ export default {
               item.AApproveStatus = "已拒绝";
             }
             item.Amount = parseFloat(item.Amount).toFixed(2);
-						//_$this.itemData.DocEntry=item.Amount;
-						_$this.itemData.PayType=item.PayType;
+						_$this.itemData.PayTypeCode=item.PayType;
 						_$this.itemData.AccountNumber=item.AccountNumber;
 						_$this.itemData.AcceptingUnit=item.AcceptingUnit;
 						_$this.itemData.Remarks=item.Remarks;
 						_$this.PayType.forEach((_item,index)=>{
-											  if(_item===_this.itemData.PayType)
+											  if(_item===_this.itemData.PayTypeName)
 											  {
 												  _this.indexPayType=index;
 												  _this.itemData.indexPayType=index;

@@ -250,8 +250,9 @@ export default {
   },
   data() {
     return {
-			PayType:['支付宝支付', '微信支付', '银行转账','现金支付'],
-			indexPayType:2,
+			PayType:["请选择支付方式","转账给申请人","转账给第三人(需备注)","银行转账(需备注)","现金支付给申请人","按发票汇款","银行托收","申请支票",
+			"其他现金支付","其他银行汇款"],
+			indexPayType:0,
 			indexCostType: 0,
 			radio: 'radio1',
 			radio2:'radio2',
@@ -300,6 +301,37 @@ export default {
 				Code:"Other",
 				Name:"其他工具"
 			}],
+			PayTypeList:[{
+				Code:"ToRequestUser",
+				Name:"转账给申请人",
+			},
+			{
+				Code:"ToThirdUser",
+				Name:"转账给第三人(需备注)",
+			},
+			{
+				Code:"BankToUser",
+				Name:"银行转账(需备注)",
+			},
+			{
+				Code:"MoneyToUser",
+				Name:"现金支付给申请人",
+			},{
+				Code:"ToUserByInvonice",
+				Name:"按发票汇款",
+			},{
+				Code:"ToBank",
+				Name:"银行托收",
+			},{
+				Code:"RequestCheque",
+				Name:"申请支票",
+			},{
+				Code:"OtherMoneyPay",
+				Name:"其他现金支付",
+			},{
+				Code:"OtherBankPay",
+				Name:"其他银行汇款",
+			}],
       modalName: null,
 	  modalNameType: null,
 	  modalNameTraffic:null,
@@ -318,7 +350,7 @@ export default {
       sizeType: ["压缩", "原图", "压缩或原图"],
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-			itemData:{DocEntry:"",indexPayType:2,AccountNumber:"",AcceptingUnit:"",PayType:"银行转账",Remarks:"","InvCompanyId":"","InvCompanyName":"请选择",
+	  itemData:{DocEntry:"",indexPayType:0,AccountNumber:"",AcceptingUnit:"",PayTypeCode:"",PayTypeName:"请选择支付方式",Remarks:"","InvCompanyId":"","InvCompanyName":"请选择",
 			CostType: [],CostTypeCode:"",CostTypeName:"",Reasons:"",Days:"",AllowanceAmount:"",AccountName:"",},
       formList: [
         {
@@ -466,7 +498,7 @@ export default {
 				});
 				return false;
 			}
-			if(this.itemData.PayType==="银行转账")
+			if(this.itemData.PayTypeCode==="BankToUser")
 			{
 				if(this.$mbservices.isEmpty(this.itemData.AccountName))
 				{
@@ -493,7 +525,7 @@ export default {
 					return false;
 				}
 			}
-			if(this.itemData.PayType!=="银行转账"&&this.itemData.PayType!=="现金支付")
+			if(this.itemData.PayType!=="BankToUser"&&this.itemData.PayType!=="MoneyToUser")
 			{
 				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
 				{
@@ -643,7 +675,7 @@ export default {
           (_this.editEntitysList[0].Amount = parseFloat(
             _this.totalJine
           ).toFixed(2));
-				_this.editEntitysList[0].PayType=_this.itemData.PayType;
+				_this.editEntitysList[0].PayType=_this.itemData.PayTypeCode;
 				_this.editEntitysList[0].AccountCode=_this.itemData.AccountNumber;
 				_this.editEntitysList[0].Bank=_this.itemData.AcceptingUnit;
 				_this.editEntitysList[0].AccountName=_this.itemData.AccountName;
@@ -678,7 +710,7 @@ export default {
           DocDate: _this.formatDate(),
           OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 					CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
-					PayType:_this.itemData.PayType,
+					PayType:_this.itemData.PayTypeCode,
 					AccountCode: _this.itemData.AccountNumber,
 					 Bank: _this.itemData.AcceptingUnit,
           ReimbursementTypeID: "",
@@ -811,14 +843,19 @@ export default {
         parseInt(e.target.value)
       ];
     },
-		bindPickerChange1: function(e) {
-			this.indexPayType=e.target.value;
-			this.itemData.indexPayType=e.target.value;
-			this.itemData.PayType=this.PayType[this.indexPayType];
-			
-			if (this.PayType[this.indexPayType] != "银行转账") {this.itemData.Bank=this.PayType[this.indexPayType];}
-		    else {this.itemData.Bank="";}
-		},
+	bindPickerChange1: function(e) {
+		this.indexPayType=e.target.value;
+		this.itemData.indexPayType=e.target.value;
+		for(var i in this.PayTypeList){
+			if(this.PayType[this.indexPayType] === this.PayTypeList[i].Name){
+				this.itemData.PayTypeCode = this.PayTypeList[i].Code;
+				this.itemData.PayTypeName = this.PayType[this.indexPayType];
+			}
+		}
+		
+		// if (this.PayType[this.indexPayType] != "BankToUser") {this.itemData.AcceptingUnit=this.PayType[this.indexPayType];}
+	 //    else {this.itemData.AcceptingUnit="";}
+	},
 		bindPickerChange2: function(e) {
 			this.indexCostType = e.target.value;
 			for(var i in this.CostTypeList){
@@ -1086,12 +1123,12 @@ export default {
             }
             item.Amount = parseFloat(item.Amount).toFixed(2);
 						//_$this.itemData.DocEntry=item.Amount;
-						_$this.itemData.PayType=item.PayType;
+						_$this.itemData.PayTypeCode=item.PayType;
 						_$this.itemData.AccountCode=item.AccountCode;
 						_$this.itemData.Bank=item.Bank;
 						_$this.itemData.Remarks=item.Remarks;
 						_$this.PayType.forEach((_item,index)=>{
-											  if(_item===_this.itemData.PayType)
+											  if(_item===_this.itemData.PayTypeName)
 											  {
 												  _this.indexPayType=index;
 												  _this.itemData.indexPayType=index;

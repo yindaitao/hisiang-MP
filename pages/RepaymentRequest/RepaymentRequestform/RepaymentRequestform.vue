@@ -187,8 +187,40 @@ export default {
   },
   data() {
     return {
-			PayType:['支付宝支付', '微信支付', '银行转账','现金支付'],
-			indexPayType:2,
+			PayType:["请选择支付方式","转账给申请人","转账给第三人(需备注)","银行转账(需备注)","现金支付给申请人","按发票汇款","银行托收","申请支票",
+			"其他现金支付","其他银行汇款"],
+			indexPayType:0,
+			PayTypeList:[{
+				Code:"ToRequestUser",
+				Name:"转账给申请人",
+			},
+			{
+				Code:"ToThirdUser",
+				Name:"转账给第三人(需备注)",
+			},
+			{
+				Code:"BankToUser",
+				Name:"银行转账(需备注)",
+			},
+			{
+				Code:"MoneyToUser",
+				Name:"现金支付给申请人",
+			},{
+				Code:"ToUserByInvonice",
+				Name:"按发票汇款",
+			},{
+				Code:"ToBank",
+				Name:"银行托收",
+			},{
+				Code:"RequestCheque",
+				Name:"申请支票",
+			},{
+				Code:"OtherMoneyPay",
+				Name:"其他现金支付",
+			},{
+				Code:"OtherBankPay",
+				Name:"其他银行汇款",
+			}],
 			radio: 'radio1',
       modalName: null,
       resourceArray: ["选项一", "选项二", "选项三"],
@@ -205,7 +237,7 @@ export default {
       sizeType: ["压缩", "原图", "压缩或原图"],
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-			itemData:{DocEntry:"",indexPayType:2,AccountNumber:"",AcceptingUnit:"",PayType:"银行转账",Remarks:"",
+			itemData:{DocEntry:"",indexPayType:0,AccountNumber:"",AcceptingUnit:"",PayTypeCode:"",PayTypeName:"请选择支付方式",Remarks:"",
 			BaseEntry:"请选择",BorrowDate:"","TotalAmount":""},
       formList: [
         {
