@@ -179,7 +179,7 @@
 					console.log(item);
 				}
 				uni.navigateTo({
-					url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?from=ReimRequestlist&data=" + JSON.stringify(item)
+					url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=Original&data=" + JSON.stringify(item)
 				});
 			},
 			editItem(item) {

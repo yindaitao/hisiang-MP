@@ -964,7 +964,9 @@ export default {
     /* 修改传递参数 */
     if (e.flag === "modify") {
       this.editflag = true;
-    }
+    }else if(e.flag === "modify"){
+			
+		}
     if (this.editflag) {
       this.editItem = JSON.parse(e.data);
       this.getDetailData();

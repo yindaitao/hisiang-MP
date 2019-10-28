@@ -25,7 +25,7 @@
 				<text>{{item.name}}</text>
 			</view>
 		</view>
-		<!-- <official-account style="width: 300px;height: 84px;" bindload="">关注公众号</official-account> -->
+		<official-account style="width: 300px;height: 84px;" bindload="">关注公众号</official-account>
 	</view>
 </template>
 
@@ -133,7 +133,7 @@
 						});
 						break;
 					case "test":
-						
+
 						uni.navigateTo({
 							url: "/pages/department/depform/multiModal",
 							title: "全选测试"
@@ -293,9 +293,9 @@
 										let _this = this;
 										if (ace.statusCode === 200) {
 											uni.reLaunch({
-												url:'/pages/tabBar/firstPage/firstPage'
+												url: '/pages/tabBar/firstPage/firstPage'
 											})
-											
+
 											this.$mbservices.setStorageInfo(
 												"JSUserInfo",
 												ace.data,
@@ -390,8 +390,19 @@
 								});
 							});
 						});
-					    console.log(e)
+						if(!this.$mbservices.isEmpty(e.data)){
+							if (JSON.parse(e.data).from === "ApprovalNoteList") {
+								uni.navigateTo({
+									url: '/pages/tabBar/firstPage/firstPage'
+								})
+							}else if(JSON.parse(e.data).from === "ApprovalHandle"){
+								uni.navigateTo({
+									url: '/pages/ApprovalNote/ApprovalNoteList'
+								})
+							}
+						}
 					},
+
 					fail: resultM => {
 						setTimeout(function() {
 							uni.hideLoading()
@@ -399,7 +410,7 @@
 						console.log("失败：" + JSON.stringify(resultM));
 					}
 				});
-			    console.log()
+				console.log()
 			} else {
 				// #ifdef MP-WEIXIN
 				uni.login({
