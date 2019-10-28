@@ -809,7 +809,16 @@
 			}
 		},
 		onLoad(e) {
-			this.from = JSON.parse(e.data).from
+			console.log(e.data)
+			if(!this.$mbservices.isEmpty(e.data)){
+				if(!this.$mbservices.isEmpty(JSON.parse(e.data).from)){
+					this.from = JSON.parse(e.data).from;
+				}else{
+					this.from = null;
+				}
+			}else{
+				this.from = null;
+			}
 			//#ifdef MP-WEIXIN
 			const query = wx.createSelectorQuery();
 			query.select("#_tabBar").boundingClientRect();

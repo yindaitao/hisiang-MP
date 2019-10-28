@@ -133,10 +133,7 @@
 						});
 						break;
 					case "test":
-						// 						uni.clearStorageSync("JSUserInfo");
-						// 						console.log("ok   数据已清除");
-						// 						console.log(uni.getStorageInfoSync('JSUserInfo'));
-						// 						return false;
+						
 						uni.navigateTo({
 							url: "/pages/department/depform/multiModal",
 							title: "全选测试"
@@ -332,7 +329,6 @@
 		},
 		onBackPress: e => {},
 		onLoad: function(e) {
-			console.log('kkkkkkkkkkkkkkkkkkkk');
 			/* 菜单组合 */
 			var _this = this;
 			if (this.$store.state.access_token !== null) {
@@ -394,6 +390,7 @@
 								});
 							});
 						});
+					    console.log(e)
 					},
 					fail: resultM => {
 						setTimeout(function() {
@@ -402,6 +399,7 @@
 						console.log("失败：" + JSON.stringify(resultM));
 					}
 				});
+			    console.log()
 			} else {
 				// #ifdef MP-WEIXIN
 				uni.login({

@@ -80,9 +80,6 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">备注</view>
-					<!-- <view class="action">
-						<view>已输入({{!this.$mbservices.isEmpty(itemData.Remarks)?itemData.Remarks.length:0}})个字符</view>
-					</view> -->
 				</view>
 				<view class="cu-form-group">
 					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
@@ -230,8 +227,8 @@ export default {
       sizeType: ["压缩", "原图", "压缩或原图"],
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-			itemData:{DocEntry:"",indexPayType:0,AccountNumber:"",AcceptingUnit:"",PayTypeCode:"",PayTypeName:"请选择支付方式",Remarks:"","InvCompanyId":"","InvCompanyName":"请选择",
-			CostType: [],CostTypeCode:"",CostTypeName:""},
+			itemData:{DocEntry:"",indexPayType:0,AccountNumber:"",AcceptingUnit:"",PayTypeCode:"",PayTypeName:"请选择支付方式",Remarks:"","InvCompanyId":uni.getStorageSync("JSUserInfo").CompanyId,
+			"InvCompanyName":uni.getStorageSync("JSUserInfo").CompanyName,CostType: [],CostTypeCode:"",CostTypeName:""},
       formList: [
         {
           id: 1,
@@ -881,7 +878,6 @@ export default {
               item.AApproveStatus = "已拒绝";
             }
             item.Amount = parseFloat(item.Amount).toFixed(2);
-						//_$this.itemData.DocEntry=item.Amount;
 						_$this.itemData.PayTypeCode=item.PayType;
 						_$this.itemData.AccountNumber=item.AccountNumber;
 						_$this.itemData.AcceptingUnit=item.AcceptingUnit;

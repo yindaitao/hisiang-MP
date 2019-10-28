@@ -57,10 +57,6 @@
 								<text class="icon-timefill margin-right-xs"></text>
 								{{list.DocDate}}
 							</view>
-							<!-- <view class="text-gray text-sm">
-								<text class="icon-coin margin-right-xs"></text>
-								RMB:{{list.Amount}}
-							</view> -->
 						</view>
 						<view class="action" v-if="list.Approve!=='No'||list.ApproveStatus==='Rejected'">
 							<view v-if="list.ApproveStatus==='Pending'" class="cu-tag round bg-olive light">{{list.AApproveStatus}}</view>
@@ -179,8 +175,11 @@
 		},
 		methods: {
 			goDetail(item) {
+				if(item){
+					console.log(item);
+				}
 				uni.navigateTo({
-					url: "/pages/ReimbursementRequest/ReimRequestdetail/ReimRequestdetail?data=" + JSON.stringify(item)
+					url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?from=ReimRequestlist&data=" + JSON.stringify(item)
 				});
 			},
 			editItem(item) {

@@ -35,33 +35,23 @@
 		methods: {
 			back() {
 				if (this.backFrom === "ApprovalNoteList") {
-					if (this.baseEntry === "firstPage") {
-						 // && this.baseEntrys === null
-						console.log("ApprovalNoteList  返回上一层")
-						//返回到上一层页面
-						uni.navigateBack({
-							delta: 1
+					if (this.$mbservices.isEmpty(this.baseEntry)) {
+						uni.switchTab({
+						    url: '/pages/tabBar/firstPage/firstPage?data=' + JSON.stringify({
+								from:"ApprovalNoteList",
+							})
 						});
-						console.log("ApprovalNoteList  返回上一层结束")
-					} else {
-						//返回到首页
-						uni.navigateTo({
-							url: "/pages/tabBar/firstPage/firstPage"
+					}else{
+						uni.navigateBack({
+						    delta: 1
 						});
 					}
 				} else if (this.backFrom === "ApprovalHandle") {
-					if (this.baseEntry === "ApprovalNoteList") {
-						// && this.baseEntrys === null
-						console.log("ApprovalHandle  返回上一层")
-						//返回到上一层页面
-						uni.navigateBack({
-							delta: 1
-						});
-						console.log("ApprovalHandle  返回上一层结束")
-					} else {
-						//返回到审批列表页面
-						uni.navigateTo({
-							url: "/pages/ApprovalNote/ApprovalNoteList" 
+					if (this.$mbservices.isEmpty(this.baseEntry)) {
+						uni.switchTab({
+						    url: '/pages/tabBar/firstPage/firstPage?data=' + JSON.stringify({
+								from:"ApprovalHandle",
+							})
 						});
 					}
 				} 
