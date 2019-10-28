@@ -51,11 +51,12 @@
 					<text class="cu-tag round bg-gray light">{{itemData.DocEntry}}</text>
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
-				<view class="cu-form-group" readonly>
+				<view class="cu-form-group">
 					<view class="title">公司</view>
 					<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1">{{itemData.InvCompanyName}}</text>
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
+				{{edit}}
 				<view class="cu-form-group">
 					<view class="title">支付方式</view>
 					<picker @change="bindPickerChange1" :value="indexPayType" :range="PayType">
@@ -69,13 +70,18 @@
 					</picker>
 				</view>
 				<view class="cu-form-group">
+					<view class="title">开户名</view>
+					<input placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)" :value="itemData.AccountName">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
 					<view class="title">账户(卡号)</view>
-					<input placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
+					<input placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountCode">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">受理单位(银行)</view>
-					<input placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
+					<input placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.Bank">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
@@ -227,7 +233,7 @@ export default {
       sizeType: ["压缩", "原图", "压缩或原图"],
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-			itemData:{DocEntry:"",indexPayType:0,AccountNumber:"",AcceptingUnit:"",PayTypeCode:"",PayTypeName:"请选择支付方式",Remarks:"","InvCompanyId":uni.getStorageSync("JSUserInfo").CompanyId,
+			itemData:{DocEntry:"",indexPayType:0,AccountCode:"",Bank:"",AccountName:"",PayTypeCode:"",PayTypeName:"请选择支付方式",Remarks:"","InvCompanyId":uni.getStorageSync("JSUserInfo").CompanyId,
 			"InvCompanyName":uni.getStorageSync("JSUserInfo").CompanyName,CostType: [],CostTypeCode:"",CostTypeName:""},
       formList: [
         {
@@ -246,7 +252,8 @@ export default {
       totalJine: "0.00",
       editflag: false,
       editItem: {},
-      isDoSteps: false
+      isDoSteps: false,
+	  edit:true,
     };
   },
   computed: {
@@ -307,6 +314,14 @@ export default {
 			this.modalName = e.currentTarget.dataset.target;
 		},
     showModal(e) {
+		if(this.$mbservices.isEmpty(this.itemData.AccountName))
+		{
+			uni.showToast({
+				title:'请输入开户名',
+				icon:'none'
+			});
+			return false;
+		}
 			if(this.$mbservices.isEmpty(this.itemData.InvCompanyId))
 			{
 				uni.showToast({
@@ -317,7 +332,7 @@ export default {
 			}
 			if(this.itemData.PayTypeCode==="BankToUser")
 			{
-				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
+				if(this.$mbservices.isEmpty(this.itemData.AccountCode))
 				{
 					uni.showToast({
 						title:'请输入银行卡号',
@@ -325,7 +340,7 @@ export default {
 					});
 					return false;
 				}
-				if(this.$mbservices.isEmpty(this.itemData.AcceptingUnit))
+				if(this.$mbservices.isEmpty(this.itemData.Bank))
 				{
 					uni.showToast({
 						title:'请输入受理银行',
@@ -336,7 +351,7 @@ export default {
 			}
 			if(this.itemData.PayTypeCode!=="BankToUser"&&this.itemData.PayTypeCode!=="MoneyToUser")
 			{
-				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
+				if(this.$mbservices.isEmpty(this.itemData.AccountCode))
 				{
 					uni.showToast({
 						title:'请输入收款账户',
@@ -459,8 +474,9 @@ export default {
 		    _this.totalJine
 		  ).toFixed(2));
 				_this.editEntitysList[0].PayType=_this.itemData.PayTypeCode;
-				_this.editEntitysList[0].AccountNumber=_this.itemData.AccountNumber;
-				_this.editEntitysList[0].AcceptingUnit=_this.itemData.AcceptingUnit;
+				_this.editEntitysList[0].AccountCode=_this.itemData.AccountCode;
+				_this.editEntitysList[0].AccountName=_this.itemData.AccountName;
+				_this.editEntitysList[0].Bank=_this.itemData.Bank;
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
 				_this.editEntitysList[0].InvCompanyId=_this.itemData.InvCompanyId;
 				_this.editEntitysList[0].InvOrganizationCode=uni.getStorageSync("JSUserInfo").OrganizationCode;
@@ -486,8 +502,9 @@ export default {
           OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 					CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
 					PayType:_this.itemData.PayTypeCode,
-					AccountNumber:_this.itemData.AccountNumber,
-					AcceptingUnit:_this.itemData.AcceptingUnit,
+					AccountCode:_this.itemData.AccountCode,
+					Bank:_this.itemData.Bank,
+					AccountName: _this.itemData.AccountName,
           ReimbursementTypeID: "",
 		  InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  InvOrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
@@ -535,6 +552,9 @@ export default {
         }
       );
     },
+	inputNumAN(event){
+		this.itemData.AccountName=event.detail.value;
+	},
     inputNum(item, event) {
       item.jine = event.detail.value;
       if (parseFloat(item.jine).toFixed(2) > 0) {
@@ -617,8 +637,8 @@ export default {
 				}
 			}
 			
-			// if (this.PayType[this.indexPayType] != "BankToUser") {this.itemData.AcceptingUnit=this.PayType[this.indexPayType];}
-		 //    else {this.itemData.AcceptingUnit="";}
+			// if (this.PayType[this.indexPayType] != "BankToUser") {this.itemData.Bank=this.PayType[this.indexPayType];}
+		 //    else {this.itemData.Bank="";}
 		},
 		bindPickerChange2: function(e) {
 			this.indexCostType = e.target.value;
@@ -865,6 +885,7 @@ export default {
           }
           //_this.formList = [];
           _this.editEntitysList = [];
+		  console.log(ret.data.data)
           _this.editEntitysList = ret.data.data;
 					var _$this=_this;
           ret.data.data.forEach(item => {
@@ -877,16 +898,33 @@ export default {
             if (item.ApproveStatus === "Rejected") {
               item.AApproveStatus = "已拒绝";
             }
+			_$this.getCostType();
             item.Amount = parseFloat(item.Amount).toFixed(2);
 						_$this.itemData.PayTypeCode=item.PayType;
-						_$this.itemData.AccountNumber=item.AccountNumber;
-						_$this.itemData.AcceptingUnit=item.AcceptingUnit;
+						_$this.itemData.AccountCode=item.AccountCode;
+						_$this.itemData.Bank=item.Bank;
+						console.log(_$this.itemData.AccountCode);
 						_$this.itemData.Remarks=item.Remarks;
+						_$this.PayTypeList.forEach(inner => {
+							if (inner.Code === _$this.itemData.PayTypeCode) {
+								_$this.itemData.PayTypeName = inner.Name;
+							}
+						})
 						_$this.PayType.forEach((_item,index)=>{
-											  if(_item===_this.itemData.PayTypeName)
+											  if(_item===_$this.itemData.PayTypeName)
 											  {
-												  _this.indexPayType=index;
-												  _this.itemData.indexPayType=index;
+												  _$this.indexPayType=index;
+												  _$this.itemData.indexPayType=index;
+													
+											  }
+						});
+						_$this.itemData.CostTypeCode = item.CostTypeCode;
+						_$this.itemData.CostTypeName = item.CostTypeName;
+						_$this.CostType.forEach((_item,index)=>{
+											  if(_item===_$this.itemData.CostTypeName)
+											  {
+												  _$this.indexCostType=index;
+												  _$this.itemData.indexCostType=index;
 													
 											  }
 						});
@@ -948,10 +986,10 @@ export default {
       );
     },
 		inputNum11(event){
-			this.itemData.AccountNumber=event.detail.value;
+			this.itemData.AccountCode=event.detail.value;
 		},
 		inputNum22(event){
-			this.itemData.AcceptingUnit=event.detail.value;
+			this.itemData.Bank=event.detail.value;
 		},
 		textareaInput33(e) {
 		  this.itemData.Remarks = e.detail.value;
@@ -964,11 +1002,13 @@ export default {
     /* 修改传递参数 */
     if (e.flag === "modify") {
       this.editflag = true;
-    }else if(e.flag === "modify"){
-			
+    }else if(e.flag === "Original"){
+		  this.editflag = true;
+		  this.edit = false;
 		}
     if (this.editflag) {
       this.editItem = JSON.parse(e.data);
+	  this.itemData.DocEntry=this.editItem.DocEntry;
       this.getDetailData();
     }
     if(!this.editflag)
