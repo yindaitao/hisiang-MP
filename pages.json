@@ -121,13 +121,7 @@
 				    "style": {
 				        "navigationBarTitleText": "还款申请"
 				    }
-				},
-		        {
-		            "path": "RepaymentRequestdetail/RepaymentRequestdetail",
-		            "style": {
-		                "navigationBarTitleText": "还款申请"
-		            }
-		        }
+				}
 		    ]
 		},
         {
@@ -141,12 +135,6 @@
                 },
                 {
                     "path": "BorrowRequestlist/BorrowRequestlist",
-                    "style": {
-                        "navigationBarTitleText": "借款申请"
-                    }
-                },
-                {
-                    "path": "BorrowRequestdetail/BorrowRequestdetail",
                     "style": {
                         "navigationBarTitleText": "借款申请"
                     }
@@ -167,13 +155,7 @@
 				    "style": {
 				        "navigationBarTitleText": "差旅报销申请"
 				    }
-				},
-		        {
-		            "path": "BusinesstravelRequestdetail/BusinesstravelRequestdetail",
-		            "style": {
-		                "navigationBarTitleText": "差旅报销申请"
-		            }
-		        }
+				}
 		    ]
 		},
 		{
@@ -190,13 +172,7 @@
 				    "style": {
 				        "navigationBarTitleText": "消耗申请"
 				    }
-				},
-		        {
-		            "path": "DepleteRequestdetail/DepleteRequestdetail",
-		            "style": {
-		                "navigationBarTitleText": "消耗申请"
-		            }
-		        }
+				}
 		    ]
 		},
         {

@@ -1165,7 +1165,8 @@ export default {
     },
     getArrayIndex(keyValue) {
       var index = 0;
-      this.resourceArray.forEach((item, _indx) => {
+	  var _this = this;
+      _this.resourceArray.forEach((item, _indx) => {
         if (item.ReimbursementTypeName === keyValue) {
           index = _indx;
         }
@@ -1391,6 +1392,40 @@ export default {
       this.itemData.DocEntry=this.editItem.DocEntry;
       // 费用类型
       this.getCostType();
+	  /* 初始化报销类型 */
+	  var ajaxJSON = {
+	    pageIndex: 0,
+	    rowsPerPage: "10000",
+	    type: "Initialize",
+	    Parameter: {
+	      LoadChildren: "NoLoad",
+	      Conditions: [
+	  				{ FieldName: "Activated", Operation: "EQUAL", ConditionValue: "Y", Relationship: "AND" },{ FieldName: "DataType", Operation: "EQUAL", ConditionValue: "P", Relationship: "AND" }
+	  			]
+	    }
+	  };
+	  var _this = this;
+	  this.$mbservices.Request(
+	    this.$webapi.getRemTypeList,
+	    "POST",
+	    ajaxJSON,
+	    function(success) {
+	      if (success.statusCode === 200) {
+	        _this.arrayType = [];
+	        _this.resourceArray = [];
+	        success.data.data.forEach(_item => {
+	          _this.arrayType.push(_item.ReimbursementTypeName);
+	          _this.resourceArray.push(_item);
+	        });
+	      }
+	    },
+	    function(err) {
+	      uni.showToast({
+	        title: "获取报销类型失败",
+	        icon: "none"
+	      });
+	    }
+	  );
       this.getDetailData();
     }
     if(!this.editflag)

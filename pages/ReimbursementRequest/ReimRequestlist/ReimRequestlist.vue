@@ -175,7 +175,11 @@
 		},
 		methods: {
 			goDetail(item) {
-				if(item.ApproveStatus === "Rejected"){
+				if(item.Approve==='No'&&item.ApproveStatus!=='Rejected'){
+					uni.navigateTo({
+						url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=modify&data=" + JSON.stringify(item)
+					});
+				}else if(item.ApproveStatus==='Rejected'){
 					uni.navigateTo({
 						url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=modify&data=" + JSON.stringify(item)
 					});
