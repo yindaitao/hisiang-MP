@@ -166,12 +166,12 @@
 					</view>
 					<view class="cu-form-group" readonly>
 						<view class="title">报销日期</view>
-						<text class="cu-tag round bg-gray light">{{formatDate(time)}}</text>
+						<text class="cu-tag round bg-gray light">{{item.itemDate}}</text>
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group">
 						<view class="title">报销类型</view>
-						<picker v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange" :value="item.itemOptionIndex" :range="arrayType">
+						<picker v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange(item,$event)" :value="item.itemOptionIndex" :range="arrayType">
 							<view class="picker">{{arrayType[item.itemOptionIndex]}}</view>
 						</picker>
 					</view>
@@ -271,7 +271,7 @@ export default {
 			invCompanys:[],
 			CostType:["请选择"],
 			CostTypeList: [],
-			VatType:["请选择"],
+			VatType:[],
 			VatTypeList:[],
 			DetailTypeList:[{
 				Code: "Traffic",
@@ -413,7 +413,7 @@ export default {
 		  DetailTypeName:"请选择明细类型",
 		  TrafficType:"",
 		  TrafficTypeName:"请选择交通工具",
-          itemDate: "请选择",
+          itemDate: this.getDate({format: true}),
           itemOptionIndex: 0,
           itemOptionText: "",
           itemReason: "",
@@ -421,7 +421,7 @@ export default {
           bigjine: "",
 		  Count1: 1,
 		  VatTypeCode:"",
-		  VatTypeName:"",
+		  VatTypeName:"请选择",
 		  indexVatType: 0,
         }
       ],
@@ -865,7 +865,7 @@ export default {
         bigjine: "",
 		Count1: 1,
 		VatTypeCode:"",
-		VatTypeName:"",
+		VatTypeName:"请选择",
 		indexVatType: 0,
       });
     },
@@ -892,14 +892,15 @@ export default {
       });
       this.totalJine = _cache;
     },
-    bindPickerChange: function(e) {
-      this.indexType = e.target.value;
-      this.formList[parseInt(e.target.id) - 1].itemOptionIndex = parseInt(
-        e.target.value
-      );
-      this.formList[parseInt(e.target.id) - 1].itemOptionText = this.arrayType[
-        parseInt(e.target.value)
-      ];
+    bindPickerChange: function(item,e) {
+		var _this = this;
+      item.indexType = e.target.value;
+     for(var i in _this.resourceArray){
+     	if(_this.arrayType[item.indexType] === _this.resourceArray[i].ReimbursementTypeName){
+     		item.itemOptionIndex = _this.resourceArray[i].ReimbursementTypeCode;
+     		item.itemOptionText = _this.arrayType[item.indexType];
+     	}
+     }
     },
 	bindPickerChange1: function(e) {
 		this.indexPayType=e.target.value;
@@ -924,6 +925,7 @@ export default {
 			}
 		},
 		bindPickerChange4: function(item,e) {
+			console.log(e)
 			var _this = this;
 			item.indexVatType = e.target.value;
 			for(var i in _this.itemData.VatTypeList){
@@ -986,7 +988,6 @@ export default {
 				this.$mbservices.Request(this.$webapi.getVatRecords,"POST",ajaxJSON,res=>{
 					if(res.data.RecordCount>0)
 					{
-						console.log(res.data.data)
 						res.data.data.forEach(item =>{
 							this.VatType.push(item.Name)
 							this.VatTypeList.push(item)
@@ -1171,6 +1172,15 @@ export default {
       });
       return index;
     },
+	getVatIndex(keyValue) {
+	  var index = 0;
+	  this.VatTypeList.forEach((item, _indx) => {
+	    if (item.Name === keyValue) {
+	      index = _indx;
+	    }
+	  });
+	  return index;
+	},
     getDetailData: function() {
       this.pageIndex = parseInt(this.pageIndex) + 1;
       var ajaxJSON = {
@@ -1194,7 +1204,7 @@ export default {
       });
       var _this = this;
       this.$mbservices.Request(
-        this.$webapi.getReimList,
+        this.$webapi.getBusinesstravelReimList,
         "POST",
         ajaxJSON,
         function(ret) {
@@ -1205,6 +1215,7 @@ export default {
             return false;
           }
           //_this.formList = [];
+		  console.log(ret.data.data);
           _this.editEntitysList = [];
           _this.editEntitysList = ret.data.data;
 					var _$this=_this;
@@ -1219,19 +1230,36 @@ export default {
               item.AApproveStatus = "已拒绝";
             }
             item.Amount = parseFloat(item.Amount).toFixed(2);
-						//_$this.itemData.DocEntry=item.Amount;
-						_$this.itemData.PayTypeCode=item.PayType;
-						_$this.itemData.AccountCode=item.AccountCode;
-						_$this.itemData.Bank=item.Bank;
-						_$this.itemData.Remarks=item.Remarks;
-						_$this.PayType.forEach((_item,index)=>{
-											  if(_item===_this.itemData.PayTypeName)
-											  {
-												  _this.indexPayType=index;
-												  _this.itemData.indexPayType=index;
-													
-											  }
-						});
+			_$this.itemData.AccountName = item.AccountName;
+			_$this.itemData.PayTypeCode=item.PayType;
+			_$this.itemData.CostTypeCode=item.CostTypeCode;
+			_$this.itemData.CostTypeName=item.CostTypeName;
+			_$this.itemData.AccountCode=item.AccountCode;
+			_$this.itemData.Bank=item.Bank;
+			_$this.itemData.AllowanceAmount = item.AllowanceAmount;
+			_$this.itemData.Days = item.Days;
+			_$this.itemData.Reasons=item.Reasons;
+			_$this.itemData.Remarks=item.Remarks;
+			_$this.PayTypeList.forEach(inner => {
+				if (inner.Code === _$this.itemData.PayTypeCode) {
+					_$this.itemData.PayTypeName = inner.Name;
+				}
+			})
+			_$this.PayType.forEach((_item,index)=>{
+								  if(_item===_$this.itemData.PayTypeName)
+								  {
+									  _$this.indexPayType=index;
+									  _$this.itemData.indexPayType=index;
+										
+								  }
+			});
+			_$this.CostType.forEach((__item,__index)=>{
+								  if(__item===_$this.itemData.CostTypeName)
+								  {
+									  _$this.itemData.indexCostType=__index;
+									  _$this.indexCostType=__index;
+								  }
+			});
             _this.formList = [];
             _this.totalJine = parseFloat(item.Amount).toFixed(2);
             item.BusinessTravelRequestLines.forEach((_item, _indx) => {
@@ -1250,13 +1278,29 @@ export default {
                   deleteurl: _item_
                 });
               });
+			  _$this.DetailTypeList.forEach(inner => {
+			  	if (inner.Code === _item.DetailType) {
+			  		_item.DetailTypeName = inner.Name;
+			  	}
+			  })
+			  _$this.TrafficTypeList.forEach(inner => {
+			  	if (inner.Code === _item.TrafficType) {
+			  		_item.TrafficTypeName = inner.Name;
+			  	}
+			  })
               /* _item.Amount = parseFloat(item.Amount).toFixed(2); */
               _this.formList.push({
                 id: parseInt(_indx) + 1,
                 DocEntry: _item.DocEntry,
                 name: "",
+				DocDateStart: _item.DocDateStart,
+				DocDateArrive:_item.DocDateArrive,
+				StartPlace: _item.StartPlace,
+				ArrivePlace: _item.ArrivePlace,
 				DetailType: _item.DetailType,
+				DetailTypeName: _item.DetailTypeName,
 				TrafficType: _item.TrafficType,
+				TrafficTypeName: _item.TrafficTypeName,
                 jine: parseFloat(_item.Amount)
                   .toFixed(2)
                   .toString(),
@@ -1269,10 +1313,16 @@ export default {
                 imageList: _item.pathArr,
                 bigjine: _this.$mbservices.smalltoBIG(
                   parseFloat(_item.Amount).toFixed(2)
-                )
+                ),
+				Count1: _item.Count,
+				VatTypeCode: _item.VatCode,
+				VatTypeName: _item.VatName,
+				indexVatType: _this.getVatIndex(
+                  _item.VatName
+                ),
+				Remarks1:  _item.Remarks,
               });
             });
-            //_this.formList.push(item);
           });
           setTimeout(() => {
             uni.hideLoading();
@@ -1332,9 +1382,15 @@ export default {
     /* 修改传递参数 */
     if (e.flag === "modify") {
       this.editflag = true;
-    }
+    }else if(e.flag === "Original"){
+    	  this.editflag = true;
+    	  this.edit = false;
+    	}
     if (this.editflag) {
       this.editItem = JSON.parse(e.data);
+      this.itemData.DocEntry=this.editItem.DocEntry;
+      // 费用类型
+      this.getCostType();
       this.getDetailData();
     }
     if(!this.editflag)

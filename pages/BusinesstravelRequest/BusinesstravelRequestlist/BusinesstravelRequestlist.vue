@@ -174,9 +174,19 @@
 		},
 		methods: {
 			goDetail(item) {
-				uni.navigateTo({
-					url: "/pages/costReim/detail/detail?data=" + JSON.stringify(item)
-				});
+				if(item.Approve==='No'&&item.ApproveStatus!=='Rejected'){
+					uni.navigateTo({
+						url: "/pages/BusinesstravelRequest/BusinesstravelRequestform/BusinesstravelRequestform?flag=modify&data=" + JSON.stringify(item)
+					});
+				}else if(item.ApproveStatus==='Rejected'){
+					uni.navigateTo({
+						url: "/pages/BusinesstravelRequest/BusinesstravelRequestform/BusinesstravelRequestform?flag=modify&data=" + JSON.stringify(item)
+					});
+				}else if(item.ApproveStatus === "Approved" || item.ApproveStatus === "Pending"){
+					uni.navigateTo({
+						url: "/pages/BusinesstravelRequest/BusinesstravelRequestform/BusinesstravelRequestform?flag=Original&data=" + JSON.stringify(item)
+					});
+				}
 			},
 			editItem(item) {
 				console.log(item);

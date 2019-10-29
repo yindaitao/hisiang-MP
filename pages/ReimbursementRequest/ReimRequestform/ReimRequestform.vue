@@ -1006,7 +1006,6 @@ export default {
 						_$this.itemData.AccountCode=item.AccountCode;
 						_$this.itemData.Bank=item.Bank;
 						_$this.itemData.AccountName = item.AccountName;
-						console.log(_$this.itemData.AccountCode);
 						_$this.itemData.Remarks=item.Remarks;
 						_$this.PayTypeList.forEach(inner => {
 							if (inner.Code === _$this.itemData.PayTypeCode) {
@@ -1066,7 +1065,7 @@ export default {
              _$this.VatType.forEach((__item,__index)=>{
              					  if(__item===_item.VatTypeName)
              					  {
-             						  __item.indexVatType=__index;
+             						  _item.indexVatType=__index;
              					  }
              });
               _this.formList.push({
@@ -1085,7 +1084,7 @@ export default {
                 imageList: _item.pathArr,
 				VatCode: _item.VatTypeCode,
 				VatName: _item.VatTypeName,
-				indexVatType: 1,
+				indexVatType: _item.indexVatType,
 				Count1: _item.Count,
                 bigjine: _this.$mbservices.smalltoBIG(
                   parseFloat(_item.Amount).toFixed(2)
