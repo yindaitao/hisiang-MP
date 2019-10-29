@@ -845,7 +845,6 @@ export default {
                 )
               });
             });
-            //_this.formList.push(item);
           });
           setTimeout(() => {
             uni.hideLoading();
@@ -893,9 +892,49 @@ export default {
     /* 修改传递参数 */
     if (e.flag === "modify") {
       this.editflag = true;
-    }
+    }else if(e.flag === "Original"){
+    	  this.editflag = true;
+    	  this.edit = false;
+    	}
     if (this.editflag) {
       this.editItem = JSON.parse(e.data);
+      this.itemData.DocEntry=this.editItem.DocEntry;
+      // 费用类型
+      this.getCostType();
+      /* 初始化报销类型 */
+      var ajaxJSON = {
+        pageIndex: 0,
+        rowsPerPage: "10000",
+        type: "Initialize",
+        Parameter: {
+          LoadChildren: "NoLoad",
+          Conditions: [
+      				{ FieldName: "Activated", Operation: "EQUAL", ConditionValue: "Y", Relationship: "AND" },{ FieldName: "DataType", Operation: "EQUAL", ConditionValue: "P", Relationship: "AND" }
+      			]
+        }
+      };
+      var _this = this;
+      this.$mbservices.Request(
+        this.$webapi.getRemTypeList,
+        "POST",
+        ajaxJSON,
+        function(success) {
+          if (success.statusCode === 200) {
+            _this.arrayType = [];
+            _this.resourceArray = [];
+            success.data.data.forEach(_item => {
+              _this.arrayType.push(_item.ReimbursementTypeName);
+              _this.resourceArray.push(_item);
+            });
+          }
+        },
+        function(err) {
+          uni.showToast({
+            title: "获取报销类型失败",
+            icon: "none"
+          });
+        }
+      );
       this.getDetailData();
     }
     if(!this.editflag)
