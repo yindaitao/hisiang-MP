@@ -104,13 +104,7 @@
 				    "style": {
 				        "navigationBarTitleText": "报销申请"
 				    }
-				},
-		        {
-		            "path": "ReimRequestdetail/ReimRequestdetail",
-		            "style": {
-		                "navigationBarTitleText": "报销申请"
-		            }
-		        }
+				}
 		    ]
 		},
 		{

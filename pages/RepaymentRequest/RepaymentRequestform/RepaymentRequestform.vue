@@ -610,10 +610,12 @@ export default {
 		bindPickerChange1: function(e) {
 			this.indexPayType=e.target.value;
 			this.itemData.indexPayType=e.target.value;
-			this.itemData.PayType=this.PayType[this.indexPayType];
-			
-			if (this.PayType[this.indexPayType] != "银行转账") {this.itemData.AcceptingUnit=this.PayType[this.indexPayType];}
-		    else {this.itemData.AcceptingUnit="";}
+			for(var i in this.PayTypeList){
+				if(this.PayType[this.indexPayType] === this.PayTypeList[i].Name){
+					this.itemData.PayTypeCode = this.PayTypeList[i].Code;
+					this.itemData.PayTypeName = this.PayType[this.indexPayType];
+				}
+			}
 		},
     bindDateChange: function(item, e) {
       item.itemDate = e.target.value;
@@ -804,7 +806,7 @@ export default {
             });
             return false;
           }
-          //_this.formList = [];
+		  console.log(ret.data.data)
           _this.editEntitysList = [];
           _this.editEntitysList = ret.data.data;
 					var _$this=_this;
@@ -819,16 +821,20 @@ export default {
               item.AApproveStatus = "已拒绝";
             }
             item.Amount = parseFloat(item.Amount).toFixed(2);
-						//_$this.itemData.DocEntry=item.Amount;
-						_$this.itemData.PayType=item.PayType;
+						_$this.itemData.PayTypeCode=item.PayType;
 						_$this.itemData.AccountNumber=item.AccountNumber;
 						_$this.itemData.AcceptingUnit=item.AcceptingUnit;
 						_$this.itemData.Remarks=item.Remarks;
+						_$this.PayTypeList.forEach(inner => {
+							if (inner.Code === _$this.itemData.PayTypeCode) {
+								_$this.itemData.PayTypeName = inner.Name;
+							}
+						})
 						_$this.PayType.forEach((_item,index)=>{
-											  if(_item===_this.itemData.PayType)
+											  if(_item===_$this.itemData.PayTypeName)
 											  {
-												  _this.indexPayType=index;
-												  _this.itemData.indexPayType=index;
+												  _$this.indexPayType=index;
+												  _$this.itemData.indexPayType=index;
 													
 											  }
 						});
@@ -906,9 +912,13 @@ export default {
     /* 修改传递参数 */
     if (e.flag === "modify") {
       this.editflag = true;
-    }
+    }else if(e.flag === "Original"){
+    	  this.editflag = true;
+    	  this.edit = false;
+    	}
     if (this.editflag) {
       this.editItem = JSON.parse(e.data);
+      this.itemData.DocEntry=this.editItem.DocEntry;
       this.getDetailData();
     }
     if(!this.editflag)

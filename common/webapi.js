@@ -23,6 +23,8 @@ module.exports = {
 	submitOrgForm: websiteUrl + '/api/Organization/Save',
 	/* 删除组织架构 */
 	deleteOrg: websiteUrl + '/api/Organization/Delete',
+	/* 获取记账公司列表 */
+	getInvCompany: websiteUrl + '/api/AccountingCompany/GetRecords',
 	/* 获取组织架构列表 */
 	getOrgList: websiteUrl + '/api/Organization/GetOrganizations',
 	/* 获取费用类型列表 */
@@ -124,5 +126,7 @@ module.exports = {
 	/* 保存打卡记录 */
 	saveWorkRecord: websiteUrl + '/api/WorkRecord/SaveEntity',
 	/* 获取今天的打卡记录 */
-	getWorkRecords: websiteUrl + '/api/WorkRecord/GetRecordsList'
+	getWorkRecords: websiteUrl + '/api/WorkRecord/GetRecordsList',
+	// 获取发票类型
+	getVatRecords: websiteUrl + '/api/Vat/GetRecords',
 }

@@ -124,9 +124,15 @@
 		},
 		methods: {
 			goDetail(item) {
-				uni.navigateTo({
-					url: "/pages/RepaymentRequest/RepaymentRequestdetail/RepaymentRequestdetail?data=" + JSON.stringify(item)
-				});
+				if(item.ApproveStatus === "Rejected"){
+					uni.navigateTo({
+						url: "/pages/RepaymentRequest/RepaymentRequestform/RepaymentRequestform?flag=modify&data=" + JSON.stringify(item)
+					});
+				}else if(item.ApproveStatus === "Approved" || item.ApproveStatus === "Pending"){
+					uni.navigateTo({
+						url: "/pages/RepaymentRequest/RepaymentRequestform/RepaymentRequestform?flag=Original&data=" + JSON.stringify(item)
+					});
+				}
 			},
 			newShowGetBorrowRequestList:async function(params){
 				this.pageIndex = parseInt(this.pageIndex) + 1;

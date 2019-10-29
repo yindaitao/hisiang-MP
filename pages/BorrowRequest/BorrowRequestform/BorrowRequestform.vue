@@ -296,13 +296,19 @@ export default {
 			},function(err){}); */
 
         /* 修改传递参数 */
-        if (e.flag === "modify") {
-            this.editflag = true;
-        }
-        if (this.editflag) {
-            this.editItem = JSON.parse(e.data);
-            this.getDetailData();
-        }
+       if (e.flag === "modify") {
+         this.editflag = true;
+       }else if(e.flag === "Original"){
+       	  this.editflag = true;
+       	  this.edit = false;
+       	}
+       if (this.editflag) {
+         this.editItem = JSON.parse(e.data);
+         this.itemData.DocEntry=this.editItem.DocEntry;
+         // 费用类型
+         this.getCostType();
+         this.getDetailData();
+       }
     },
 	computed: {
 	  startDate() {
@@ -366,9 +372,32 @@ export default {
                     console.log("看编辑");
                     console.log(ret.data.data);
                     _this.itemData = ret.data.data[0];
-                    _this.totalJine = parseFloat(_this.itemData.Amount).toFixed(
-                        2
-                    );
+					_this.itemData.PayTypeCode=_this.itemData.PayType;
+					_this.PayTypeList.forEach(inner => {
+						if (inner.Code === _this.itemData.PayTypeCode) {
+							_this.itemData.PayTypeName = inner.Name;
+						}
+					})
+					_this.PayType.forEach((_item,index)=>{
+										  if(_item===_this.itemData.PayTypeName)
+										  {
+											  _this.indexPayType=index;
+											  _this.itemData.indexPayType=index;
+												
+										  }
+					});
+					_this.itemData.CostTypeCode = _this.itemData.CostTypeCode;
+					_this.itemData.CostTypeName = _this.itemData.CostTypeName;
+					_this.CostType.forEach((_item,index)=>{
+										  if(_item===_this.itemData.CostTypeName)
+										  {
+											  _this.indexCostType=index;
+											  _this.itemData.indexCostType=index;
+												
+										  }
+					});
+                   _this.itemData.Amount = parseFloat(_this.itemData.Amount).toFixed(2);
+				   _this.totalJine = parseFloat(_this.itemData.Amount).toFixed(2);
                     _this.BaseBorrowType.forEach((_item, index) => {
                         if (
                             _item.BorrowTypeCode ===
@@ -382,12 +411,6 @@ export default {
                     _this.itemData.bigjine = _this.$mbservices.smalltoBIG(
                         _this.itemData.Amount
                     );
-                    _this.PayType.forEach((_item, index) => {
-                        if (_item === _this.itemData.PayType) {
-                            _this.indexPayType = index;
-                            _this.itemData.indexPayType = index;
-                        }
-                    });
                     setTimeout(() => {
                         uni.hideLoading();
                     }, 1000);
