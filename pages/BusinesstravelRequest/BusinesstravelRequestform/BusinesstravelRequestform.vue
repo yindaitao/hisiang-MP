@@ -6,7 +6,7 @@
 				<text class="icon-redpacket text-orange"></text>
 				总金额:{{totalJine}}(元)
 			</view>
-			<view class="action">
+			<view class="action" v-if='edit === false'>
 				<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
 					<text class="icon-upload"></text>提交
 				</button>
@@ -30,7 +30,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal">
+		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioChange">
 					<view class="cu-list menu text-left">
@@ -44,7 +44,7 @@
 				</radio-group>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalNameType=='RadioModalType'?'show':''" @tap="hideModalType">
+		<view class="cu-modal" :class="modalNameType=='RadioModalType'?'show':''" @tap="hideModalType" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioTypeChange">
 					<view class="cu-list menu text-left">
@@ -58,7 +58,7 @@
 				</radio-group>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalNameTraffic=='RadioModalTraffic'?'show':''" @tap="hideModalTraffic">
+		<view class="cu-modal" :class="modalNameTraffic=='RadioModalTraffic'?'show':''" @tap="hideModalTraffic" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioTrafficChange">
 					<view class="cu-list menu text-left">
@@ -86,39 +86,39 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">支付方式</view>
-					<picker @change="bindPickerChange1" :value="indexPayType" :range="PayType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexPayType" :range="PayType">
 						<view class="picker">{{PayType[indexPayType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">费用类型</view>
-					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange2" :value="indexCostType" :range="CostType">
 						<view class="picker">{{CostType[indexCostType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">开户名</view>
-					<input placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)" :value="itemData.AccountName">
+					<input :disabled="edit?true:false" placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)" :value="itemData.AccountName">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">账户(卡号)</view>
-					<input placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
+					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">受理单位(银行)</view>
-					<input placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
+					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">出差天数</view>
-					<input placeholder="出差天数" name="input" style="text-align: right;" @input="inputNumDays($event)" :value="itemData.Days">
+					<input :disabled="edit?true:false" placeholder="出差天数" name="input" style="text-align: right;" @input="inputNumDays($event)" :value="itemData.Days">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">出差补贴金额</view>
-					<input placeholder="出差补贴金额" name="input" style="text-align: right;" @input="inputNumAllowanceAmount($event)"
+					<input :disabled="edit?true:false" placeholder="出差补贴金额" name="input" style="text-align: right;" @input="inputNumAllowanceAmount($event)"
 					 :value="itemData.AllowanceAmount">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
@@ -126,7 +126,7 @@
 					<view class="title">出差事由</view>
 				</view>
 				<view class="cu-form-group">
-					<textarea @input="textareaInputReasons" :class="itemData.Reasons?'value':''" maxlength="-1" :disabled="modalName!=null"
+					<textarea :disabled="modalName!=null" @input="textareaInputReasons" :class="itemData.Reasons?'value':''" maxlength="-1"
 					 placeholder-class="placeholder" data-placeholder="在此输入出差事由" :value="itemData.Reasons" />
 					</view>
 				<view class="cu-form-group">
@@ -146,7 +146,7 @@
 							<text class="cu-tag round bg-blue light" data-target="RadioModalType" @tap="showModalType(item.id,$event)">{{item.DetailTypeName}}</text>
 							<text v-if="false" class="icon-roundclosefill text-orange"></text>
 						</view>
-						<view class="action" v-if="formList.length!=1">
+						<view class="action" v-if="formList.length!=1 && edit === false">
 							<button class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
 								<text class="icon-roundclosefill" style="font-size: 2em;color:red;"></text>
 							</button>
@@ -154,7 +154,7 @@
 					</view>
 					<view class="cu-form-group">
 						<view class="title">报销金额</view>
-						<input placeholder="请输入报销金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
+						<input :disabled="edit?true:false" placeholder="请输入报销金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
 						 :value="item.jine">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
@@ -166,35 +166,46 @@
 					</view>
 					<view class="cu-form-group" readonly>
 						<view class="title">报销日期</view>
-						<text class="cu-tag round bg-gray light">{{formatDate(time)}}</text>
+						<text class="cu-tag round bg-gray light">{{item.itemDate}}</text>
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group">
 						<view class="title">报销类型</view>
-						<picker v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange" :value="item.itemOptionIndex" :range="arrayType">
+						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange(item,$event)" :value="item.itemOptionIndex" :range="arrayType">
 							<view class="picker">{{arrayType[item.itemOptionIndex]}}</view>
+						</picker>
+					</view>
+					<view class="cu-form-group">
+						<view class="title">单据张数</view>
+						<input :disabled="edit?true:false" placeholder="单据张数" name="input" style="text-align: right;" @input="inputNumCount1(item,$event)" :value="item.Count1">
+						<text v-if="false" class="icon-roundclosefill text-orange"></text>
+					</view>
+					<view class="cu-form-group">
+						<view class="title">发票类型</view>
+						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange4(item,$event)" :value="item.indexVatType" :range="VatType">
+							<view class="picker">{{VatType[item.indexVatType]}}</view>
 						</picker>
 					</view>
 					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
 						<view class="title">出发日期</view>
-						<picker mode="date" :value="item.DocDateStart" :start="startDate" :end="endDate" @change="bindDateStartChange(item,$event)">
+						<picker :disabled="edit?true:false" mode="date" :value="item.DocDateStart" :start="startDate" :end="endDate" @change="bindDateStartChange(item,$event)">
 							<view class="picker">{{item.DocDateStart}}</view>
 						</picker>
 					</view>
 					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
 						<view class="title">出发地点</view>
-						<input placeholder="出发地点" name="input" style="text-align: right;" @input="inputNumStartPlace(item,$event)" :value="item.StartPlace">
+						<input :disabled="edit?true:false" placeholder="出发地点" name="input" style="text-align: right;" @input="inputNumStartPlace(item,$event)" :value="item.StartPlace">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
 						<view class="title">到达日期</view>
-						<picker mode="date" :value="item.DocDateArrive" :start="startDate" :end="endDate" @change="bindDateArriveChange(item,$event)">
+						<picker :disabled="edit?true:false" mode="date" :value="item.DocDateArrive" :start="startDate" :end="endDate" @change="bindDateArriveChange(item,$event)">
 							<view class="picker">{{item.DocDateArrive}}</view>
 						</picker>
 					</view>
 					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
 						<view class="title">到达地点</view>
-						<input placeholder="到达地点" name="input" style="text-align: right;" @input="inputNumArrivePlace(item,$event)" :value="item.ArrivePlace">
+						<input :disabled="edit?true:false" placeholder="到达地点" name="input" style="text-align: right;" @input="inputNumArrivePlace(item,$event)" :value="item.ArrivePlace">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
@@ -207,7 +218,7 @@
 					</view>
 					<view class="cu-form-group">
 						<textarea @input="textareaInput(item,$event)" :class="item.Remarks1?'value':''"
-						 maxlength="-1" :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入明细备注" :value="item.Remarks1" />
+						 maxlength="-1" placeholder-class="placeholder" data-placeholder="在此输入明细备注" :value="item.Remarks1" />
 						</view>
           <!-- 图片开始 -->
           <view class="cu-bar bg-white">
@@ -217,11 +228,11 @@
           <view class="cu-form-group">
             <view class="grid col-4 grid-square flex-sub">
               <view class="padding-xs bg-img" :style="'background-image:url(' + item.imageList[index1].url +')'" v-for="(_item,index1) in item.imageList" :key="index1" @tap="previewImage(item,$event)" :data-url="item.imageList[index1].url">
-                <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1">
+                <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1" v-if="edit === false">
                   <text class="icon-delete"></text>
                 </view>
               </view>
-              <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9">
+              <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9 && edit === false">
                 <text class="icon-cameraadd"></text>
               </view>
             </view>
@@ -260,6 +271,8 @@ export default {
 			invCompanys:[],
 			CostType:["请选择"],
 			CostTypeList: [],
+			VatType:[],
+			VatTypeList:[],
 			DetailTypeList:[{
 				Code: "Traffic",
 				Name:"交通费",
@@ -332,6 +345,20 @@ export default {
 				Code:"OtherBankPay",
 				Name:"其他银行汇款",
 			}],
+			ReimbursementNameList:["请选择","私人费用","部门费用","内部往来费用"],
+			indexReimbursementType:0,
+			ReimbursementTypeList:[{
+				Code:"Person",
+				Name:"私人费用",
+			},
+			{
+				Code:"Other",
+				Name:"部门费用",
+			},
+			{
+				Code:"Internal",
+				Name:"内部往来费用",
+			}],
       modalName: null,
 	  modalNameType: null,
 	  modalNameTraffic:null,
@@ -350,8 +377,28 @@ export default {
       sizeType: ["压缩", "原图", "压缩或原图"],
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-	  itemData:{DocEntry:"",indexPayType:0,AccountNumber:"",AcceptingUnit:"",PayTypeCode:"",PayTypeName:"请选择支付方式",Remarks:"","InvCompanyId":"","InvCompanyName":"请选择",
-			CostType: [],CostTypeCode:"",CostTypeName:"",Reasons:"",Days:"",AllowanceAmount:"",AccountName:"",},
+	  itemData:{
+		  DocEntry:"",
+		  indexPayType:0,
+		  AccountNumber:"",
+		  AcceptingUnit:"",
+		  PayTypeCode:"",
+		  PayTypeName:"请选择支付方式",
+		  Remarks:"",
+		  "InvCompanyId":"",
+		  "InvCompanyName":"请选择",
+			CostType: [],
+			CostTypeCode:"",
+			CostTypeName:"",
+			Reasons:"",
+			Days:"",
+			AllowanceAmount:"",
+			AccountName:"",
+			ReimbursementType:"",
+			ReimbursementTypeCode1:"",
+			ReimbursementTypeName1:"请选择",
+			indexReimbursementType:0,
+			ShareType: "",},
       formList: [
         {
           id: 1,
@@ -366,18 +413,23 @@ export default {
 		  DetailTypeName:"请选择明细类型",
 		  TrafficType:"",
 		  TrafficTypeName:"请选择交通工具",
-          itemDate: "请选择",
+          itemDate: this.getDate({format: true}),
           itemOptionIndex: 0,
           itemOptionText: "",
           itemReason: "",
           imageList: [],
-          bigjine: ""
+          bigjine: "",
+		  Count1: 1,
+		  VatTypeCode:"",
+		  VatTypeName:"请选择",
+		  indexVatType: 0,
         }
       ],
       editEntitysList: [],
       totalJine: "0.00",
       editflag: false,
       editItem: {},
+	  edit:false,
       isDoSteps: false,
 	  DetailId:0,
 	  TrafficId:0,
@@ -422,17 +474,11 @@ export default {
 				      Operation: "EQUAL",
 				      ConditionValue: "Y",
 				      Relationship: "AND"
-				    },
-						{
-							FieldName: "OrganizationType",
-							Operation: "EQUAL",
-							ConditionValue: "B",
-							Relationship: "AND"
-						}
+				    }
 				  ]
 				}
 			};
-			this.$mbservices.Request(this.$webapi.getOrgList,"POST",ajaxJSON,res=>{
+			this.$mbservices.Request(this.$webapi.getInvCompany,"POST",ajaxJSON,res=>{
 				if(res.data.RecordCount>0)
 				{
 					this.invCompanys=res.data.data;
@@ -445,9 +491,9 @@ export default {
 			this.radio = e.detail.value;
 			this.itemData.InvCompanyId=e.detail.value;
 			this.invCompanys.forEach(item=>{
-				if(item.Code===e.detail.value)
+				if(item.ACCode===e.detail.value)
 				{
-					this.itemData.InvCompanyName=item.Name;
+					this.itemData.InvCompanyName=item.ACName;
 				}
 			})
 			this.modalName = null;
@@ -607,10 +653,13 @@ export default {
 			  TrafficType: _item.TrafficType,
 			  DetailType: _item.DetailType,
 			  Amount: parseFloat(_item.jine).toFixed(2),
+			  Count: _item.Count1,
 			  Imgs: path,
 			  DocDate: _this.formatDate(),
 			  ReimbursementTypeCode: "JTF",
 			  ReimbursementTypeName: "交通费",
+			  VatCode: _item.VatTypeCode,
+			  VatName: _item.VatTypeName,
 			  Canceled: "N",
 			  Closed: "N",
 			  LineStatus: "O",
@@ -628,11 +677,14 @@ export default {
 			  TrafficType: _item.TrafficType,
 			  DetailType: _item.DetailType,
 			  Amount: parseFloat(_item.jine).toFixed(2),
+			  Count: _item.Count1,
 			  Imgs: path,
 			  DocDate: _this.formatDate(),
 			  ReimbursementTypeCode:
 			    _this.resourceArray[_item.itemOptionIndex].ReimbursementTypeCode,
 			  ReimbursementTypeName: _this.arrayType[_item.itemOptionIndex],
+			  VatCode: _item.VatTypeCode,
+			  VatName: _item.VatTypeName,
 			  Canceled: "N",
 			  Closed: "N",
 			  LineStatus: "O",
@@ -688,6 +740,8 @@ export default {
 				_this.editEntitysList[0].Reasons=_this.itemData.Reasons;
 				_this.editEntitysList[0].Days=_this.itemData.Days;
 				_this.editEntitysList[0].AllowanceAmount=_this.itemData.AllowanceAmount;
+				_this.editEntitysList[0].ReimbursementType = _this.itemData.ReimbursementTypeCode1;
+				_this.editEntitysList[0].ShareType = _this.itemData.ShareType;
         _this.editEntitysList[0].UIStatus = "Modify";
         ajaxJSON = _this.editEntitysList[0];
       } else {
@@ -714,7 +768,7 @@ export default {
 					AccountCode: _this.itemData.AccountNumber,
 					 Bank: _this.itemData.AcceptingUnit,
 					 AccountName: _this.itemData.AccountName,
-          ReimbursementTypeID: "",
+          ReimbursementType: _this.itemData.ReimbursementTypeCode1,
 		  InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  InvOrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 		  CostTypeCode: _this.itemData.CostTypeCode,
@@ -809,7 +863,11 @@ export default {
         itemOptionText: this.arrayType[0],
         itemReason: "",
         imageList: [],
-        bigjine: ""
+        bigjine: "",
+		Count1: 1,
+		VatTypeCode:"",
+		VatTypeName:"请选择",
+		indexVatType: 0,
       });
     },
     deleteOption(e) {
@@ -835,14 +893,15 @@ export default {
       });
       this.totalJine = _cache;
     },
-    bindPickerChange: function(e) {
-      this.indexType = e.target.value;
-      this.formList[parseInt(e.target.id) - 1].itemOptionIndex = parseInt(
-        e.target.value
-      );
-      this.formList[parseInt(e.target.id) - 1].itemOptionText = this.arrayType[
-        parseInt(e.target.value)
-      ];
+    bindPickerChange: function(item,e) {
+		var _this = this;
+      item.indexType = e.target.value;
+     for(var i in _this.resourceArray){
+     	if(_this.arrayType[item.indexType] === _this.resourceArray[i].ReimbursementTypeName){
+     		item.itemOptionIndex = _this.resourceArray[i].ReimbursementTypeCode;
+     		item.itemOptionText = _this.arrayType[item.indexType];
+     	}
+     }
     },
 	bindPickerChange1: function(e) {
 		this.indexPayType=e.target.value;
@@ -863,6 +922,17 @@ export default {
 				if(this.CostType[this.indexCostType] === this.CostTypeList[i].Name){
 					this.itemData.CostTypeCode = this.CostTypeList[i].Code;
 					this.itemData.CostTypeName = this.CostType[this.indexCostType];
+				}
+			}
+		},
+		bindPickerChange4: function(item,e) {
+			console.log(e)
+			var _this = this;
+			item.indexVatType = e.target.value;
+			for(var i in _this.VatTypeList){
+				if(_this.VatType[this.indexVatType] === _this.VatTypeList[i].Name){
+					item.VatTypeCode = _this.VatTypeList[i].Code;
+					item.VatTypeName = _this.VatType[item.indexVatType];
 				}
 			}
 		},
@@ -899,6 +969,34 @@ export default {
 				
 			},err=>{})
 		},
+		getVatRecords:async function(){
+				var ajaxJSON={
+					pageIndex: 1,
+					rowsPerPage: "10000",
+					type: "Initialize",
+					Parameter: {
+					  LoadChildren: "NoLoad",
+					  Conditions: [
+					    {
+					      FieldName: "Activated",
+					      Operation: "EQUAL",
+					      ConditionValue: "Y",
+					      Relationship: "AND"
+					    }
+					  ]
+					}
+				};
+				this.$mbservices.Request(this.$webapi.getVatRecords,"POST",ajaxJSON,res=>{
+					if(res.data.RecordCount>0)
+					{
+						res.data.data.forEach(item =>{
+							this.VatType.push(item.Name)
+							this.VatTypeList.push(item)
+						})
+					}
+					
+				},err=>{})
+			},
     bindDateStartChange: function(itemDate, e) {
       itemDate.DocDateStart = e.target.value;
     },
@@ -1068,13 +1166,23 @@ export default {
     },
     getArrayIndex(keyValue) {
       var index = 0;
-      this.resourceArray.forEach((item, _indx) => {
+	  var _this = this;
+      _this.resourceArray.forEach((item, _indx) => {
         if (item.ReimbursementTypeName === keyValue) {
           index = _indx;
         }
       });
       return index;
     },
+	getVatIndex(keyValue) {
+	  var index = 0;
+	  this.VatTypeList.forEach((item, _indx) => {
+	    if (item.Name === keyValue) {
+	      index = _indx;
+	    }
+	  });
+	  return index;
+	},
     getDetailData: function() {
       this.pageIndex = parseInt(this.pageIndex) + 1;
       var ajaxJSON = {
@@ -1098,7 +1206,7 @@ export default {
       });
       var _this = this;
       this.$mbservices.Request(
-        this.$webapi.getReimList,
+        this.$webapi.getBusinesstravelReimList,
         "POST",
         ajaxJSON,
         function(ret) {
@@ -1109,6 +1217,7 @@ export default {
             return false;
           }
           //_this.formList = [];
+		  console.log(ret.data.data);
           _this.editEntitysList = [];
           _this.editEntitysList = ret.data.data;
 					var _$this=_this;
@@ -1123,19 +1232,45 @@ export default {
               item.AApproveStatus = "已拒绝";
             }
             item.Amount = parseFloat(item.Amount).toFixed(2);
-						//_$this.itemData.DocEntry=item.Amount;
-						_$this.itemData.PayTypeCode=item.PayType;
-						_$this.itemData.AccountCode=item.AccountCode;
-						_$this.itemData.Bank=item.Bank;
-						_$this.itemData.Remarks=item.Remarks;
-						_$this.PayType.forEach((_item,index)=>{
-											  if(_item===_this.itemData.PayTypeName)
-											  {
-												  _this.indexPayType=index;
-												  _this.itemData.indexPayType=index;
-													
-											  }
-						});
+			_$this.itemData.AccountName = item.AccountName;
+			_$this.itemData.PayTypeCode=item.PayType;
+			_$this.itemData.CostTypeCode=item.CostTypeCode;
+			_$this.itemData.CostTypeName=item.CostTypeName;
+			_$this.itemData.AccountCode=item.AccountCode;
+			_$this.itemData.Bank=item.Bank;
+			_$this.itemData.AllowanceAmount = item.AllowanceAmount;
+			_$this.itemData.Days = item.Days;
+			_$this.itemData.InvCompanyId = item.InvCompanyId;
+			_$this.invCompanys.forEach(item => {
+				console.log(item.ACCode);
+				console.log(_$this.itemData.InvCompanyId);
+				if(item.ACCode===_$this.itemData.InvCompanyId)
+				{
+					_$this.itemData.InvCompanyName=item.ACName;
+				}
+			})
+			_$this.itemData.Reasons=item.Reasons;
+			_$this.itemData.Remarks=item.Remarks;
+			_$this.PayTypeList.forEach(inner => {
+				if (inner.Code === _$this.itemData.PayTypeCode) {
+					_$this.itemData.PayTypeName = inner.Name;
+				}
+			})
+			_$this.PayType.forEach((_item,index)=>{
+								  if(_item===_$this.itemData.PayTypeName)
+								  {
+									  _$this.indexPayType=index;
+									  _$this.itemData.indexPayType=index;
+										
+								  }
+			});
+			_$this.CostType.forEach((__item,__index)=>{
+								  if(__item===_$this.itemData.CostTypeName)
+								  {
+									  _$this.itemData.indexCostType=__index;
+									  _$this.indexCostType=__index;
+								  }
+			});
             _this.formList = [];
             _this.totalJine = parseFloat(item.Amount).toFixed(2);
             item.BusinessTravelRequestLines.forEach((_item, _indx) => {
@@ -1154,13 +1289,29 @@ export default {
                   deleteurl: _item_
                 });
               });
+			  _$this.DetailTypeList.forEach(inner => {
+			  	if (inner.Code === _item.DetailType) {
+			  		_item.DetailTypeName = inner.Name;
+			  	}
+			  })
+			  _$this.TrafficTypeList.forEach(inner => {
+			  	if (inner.Code === _item.TrafficType) {
+			  		_item.TrafficTypeName = inner.Name;
+			  	}
+			  })
               /* _item.Amount = parseFloat(item.Amount).toFixed(2); */
               _this.formList.push({
                 id: parseInt(_indx) + 1,
                 DocEntry: _item.DocEntry,
                 name: "",
+				DocDateStart: _item.DocDateStart,
+				DocDateArrive:_item.DocDateArrive,
+				StartPlace: _item.StartPlace,
+				ArrivePlace: _item.ArrivePlace,
 				DetailType: _item.DetailType,
+				DetailTypeName: _item.DetailTypeName,
 				TrafficType: _item.TrafficType,
+				TrafficTypeName: _item.TrafficTypeName,
                 jine: parseFloat(_item.Amount)
                   .toFixed(2)
                   .toString(),
@@ -1173,10 +1324,16 @@ export default {
                 imageList: _item.pathArr,
                 bigjine: _this.$mbservices.smalltoBIG(
                   parseFloat(_item.Amount).toFixed(2)
-                )
+                ),
+				Count1: _item.Count,
+				VatTypeCode: _item.VatCode,
+				VatTypeName: _item.VatName,
+				indexVatType: _this.getVatIndex(
+                  _item.VatName
+                ),
+				Remarks1:  _item.Remarks,
               });
             });
-            //_this.formList.push(item);
           });
           setTimeout(() => {
             uni.hideLoading();
@@ -1207,6 +1364,9 @@ export default {
 		inputNumDays(event){
 			this.itemData.Days=event.detail.value;
 		},
+		inputNumCount1(item,event){
+			item.Count1=event.detail.value;
+		},
 		inputNumAllowanceAmount(event){
 			this.itemData.AllowanceAmount=event.detail.value;
 		},
@@ -1233,10 +1393,60 @@ export default {
     /* 修改传递参数 */
     if (e.flag === "modify") {
       this.editflag = true;
-    }
+	  this.edit = false;
+    }else if(e.flag === "Original"){
+    	  this.editflag = true;
+    	  this.edit = true;
+    	}else if(e.flag === "tasklist"){
+			 this.editflag = true;
+			 this.edit = true;
+		}
     if (this.editflag) {
       this.editItem = JSON.parse(e.data);
-      this.getDetailData();
+      this.itemData.DocEntry=this.editItem.DocEntry;
+      // 费用类型
+      this.getCostType();
+	  /* 初始化报销类型 */
+	  var ajaxJSON = {
+	    pageIndex: 0,
+	    rowsPerPage: "10000",
+	    type: "Initialize",
+	    Parameter: {
+	      LoadChildren: "NoLoad",
+	      Conditions: [
+	  				{ FieldName: "Activated", Operation: "EQUAL", ConditionValue: "Y", Relationship: "AND" },{ FieldName: "DataType", Operation: "EQUAL", ConditionValue: "P", Relationship: "AND" }
+	  			]
+	    }
+	  };
+	  var _this = this;
+	  this.$mbservices.Request(
+	    this.$webapi.getRemTypeList,
+	    "POST",
+	    ajaxJSON,
+	    function(success) {
+	      if (success.statusCode === 200) {
+	        _this.arrayType = [];
+	        _this.resourceArray = [];
+	        success.data.data.forEach(_item => {
+	          _this.arrayType.push(_item.ReimbursementTypeName);
+	          _this.resourceArray.push(_item);
+	        });
+	      }
+	    },
+	    function(err) {
+	      uni.showToast({
+	        title: "获取报销类型失败",
+	        icon: "none"
+	      });
+	    }
+	  );
+	  uni.showLoading({
+	    title: "拼命加载中..."
+	  });
+	  var _this = this;
+	  setTimeout(function(){
+	  		  _this.getDetailData();
+	  }, 1000);
     }
     if(!this.editflag)
 		{
@@ -1249,6 +1459,8 @@ export default {
 		this.getInvCompany();
 		// 费用类型
 		this.getCostType();
+		// 费用类型
+		this.getVatRecords();
     /* 初始化报销类型 */
     var ajaxJSON = {
       pageIndex: 0,

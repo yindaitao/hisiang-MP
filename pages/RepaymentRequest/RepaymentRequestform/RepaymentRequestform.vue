@@ -6,7 +6,7 @@
 				<text class="icon-redpacket text-orange"></text>
 				还款金额:{{totalJine}}(元)
 			</view>
-			<view class="action">
+			<view class="action" v-if="edit === false">
 				<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
 					<text class="icon-upload"></text>提交
 				</button>
@@ -30,7 +30,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal" style="margin-top: 75px;">
+		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal" style="margin-top: 75px;" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioChange">
 					<view class="cu-list menu text-left">
@@ -77,26 +77,26 @@
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
-					<view class="title">支付方式</view>
-					<picker @change="bindPickerChange1" :value="indexPayType" :range="PayType">
+					<view class="title">还款方式</view>
+					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexPayType" :range="PayType">
 						<view class="picker">{{PayType[indexPayType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">账户(卡号)</view>
-					<input placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
+					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">受理单位(银行)</view>
-					<input placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
+					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">备注</view>
 				</view>
 				<view class="cu-form-group">
-					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
+					<textarea :disabled="modalName!=null" @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1"
 					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
 					</view>
 				<block v-for="(item,index) in formList" :key="index">
@@ -105,7 +105,7 @@
 							<text class="icon-title text-orange"></text>
 							还款明细({{item.id}})
 						</view>
-						<view class="action" v-if="formList.length!=1">
+						<view class="action" v-if="formList.length!=1 && edit === false">
 							<button class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
 								<text class="icon-roundclosefill" style="font-size: 2em;color:red;"></text>
 							</button>
@@ -118,7 +118,7 @@
 					</view>
 					<view class="cu-form-group">
 						<view class="title">还款金额</view>
-						<input placeholder="请输入还款金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
+						<input :disabled="edit?true:false" placeholder="请输入还款金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
 						 :value="item.jine">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
@@ -130,21 +130,21 @@
 					</view>
 					<view class="cu-form-group" readonly>
 						<view class="title">借款单号</view>
-						<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1">{{itemData.BaseEntry}}</text>
+						<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1(item.id,$event)">{{item.BaseEntry}}</text>
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group">
 						<view class="title">借款日期</view>
 						<view class="action">
-							<view class="cu-tag round bg-gray light">{{itemData.BorrowDate}}</view>
+							<view class="cu-tag round bg-gray light">{{item.BorrowDate}}</view>
 						</view>
 					</view>
 					<view class="cu-form-group">
 						<view class="title">借款备注</view>
 					</view>
 					<view class="cu-form-group" readonly>
-						<textarea :disabled="true" :class="itemData.BorrowReason?'value':''"
-						 maxlength="-1" placeholder-class="placeholder" :value="itemData.BorrowReason" />
+						<textarea :disabled="true" :class="item.BorrowReason?'value':''"
+						 maxlength="-1" placeholder-class="placeholder" :value="item.BorrowReason" />
 					</view>
           <!-- 图片开始 -->
           <view class="cu-bar bg-white">
@@ -154,18 +154,18 @@
           <view class="cu-form-group">
             <view class="grid col-4 grid-square flex-sub">
               <view class="padding-xs bg-img" :style="'background-image:url(' + item.imageList[index1].url +')'" v-for="(_item,index1) in item.imageList" :key="index1" @tap="previewImage(item,$event)" :data-url="item.imageList[index1].url">
-                <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1">
+                <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1" v-if="edit === false">
                   <text class="icon-delete"></text>
                 </view>
               </view>
-              <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9">
+              <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9 && edit === false">
                 <text class="icon-cameraadd"></text>
               </view>
             </view>
           </view>
           <!-- 图片结束 -->
         </block>
-        <uni-view class="uni-card-link margin-top" style="text-align: center;min-height: 100upx;top: 10px;">
+        <uni-view class="uni-card-link margin-top" style="text-align: center;min-height: 100upx;top: 10px;" v-if="edit === false">
           <i class="icon-add" @tap="addOption">增加&nbsp;&nbsp;还款明细</i>
         </uni-view>
       </form>
@@ -187,39 +187,18 @@ export default {
   },
   data() {
     return {
-			PayType:["请选择支付方式","转账给申请人","转账给第三人(需备注)","银行转账(需备注)","现金支付给申请人","按发票汇款","银行托收","申请支票",
-			"其他现金支付","其他银行汇款"],
+			PayType:["请选择还款方式","银行转账","业务成本支出","现金还款"],
 			indexPayType:0,
 			PayTypeList:[{
-				Code:"ToRequestUser",
-				Name:"转账给申请人",
+				Code:"Bank",
+				Name:"银行转账",
 			},
 			{
-				Code:"ToThirdUser",
-				Name:"转账给第三人(需备注)",
-			},
-			{
-				Code:"BankToUser",
-				Name:"银行转账(需备注)",
-			},
-			{
-				Code:"MoneyToUser",
-				Name:"现金支付给申请人",
+				Code:"Business",
+				Name:"业务成本支出",
 			},{
-				Code:"ToUserByInvonice",
-				Name:"按发票汇款",
-			},{
-				Code:"ToBank",
-				Name:"银行托收",
-			},{
-				Code:"RequestCheque",
-				Name:"申请支票",
-			},{
-				Code:"OtherMoneyPay",
-				Name:"其他现金支付",
-			},{
-				Code:"OtherBankPay",
-				Name:"其他银行汇款",
+				Code:"Cash",
+				Name:"现金还款",
 			}],
 			radio: 'radio1',
       modalName: null,
@@ -238,13 +217,15 @@ export default {
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
 			itemData:{DocEntry:"",indexPayType:0,AccountNumber:"",AcceptingUnit:"",PayTypeCode:"",PayTypeName:"请选择支付方式",Remarks:"",
-			BaseEntry:"请选择",BorrowDate:"","TotalAmount":""},
+			},
       formList: [
         {
           id: 1,
           name: "张三",
           jine: "",
-          BorrowDate: "",
+		  BaseEntry:"请选择",
+		  BorrowDate:"",
+		  TotalAmount:"",
 		  BorrowReason:"",
           itemOptionIndex: 0,
           itemOptionText: "",
@@ -257,8 +238,10 @@ export default {
       totalJine: "0.00",
       editflag: false,
       editItem: {},
+	  edit:false,
       isDoSteps: false,
 	  BorrowRequestList:[],
+	  BorrowId:0,
     };
   },
   methods: {
@@ -279,11 +262,12 @@ export default {
 	                  return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
 	              },
 		selectOption(e){},
-		showModal1(e) {
+		showModal1(ID,e) {
+			this.BorrowId = ID;
 			this.modalName = e.currentTarget.dataset.target;
 		},
     showModal(e) {
-			if(this.itemData.PayType==="银行转账")
+			if(this.itemData.PayTypeCode==="BankToUser")
 			{
 				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
 				{
@@ -302,7 +286,7 @@ export default {
 					return false;
 				}
 			}
-			if(this.itemData.PayType!=="银行转账"&&this.itemData.PayType!=="现金支付")
+			if(this.itemData.PayTypeCode!=="BankToUser"&&this.itemData.PayTypeCode!=="MoneyToUser")
 			{
 				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
 				{
@@ -337,16 +321,18 @@ export default {
     },
 	RadioChange(e) {
 		this.radio = e.detail.value;
+		this.formList[this.BorrowId-1].BaseEntry = "";
+		this.formList[this.BorrowId-1].BaseEntry=e.detail.value;
 		this.BorrowRequestList.forEach(item=>{
 			if(item.DocEntry.toString()===e.detail.value.toString())
 			{
-				this.itemData.BaseEntry=item.DocEntry;
-				this.itemData.BorrowDate = item.CreateDate;
-				this.itemData.BorrowReason = item.Remarks;
-				this.itemData.TotalAmount = item.Amount;
+				this.formList[this.BorrowId-1].BorrowDate = item.CreateDate;
+				this.formList[this.BorrowId-1].BorrowReason = item.Remarks;
+				this.formList[this.BorrowId-1].TotalAmount = item.Amount;
 			}
 		})
 		this.modalName = null;
+		this.radio = "";
 	},
     onlySave() {
       this.modalName = null;
@@ -381,15 +367,15 @@ export default {
         var lineItem = {
 		  DocEntry: this.itemData.DocEntry,
           LineNum: _indx,
-		  BaseEntry: this.itemData.BaseEntry,
+		  BaseEntry: _item.BaseEntry,
 		  BaseType: "Borrow",
-		  BorrowDate: this.itemData.BorrowDate,
-		  BorrowReason: this.itemData.BorrowReason,
+		  BorrowDate: _item.BorrowDate,
+		  BorrowReason: _item.BorrowReason,
           ObjectType: "RepaymentRequest",
           Remarks: null,
           Amount: parseFloat(_item.jine).toFixed(2),
           Imgs: path,
-		  TotalAmount: this.itemData.TotalAmount,
+		  TotalAmount: _item.TotalAmount,
           Canceled: "N",
           Closed: "N",
           LineStatus: "O",
@@ -402,7 +388,7 @@ export default {
       });
       var ajaxJSON = {};
       if (_this.editflag) {
-        _this.editEntitysList[0].ReimbursementRequestLines.forEach(
+        _this.editEntitysList[0].RepaymentRequestLines.forEach(
           _calcuItem => {
             var _ishave = false;
             _lines.forEach(__option => {
@@ -411,7 +397,10 @@ export default {
                 _calcuItem.Amount = __option.Amount;
                 (_calcuItem.Remarks = __option.Remarks),
                   (_calcuItem.Imgs = __option.Imgs);
-                _calcuItem.DocDate = __option.DocDate;
+                _calcuItem.BorrowReason = __option.BorrowReason;
+				_calcuItem.BorrowDate = __option.BorrowDate;
+				_calcuItem.BaseEntry = __option.BaseEntry;
+				_calcuItem.TotalAmount = __option.TotalAmount;
                 _ishave = true;
               }
             });
@@ -425,7 +414,7 @@ export default {
           (_this.editEntitysList[0].Amount = parseFloat(
             _this.totalJine
           ).toFixed(2));
-				_this.editEntitysList[0].RePayType=_this.itemData.PayType;
+				_this.editEntitysList[0].RePayType=_this.itemData.PayTypeCode;
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
 				_this.editEntitysList[0].InvCompanyId=uni.getStorageSync("JSUserInfo").CompanyId;
 				_this.editEntitysList[0].InvOrganizationCode=uni.getStorageSync("JSUserInfo").OrganizationCode;
@@ -445,13 +434,13 @@ export default {
           Amount: parseFloat(_this.totalJine).toFixed(2),
           Attachment: "",
           Imgs: "",
-          DocDate: this.formatDate(this.time),   //还款日期
+          DocDate: this.formatDate(this.time), 
           OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
-					CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
-					RePayType:_this.itemData.PayType,
-					InvCompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
-					InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
-					InvOrganizationName:uni.getStorageSync("JSUserInfo").OrganizationName,
+		  CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+		  RePayType:_this.itemData.PayTypeCode,
+		  InvCompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+		  InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
+		  InvOrganizationName:uni.getStorageSync("JSUserInfo").OrganizationName,
 		  RepaymentRequestLines: _lines,
           UIStatus: "New"
         };
@@ -563,7 +552,7 @@ export default {
 		);
 	},
     addOption(e) {
-      this.formList.push({
+      this.formList.push({ 
         id: this.formList.length + 1,
         name: "",
         jine: "",
@@ -571,6 +560,10 @@ export default {
         itemOptionIndex: 0,
         itemOptionText: this.arrayType[0],
         itemReason: "",
+		BaseEntry:"请选择",
+		BorrowDate:"",
+		TotalAmount:"",
+		BorrowReason:"",
         imageList: [],
         bigjine: ""
       });
@@ -610,10 +603,12 @@ export default {
 		bindPickerChange1: function(e) {
 			this.indexPayType=e.target.value;
 			this.itemData.indexPayType=e.target.value;
-			this.itemData.PayType=this.PayType[this.indexPayType];
-			
-			if (this.PayType[this.indexPayType] != "银行转账") {this.itemData.AcceptingUnit=this.PayType[this.indexPayType];}
-		    else {this.itemData.AcceptingUnit="";}
+			for(var i in this.PayTypeList){
+				if(this.PayType[this.indexPayType] === this.PayTypeList[i].Name){
+					this.itemData.PayTypeCode = this.PayTypeList[i].Code;
+					this.itemData.PayTypeName = this.PayType[this.indexPayType];
+				}
+			}
 		},
     bindDateChange: function(item, e) {
       item.itemDate = e.target.value;
@@ -794,7 +789,7 @@ export default {
       });
       var _this = this;
       this.$mbservices.Request(
-        this.$webapi.getReimList,
+        this.$webapi.getpaymentRequestReimList,
         "POST",
         ajaxJSON,
         function(ret) {
@@ -804,7 +799,7 @@ export default {
             });
             return false;
           }
-          //_this.formList = [];
+		  console.log(ret.data.data)
           _this.editEntitysList = [];
           _this.editEntitysList = ret.data.data;
 					var _$this=_this;
@@ -819,22 +814,26 @@ export default {
               item.AApproveStatus = "已拒绝";
             }
             item.Amount = parseFloat(item.Amount).toFixed(2);
-						//_$this.itemData.DocEntry=item.Amount;
-						_$this.itemData.PayType=item.PayType;
+						_$this.itemData.PayTypeCode=item.RePayType;
 						_$this.itemData.AccountNumber=item.AccountNumber;
 						_$this.itemData.AcceptingUnit=item.AcceptingUnit;
 						_$this.itemData.Remarks=item.Remarks;
+						_$this.PayTypeList.forEach(inner => {
+							if (inner.Code === _$this.itemData.PayTypeCode) {
+								_$this.itemData.PayTypeName = inner.Name;
+							}
+						})
 						_$this.PayType.forEach((_item,index)=>{
-											  if(_item===_this.itemData.PayType)
+											  if(_item===_$this.itemData.PayTypeName)
 											  {
-												  _this.indexPayType=index;
-												  _this.itemData.indexPayType=index;
+												  _$this.indexPayType=index;
+												  _$this.itemData.indexPayType=index;
 													
 											  }
 						});
             _this.formList = [];
             _this.totalJine = parseFloat(item.Amount).toFixed(2);
-            item.ReimbursementRequestLines.forEach((_item, _indx) => {
+            item.RepaymentRequestLines.forEach((_item, _indx) => {
 
               var _pathArr =
                 _item.Imgs != "undefined" &&
@@ -864,6 +863,10 @@ export default {
                 ),
                 itemOptionText: _item.ReimbursementTypeName,
                 itemReason: _item.Remarks,
+				BaseEntry:_item.BaseEntry,
+				BorrowDate:_item.BorrowDate,
+				TotalAmount:_item.TotalAmount,
+				BorrowReason:_item.BorrowReason,
                 imageList: _item.pathArr,
                 bigjine: _this.$mbservices.smalltoBIG(
                   parseFloat(_item.Amount).toFixed(2)
@@ -906,10 +909,24 @@ export default {
     /* 修改传递参数 */
     if (e.flag === "modify") {
       this.editflag = true;
-    }
+	  this.edit = false;
+    }else if(e.flag === "Original"){
+    	  this.editflag = true;
+    	  this.edit = true;
+    	}else if(e.flag === "tasklist"){
+			 this.editflag = true;
+			 this.edit = true;
+		}
     if (this.editflag) {
       this.editItem = JSON.parse(e.data);
-      this.getDetailData();
+      this.itemData.DocEntry=this.editItem.DocEntry;
+	  var _this = this;
+	  uni.showLoading({
+	    title: "拼命加载中..."
+	  });
+	  setTimeout(function(){
+	  		  _this.getDetailData();
+	  }, 1000);
     }
     if(!this.editflag)
 		{

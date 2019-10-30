@@ -178,9 +178,19 @@
 		},
 		methods: {
 			goDetail(item) {
-				uni.navigateTo({
-					url: "/pages/DepleteRequest/DepleteRequestdetail/DepleteRequestdetail?data=" + JSON.stringify(item)
-				});
+				if(item.Approve==='No'&&item.ApproveStatus!=='Rejected'){
+					uni.navigateTo({
+						url: "/pages/DepleteRequest/DepleteRequestform/DepleteRequestform?flag=modify&data=" + JSON.stringify(item)
+					});
+				}else if(item.ApproveStatus==='Rejected'){
+					uni.navigateTo({
+						url: "/pages/DepleteRequest/DepleteRequestform/DepleteRequestform?flag=modify&data=" + JSON.stringify(item)
+					});
+				}else if(item.ApproveStatus === "Approved" || item.ApproveStatus === "Pending"){
+					uni.navigateTo({
+						url: "/pages/DepleteRequest/DepleteRequestform/DepleteRequestform?flag=Original&data=" + JSON.stringify(item)
+					});
+				}
 			},
 			editItem(item) {
 				console.log(item);

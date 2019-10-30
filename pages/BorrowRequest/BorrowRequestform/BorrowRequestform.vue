@@ -9,7 +9,7 @@
                 <text class="icon-redpacket text-orange"></text>
                 总金额:{{totalJine}}(元)
             </view>
-            <view class="action">
+            <view class="action" v-if="edit === false">
                 <button
                     class="cu-btn round bg-blue shadow"
                     data-target="DialogModal2"
@@ -77,6 +77,7 @@
                 <view class="cu-form-group">
                     <view class="title">金额</view>
                     <input
+					:disabled="edit?true:false"
                         placeholder="支出金额"
                         name="input"
                         type="digit"
@@ -97,25 +98,26 @@
                 </view>
 				<view class="cu-form-group">
 					<view class="title">还款日期</view>
-					<picker mode="date" :value="itemData.BackDate" :start="startDate" :end="endDate" @change="bindDateChange(itemData,$event)">
+					<picker :disabled="edit?true:false" mode="date" :value="itemData.BackDate" :start="startDate" :end="endDate" @change="bindDateChange(itemData,$event)">
 						<view class="picker">{{itemData.BackDate}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">支付方式</view>
-					<picker @change="bindPickerChange1" :value="indexPayType" :range="PayType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexPayType" :range="PayType">
 						<view class="picker">{{PayType[indexPayType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">费用类型</view>
-					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange2" :value="indexCostType" :range="CostType">
 						<view class="picker">{{CostType[indexCostType]}}</view>
 					</picker>
 				</view>
                 <view class="cu-form-group">
                     <view class="title">账户(卡号)</view>
                     <input
+					:disabled="edit?true:false"
                         placeholder="账户(卡号)"
                         name="input"
                         style="text-align: right;"
@@ -130,6 +132,7 @@
                 <view class="cu-form-group">
                     <view class="title">受理单位(银行)</view>
                     <input
+					:disabled="edit?true:false"
                         placeholder="受理单位(银行)"
                         name="input"
                         style="text-align: right;"
@@ -264,7 +267,8 @@ export default {
 				"InvCompanyName":"请选择",
                 pics: [],
             },
-            editItem: {}
+            editItem: {},
+			edit:false,
         };
     },
     onLoad(e) {
@@ -296,13 +300,30 @@ export default {
 			},function(err){}); */
 
         /* 修改传递参数 */
-        if (e.flag === "modify") {
-            this.editflag = true;
-        }
-        if (this.editflag) {
-            this.editItem = JSON.parse(e.data);
-            this.getDetailData();
-        }
+       if (e.flag === "modify") {
+         this.editflag = true;
+		  this.edit = false;
+		  console.log("modify"+this.edit);
+       }else if(e.flag === "Original"){
+       	  this.editflag = true;
+       	  this.edit = true;
+       	}else if(e.flag === "tasklist"){
+			 this.editflag = true;
+			 this.edit = true;
+		}
+       if (this.editflag) {
+         this.editItem = JSON.parse(e.data);
+         this.itemData.DocEntry=this.editItem.DocEntry;
+         // 费用类型
+         this.getCostType();
+		 uni.showLoading({
+		   title: "拼命加载中..."
+		 });
+		 var _this = this;
+		 setTimeout(function(){
+		 		  _this.getDetailData();
+		 }, 1000);
+       }
     },
 	computed: {
 	  startDate() {
@@ -366,9 +387,32 @@ export default {
                     console.log("看编辑");
                     console.log(ret.data.data);
                     _this.itemData = ret.data.data[0];
-                    _this.totalJine = parseFloat(_this.itemData.Amount).toFixed(
-                        2
-                    );
+					_this.itemData.PayTypeCode=_this.itemData.PayType;
+					_this.PayTypeList.forEach(inner => {
+						if (inner.Code === _this.itemData.PayTypeCode) {
+							_this.itemData.PayTypeName = inner.Name;
+						}
+					})
+					_this.PayType.forEach((_item,index)=>{
+										  if(_item===_this.itemData.PayTypeName)
+										  {
+											  _this.indexPayType=index;
+											  _this.itemData.indexPayType=index;
+												
+										  }
+					});
+					_this.itemData.CostTypeCode = _this.itemData.CostTypeCode;
+					_this.itemData.CostTypeName = _this.itemData.CostTypeName;
+					_this.CostType.forEach((_item,index)=>{
+										  if(_item===_this.itemData.CostTypeName)
+										  {
+											  _this.indexCostType=index;
+											  _this.itemData.indexCostType=index;
+												
+										  }
+					});
+                   _this.itemData.Amount = parseFloat(_this.itemData.Amount).toFixed(2);
+				   _this.totalJine = parseFloat(_this.itemData.Amount).toFixed(2);
                     _this.BaseBorrowType.forEach((_item, index) => {
                         if (
                             _item.BorrowTypeCode ===
@@ -382,12 +426,6 @@ export default {
                     _this.itemData.bigjine = _this.$mbservices.smalltoBIG(
                         _this.itemData.Amount
                     );
-                    _this.PayType.forEach((_item, index) => {
-                        if (_item === _this.itemData.PayType) {
-                            _this.indexPayType = index;
-                            _this.itemData.indexPayType = index;
-                        }
-                    });
                     setTimeout(() => {
                         uni.hideLoading();
                     }, 1000);
