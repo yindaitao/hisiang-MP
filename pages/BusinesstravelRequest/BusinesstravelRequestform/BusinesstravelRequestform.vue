@@ -491,9 +491,9 @@ export default {
 			this.radio = e.detail.value;
 			this.itemData.InvCompanyId=e.detail.value;
 			this.invCompanys.forEach(item=>{
-				if(item.Code===e.detail.value)
+				if(item.ACCode===e.detail.value)
 				{
-					this.itemData.InvCompanyName=item.Name;
+					this.itemData.InvCompanyName=item.ACName;
 				}
 			})
 			this.modalName = null;
@@ -929,9 +929,9 @@ export default {
 			console.log(e)
 			var _this = this;
 			item.indexVatType = e.target.value;
-			for(var i in _this.itemData.VatTypeList){
-				if(_this.VatType[this.indexVatType] === _this.itemData.VatTypeList[i].Name){
-					item.VatTypeCode = _this.itemData.VatTypeList[i].Code;
+			for(var i in _this.VatTypeList){
+				if(_this.VatType[this.indexVatType] === _this.VatTypeList[i].Name){
+					item.VatTypeCode = _this.VatTypeList[i].Code;
 					item.VatTypeName = _this.VatType[item.indexVatType];
 				}
 			}
@@ -1240,6 +1240,15 @@ export default {
 			_$this.itemData.Bank=item.Bank;
 			_$this.itemData.AllowanceAmount = item.AllowanceAmount;
 			_$this.itemData.Days = item.Days;
+			_$this.itemData.InvCompanyId = item.InvCompanyId;
+			_$this.invCompanys.forEach(item => {
+				console.log(item.ACCode);
+				console.log(_$this.itemData.InvCompanyId);
+				if(item.ACCode===_$this.itemData.InvCompanyId)
+				{
+					_$this.itemData.InvCompanyName=item.ACName;
+				}
+			})
 			_$this.itemData.Reasons=item.Reasons;
 			_$this.itemData.Remarks=item.Remarks;
 			_$this.PayTypeList.forEach(inner => {

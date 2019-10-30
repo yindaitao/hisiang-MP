@@ -76,17 +76,20 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">开户名</view>
-					<input :disabled="edit?true:false" placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)" :value="itemData.AccountName">
+					<input :disabled="edit?true:false" placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)"
+					 :value="itemData.AccountName">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">账户(卡号)</view>
-					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountCode">
+					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)"
+					 :value="itemData.AccountCode">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">受理单位(银行)</view>
-					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.Bank">
+					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)"
+					 :value="itemData.Bank">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
@@ -569,6 +572,7 @@ export default {
           UIStatus: "New"
         };
       }
+	  console.log(ajaxJSON)
       var requestUrl = _this.editflag
         ? _this.$webapi.submitCostForm
         : _this.$webapi.submitCostForm;
@@ -718,9 +722,9 @@ export default {
 		bindPickerChange4: function(item,e) {
 			var _this = this;
 			item.indexVatType = e.target.value;
-			for(var i in _this.itemData.VatTypeList){
-				if(_this.VatType[item.indexVatType] === _this.itemData.VatTypeList[i].Name){
-					item.VatTypeCode = _this.itemData.VatTypeList[i].Code;
+			for(var i in _this.VatTypeList){
+				if(_this.VatType[item.indexVatType] === _this.VatTypeList[i].Name){
+					item.VatTypeCode = _this.VatTypeList[i].Code;
 					item.VatTypeName = _this.VatType[item.indexVatType];
 				}
 			}
@@ -1007,6 +1011,13 @@ export default {
 						_$this.itemData.AccountCode=item.AccountCode;
 						_$this.itemData.Bank=item.Bank;
 						_$this.itemData.AccountName = item.AccountName;
+						_$this.itemData.InvCompanyId = item.InvCompanyId;
+						_$this.invCompanys.forEach(item => {
+							if(item.Code===_$this.itemData.InvCompanyId)
+							{
+								_$this.itemData.InvCompanyName=item.Name;
+							}
+						})
 						_$this.itemData.Remarks=item.Remarks;
 						_$this.PayTypeList.forEach(inner => {
 							if (inner.Code === _$this.itemData.PayTypeCode) {
