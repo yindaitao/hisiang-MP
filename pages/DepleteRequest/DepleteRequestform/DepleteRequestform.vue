@@ -395,6 +395,7 @@ export default {
 		  ).toFixed(2));
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
 				_this.editEntitysList[0].InvCompanyId=_this.itemData.InvCompanyId;
+				_this.editEntitysList[0].InvCompanyName=_this.itemData.InvCompanyName;11
 				_this.editEntitysList[0].InvOrganizationCode=uni.getStorageSync("JSUserInfo").OrganizationCode;
 				_this.editEntitysList[0].InvOrganizationName=uni.getStorageSync("JSUserInfo").OrganizationName;
 				_this.editEntitysList[0].CostTypeCode= _this.itemData.CostTypeCode;
@@ -417,6 +418,7 @@ export default {
 		  AdvanceType: _this.itemData.AdvanceType,
 		  AmountOrQuantity: parseFloat(_this.totalJine).toFixed(2),
           CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
+		  Creator: uni.getStorageSync("JSUserInfo").UserName,
           Remarks: _this.itemData.Remarks,
           Approve: _this.isDoSteps ? "Yes" : "No",
           ApproveStatus: "Pending",
@@ -433,6 +435,7 @@ export default {
 		  ReimbursementTypeCode: _this.itemData.ReimbursementTypeCode,
 		  ReimbursementTypeName: _this.itemData.ReimbursementTypeName,
 		  InvCompanyId:_this.itemData.InvCompanyId,
+		  InvCompanyName:_this.itemData.InvCompanyName,
 		  UserId: null,
 		  UserName: null,
           UIStatus: "New"

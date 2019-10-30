@@ -532,6 +532,7 @@ export default {
 				_this.editEntitysList[0].Bank=_this.itemData.Bank;
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
 				_this.editEntitysList[0].InvCompanyId=_this.itemData.InvCompanyId;
+				_this.editEntitysList[0].InvCompanyName=_this.itemData.InvCompanyName;
 				_this.editEntitysList[0].InvOrganizationCode=uni.getStorageSync("JSUserInfo").OrganizationCode;
 				_this.editEntitysList[0].InvOrganizationName=uni.getStorageSync("JSUserInfo").OrganizationName;
 				_this.editEntitysList[0].CostTypeCode= _this.itemData.CostTypeCode;
@@ -545,6 +546,7 @@ export default {
           DocNum: this.itemData.DocEntry,
           ObjType: "ReimbursementRequest",
           CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
+		  Creator: uni.getStorageSync("JSUserInfo").UserName,
           Remarks: _this.itemData.Remarks,
           Approve: _this.isDoSteps ? "Yes" : "No",
           ApproveStatus: "Pending",
@@ -568,6 +570,7 @@ export default {
 		  CostTypeName: _this.itemData.CostTypeName,
 		  ReimbursementAmount: parseFloat(_this.totalJine).toFixed(2),
 		  InvCompanyId:_this.itemData.InvCompanyId,
+		  InvCompanyName:_this.itemData.InvCompanyName,
           ReimbursementRequestLines: _lines,
           UIStatus: "New"
         };
@@ -577,37 +580,41 @@ export default {
         ? _this.$webapi.submitCostForm
         : _this.$webapi.submitCostForm;
 				var _$this=_this;
-     //  _this.$mbservices.Request(
-     //    requestUrl,
-     //    "POST",
-     //    ajaxJSON,
-     //    function(succ) {
-     //      setTimeout(function() {
-     //        uni.hideLoading();
-     //      }, 1000);
-     //      if (
-     //        succ.data.RecordCount == undefined ||
-     //        succ.data.RecordCount <= 0
-     //      ) {
-     //        uni.showToast({
-     //          title: "" + succ.data
-     //        });
-     //        return false;
-     //      }
-     //      uni.showToast({
-     //        title: "成功"
-     //      });
-					// _$this.$mbservices.setIsRefresh(true);
-     //      uni.navigateBack({
-     //        animationDuration: 500
-     //      });
-     //    },
-     //    function(err) {
-     //      uni.showToast({
-     //        title: "失败:" + err.data
-     //      });
-     //    }
-     //  );
+      _this.$mbservices.Request(
+        requestUrl,
+        "POST",
+        ajaxJSON,
+        function(succ) {
+          setTimeout(function() {
+            uni.hideLoading();
+          }, 1000);
+          if (
+            succ.data.RecordCount == undefined ||
+            succ.data.RecordCount <= 0
+          ) {
+			  uni.showModal({
+			  	title: "提示",
+			  	content: succ.data,
+			  	showCancel: false
+			  });
+            return false;
+          }
+          uni.showToast({
+            title: "成功"
+          });
+					_$this.$mbservices.setIsRefresh(true);
+          uni.navigateBack({
+            animationDuration: 500
+          });
+        },
+        function(err) {
+			uni.showModal({
+				title: "提示",
+				content: "data: '" + JSON.stringify(err) + "'",
+				showCancel: false
+			});
+        }
+      );
     },
 	inputNumAN(event){
 		this.itemData.AccountName=event.detail.value;

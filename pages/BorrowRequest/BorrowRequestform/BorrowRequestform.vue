@@ -498,7 +498,8 @@ export default {
 				_this.itemData.CostTypeName = _this.itemData.CostTypeName;
 				_this.itemData.InvOrganizationCode = uni.getStorageSync("JSUserInfo").OrganizationCode;
 				_this.itemData.InvOrganizationName=uni.getStorageSync("JSUserInfo").OrganizationName;
-				_this.itemData.InvCompanyId = uni.getStorageSync("JSUserInfo").CompanyId,
+				_this.itemData.InvCompanyId = uni.getStorageSync("JSUserInfo").CompanyId;
+				_this.itemData.InvCompanyName=_this.itemData.InvCompanyName;
                 _this.itemData.UIStatus = "Modify";
                 ajaxJSON = _this.itemData;
             } else {
@@ -508,6 +509,7 @@ export default {
                     CreatorId: parseInt(
                         uni.getStorageSync("JSUserInfo").UserId
                     ),
+					Creator: uni.getStorageSync("JSUserInfo").UserName,
                     Remarks: _this.itemData.Remarks,
                     Approve: _this.isDoSteps ? "Y" : "N",
                     ApproveStatus: "Pending",
@@ -524,6 +526,7 @@ export default {
 					InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 					InvOrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 					InvCompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+					InvCompanyName:_this.itemData.InvCompanyName,
                     AccountNumber: _this.itemData.AccountNumber,
                     AcceptingUnit: _this.itemData.AcceptingUnit,
                     //BorrowTypeCode:_this.BaseBorrowType[_this.indexBorrowType].BorrowTypeCode,

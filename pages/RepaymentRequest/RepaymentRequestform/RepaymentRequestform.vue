@@ -417,6 +417,7 @@ export default {
 				_this.editEntitysList[0].RePayType=_this.itemData.PayTypeCode;
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
 				_this.editEntitysList[0].InvCompanyId=uni.getStorageSync("JSUserInfo").CompanyId;
+				_this.editEntitysList[0].InvCompanyName=_this.itemData.InvCompanyName;
 				_this.editEntitysList[0].InvOrganizationCode=uni.getStorageSync("JSUserInfo").OrganizationCode;
 				_this.editEntitysList[0].InvOrganizationName=uni.getStorageSync("JSUserInfo").OrganizationName;
         _this.editEntitysList[0].UIStatus = "Modify";
@@ -426,6 +427,7 @@ export default {
           DocNum: this.itemData.DocEntry,
           ObjectType: "RepaymentRequest",
           CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
+		  Creator: uni.getStorageSync("JSUserInfo").UserName,
           Remarks: _this.itemData.Remarks,
           Approve: _this.isDoSteps ? "Yes" : "No",
           ApproveStatus: "Pending",
@@ -437,8 +439,10 @@ export default {
           DocDate: this.formatDate(this.time), 
           OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+		  CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
 		  RePayType:_this.itemData.PayTypeCode,
 		  InvCompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+		  InvCompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
 		  InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  InvOrganizationName:uni.getStorageSync("JSUserInfo").OrganizationName,
 		  RepaymentRequestLines: _lines,

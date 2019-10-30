@@ -733,6 +733,7 @@ export default {
 				_this.editEntitysList[0].AccountName=_this.itemData.AccountName;
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
 				_this.editEntitysList[0].InvCompanyId=_this.itemData.InvCompanyId;
+				_this.editEntitysList[0].InvCompanyName=_this.itemData.InvCompanyName;
 				_this.editEntitysList[0].InvOrganizationCode=uni.getStorageSync("JSUserInfo").OrganizationCode;
 				_this.editEntitysList[0].InvOrganizationName=uni.getStorageSync("JSUserInfo").OrganizationName;
 				_this.editEntitysList[0].CostTypeCode= _this.itemData.CostTypeCode;
@@ -750,6 +751,7 @@ export default {
           DocNum: this.itemData.DocEntry,
           ObjType: "BusinessTravelRequest",
           CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
+		  Creator: uni.getStorageSync("JSUserInfo").UserName,
           Remarks: _this.itemData.Remarks,
 		  Reasons: _this.itemData.Reasons,
 		  Days: _this.itemData.Days,
@@ -776,6 +778,7 @@ export default {
 		  ReimbursementAmount: 1897,
 		  ReimbursementAmount: parseFloat(_this.totalJine).toFixed(2),
 					InvCompanyId:_this.itemData.InvCompanyId,
+					InvCompanyName:_this.itemData.InvCompanyName,
           BusinessTravelRequestLines: _lines,
           UIStatus: "New",
         };
