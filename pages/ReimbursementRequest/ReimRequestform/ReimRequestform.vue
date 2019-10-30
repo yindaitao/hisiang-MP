@@ -204,7 +204,7 @@ export default {
 			invCompanys:[],
 			CostType:["请选择"],
 			CostTypeList:[],
-			VatType:["请选择"],
+			VatType:[],
 			VatTypeList:[],
 			PayTypeList:[{
 				Code:"ToRequestUser",
@@ -299,7 +299,7 @@ export default {
           bigjine: "",
 		  Count1: 1,
 		  VatTypeCode:"",
-		  VatTypeName:"",
+		  VatTypeName:"请选择",
 		  indexVatType: 0,
         }
       ],
@@ -543,7 +543,7 @@ export default {
       } else {
         ajaxJSON = {
           DocNum: this.itemData.DocEntry,
-          ObjType: "Reimbursement",
+          ObjType: "ReimbursementRequest",
           CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
           Remarks: _this.itemData.Remarks,
           Approve: _this.isDoSteps ? "Yes" : "No",
@@ -551,7 +551,7 @@ export default {
           Canceled: "No",
           Closed: "No",
           Amount: parseFloat(_this.totalJine).toFixed(2),
-          Attachment: "",
+          Attachments: "",
           Imgs: "",
           DocDate: _this.getDate(),
           OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
@@ -577,37 +577,37 @@ export default {
         ? _this.$webapi.submitCostForm
         : _this.$webapi.submitCostForm;
 				var _$this=_this;
-      _this.$mbservices.Request(
-        requestUrl,
-        "POST",
-        ajaxJSON,
-        function(succ) {
-          setTimeout(function() {
-            uni.hideLoading();
-          }, 1000);
-          if (
-            succ.data.RecordCount == undefined ||
-            succ.data.RecordCount <= 0
-          ) {
-            uni.showToast({
-              title: "" + succ.data
-            });
-            return false;
-          }
-          uni.showToast({
-            title: "成功"
-          });
-					_$this.$mbservices.setIsRefresh(true);
-          uni.navigateBack({
-            animationDuration: 500
-          });
-        },
-        function(err) {
-          uni.showToast({
-            title: "失败:" + err.data
-          });
-        }
-      );
+     //  _this.$mbservices.Request(
+     //    requestUrl,
+     //    "POST",
+     //    ajaxJSON,
+     //    function(succ) {
+     //      setTimeout(function() {
+     //        uni.hideLoading();
+     //      }, 1000);
+     //      if (
+     //        succ.data.RecordCount == undefined ||
+     //        succ.data.RecordCount <= 0
+     //      ) {
+     //        uni.showToast({
+     //          title: "" + succ.data
+     //        });
+     //        return false;
+     //      }
+     //      uni.showToast({
+     //        title: "成功"
+     //      });
+					// _$this.$mbservices.setIsRefresh(true);
+     //      uni.navigateBack({
+     //        animationDuration: 500
+     //      });
+     //    },
+     //    function(err) {
+     //      uni.showToast({
+     //        title: "失败:" + err.data
+     //      });
+     //    }
+     //  );
     },
 	inputNumAN(event){
 		this.itemData.AccountName=event.detail.value;
@@ -652,7 +652,7 @@ export default {
         bigjine: "",
 		Count1: 1,
 		VatTypeCode:"",
-		VatTypeName:"",
+		VatTypeName:"请选择",
 		indexVatType: 0,
       });
     },
@@ -1075,7 +1075,8 @@ export default {
                 });
               });
              _$this.VatType.forEach((__item,__index)=>{
-             					  if(__item===_item.VatTypeName)
+				 console.log()
+             					  if(__item===_item.VatName)
              					  {
              						  _item.indexVatType=__index;
              					  }
@@ -1094,8 +1095,8 @@ export default {
                 itemOptionText: _item.ReimbursementTypeName,
                 itemReason: _item.Remarks,
                 imageList: _item.pathArr,
-				VatCode: _item.VatTypeCode,
-				VatName: _item.VatTypeName,
+				VatTypeCode: _item.VatCode,
+				VatTypeName: _item.VatName,
 				indexVatType: _item.indexVatType,
 				Count1: _item.Count,
                 bigjine: _this.$mbservices.smalltoBIG(
