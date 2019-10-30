@@ -11,8 +11,7 @@
 			</view> -->
 			<view class="search-form round">
 				<text class="icon-search"></text>
-				<input :adjust-position="false" type="text" placeholder="请输入关键字"
-				 confirm-type="search" style="float:left;"/>
+				<input :adjust-position="false" type="text" placeholder="请输入关键字" confirm-type="search" style="float:left;" />
 			</view>
 			<view class="action">
 				<!-- <button class="cu-btn bg-green shadow-blur round">搜索</button> -->
@@ -21,10 +20,10 @@
 				</button>
 			</view>
 		</view>
-		
-		
-		
-		
+
+
+
+
 		<view class="ul-swiper-box" style="margin-top: 2upx;">
 			<scroll-view scroll-y @scrolltolower="loadMore()" style="width: 100%;margin-bottom: 10px;" :style="{'height':scrollBarHeight+'px'}">
 				<view class="cu-list menu">
@@ -34,7 +33,7 @@
 							<!-- <view>
 								<text class="icon-title text-orange"></text>{{list.DocNum}}</view> -->
 							<view>
-								<text class="icon-peoplefill text-blue margin-right-xs"></text> {{list.OriginatorName}}/{{list.BusinessTypeName}}</view>
+								<text class="icon-peoplefill text-blue margin-right-xs"></text> {{list.OrganizationName}}{{list.Creator}}的{{list.BaseTypeName}}</view>
 							<view class="text-gray text-sm">
 								<text class="icon-timefill margin-right-xs"></text> {{list.CreateDate}}</view>
 							<!-- <view class="text-gray text-sm">
@@ -104,21 +103,40 @@
 		},
 		methods: {
 			goDetail(item) {
-				console.log(item);
-				switch (item.BusinessType) {
-					case "ReimbursementRequest":
+				item.flag = "tasklist"; 
+				switch (item.BaseType) {
+					case "ApprovalNote":
 						uni.navigateTo({
-							url: '/pages/task/taskdetail/taskdetail?data=' + JSON.stringify(item)
+							url: '/pages/task/taskdetail/taskdetail?data=' + JSON.stringify(
+								item)
 						});
 						break;
-					case "ExpendRequest":
+					case "ReimbursementRequest":
 						uni.navigateTo({
-							url: '/pages/task/taskdetail/taskcadetail?data=' + JSON.stringify(item)
+							url: '/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=tasklist&data=' + JSON.stringify(item)
 						});
 						break;
 					case "BorrowRequest":
 						uni.navigateTo({
-							url: '/pages/task/taskdetail/taskrfdetail?data=' + JSON.stringify(item)
+							url: '/pages/BorrowRequest/BorrowRequestform/BorrowRequestform?flag=tasklist&data=' + JSON.stringify(item)
+						});
+						break;
+					case "BusinesstravelRequest":
+						uni.navigateTo({
+							url: '/pages/BusinesstravelRequest/BusinesstravelRequestform/BusinesstravelRequestform?flag=tasklist&data=' + JSON.stringify(
+								item)
+						});
+						break;
+					case "RepaymentRequest":
+						uni.navigateTo({
+							url: '/pages/RepaymentRequest/RepaymentRequestform/RepaymentRequestform?flag=tasklist&data=' + JSON.stringify(
+								item)
+						});
+						break;
+					case "DepleteDetails":
+						uni.navigateTo({
+							url: '/pages/DepleteRequest/DepleteRequestform/DepleteRequestform?flag=tasklist&data=' + JSON.stringify(
+								item)
 						});
 						break;
 					default:
@@ -147,33 +165,32 @@
 					return false;
 				}
 				this.searchParams = [{
-						FieldName: "BusinessType",
-						Operation: "EQUAL",
-						ConditionValue: this.searchTypeValue,
-						Relationship: "AND"
-					}
-				];
-				if(!this.$mbservices.isEmpty(this.searchValue))
-				{
-					var arr=[{
-						FieldName: "DocEntry",
-						Operation: "CONTAIN",
-						ConditionValue: this.searchValue,
-						Relationship: "OR"
-					},
-					{
-						FieldName: "Remarks",
-						Operation: "CONTAIN",
-						ConditionValue: this.searchValue,
-						Relationship: "OR"
-					},
-					{
-						FieldName: "Amount",
-						Operation: "CONTAIN",
-						ConditionValue: this.searchValue,
-						Relationship: "OR"
-					}];
-					arr.forEach(item=>{
+					FieldName: "BusinessType",
+					Operation: "EQUAL",
+					ConditionValue: this.searchTypeValue,
+					Relationship: "AND"
+				}];
+				if (!this.$mbservices.isEmpty(this.searchValue)) {
+					var arr = [{
+							FieldName: "DocEntry",
+							Operation: "CONTAIN",
+							ConditionValue: this.searchValue,
+							Relationship: "OR"
+						},
+						{
+							FieldName: "Remarks",
+							Operation: "CONTAIN",
+							ConditionValue: this.searchValue,
+							Relationship: "OR"
+						},
+						{
+							FieldName: "Amount",
+							Operation: "CONTAIN",
+							ConditionValue: this.searchValue,
+							Relationship: "OR"
+						}
+					];
+					arr.forEach(item => {
 						this.searchParams.push(item);
 					})
 				}
@@ -194,48 +211,18 @@
 			newShowGetTaskList: async function(params) {
 				this.pageIndex = parseInt(this.pageIndex) + 1;
 				var ajaxJSON = {
-					pageIndex: this.pageIndex,
-					rowsPerPage: '10',
-					type: "Initialize",
-					Parameter: {
-						Sorts: [{
-							FieldName: "DocEntry",
-							type: "Descending"
-						}],
-						LoadChildren: 'NoLoad',
-						Conditions: [{
-								FieldName: "Canceled",
-								Operation: "EQUAL",
-								ConditionValue: 'N',
-								Relationship: "AND"
-							},
-							{
-								FieldName: "Closed",
-								Operation: "EQUAL",
-								ConditionValue: "N",
-								Relationship: "AND"
-							},
-							{
-								FieldName: "DocStatus",
-								Operation: "EQUAL",
-								ConditionValue: "O",
-								Relationship: "AND"
-							},
-							{
-								FieldName: "ApproveStatus",
-								Operation: "EQUAL",
-								ConditionValue: "P",
-								Relationship: "AND"
-							},
-							{
-								FieldName: "CreatorId",
-								Operation: "EQUAL",
-								ConditionValue: uni.getStorageSync('JSUserInfo').UserId,
-								Relationship: "AND"
-							}
-						]
+					"type": "Initialize",
+					"rowsPerPage": 15,
+					"pageIndex": 1,
+					"Parameter": {
+						"LoadChildren": "NoLoad",
+						"Conditions": [],
+						"Sorts": [{
+							"FieldName": "CreateDate",
+							"type": "Ascending"
+						}]
 					}
-				};
+				}
 				if (params != undefined && params.length > 0) {
 					params.forEach((item) => {
 						ajaxJSON.Parameter.Conditions.push(item);
@@ -304,48 +291,18 @@
 				});
 				this.pageIndex = parseInt(this.pageIndex) + 1;
 				var ajaxJSON = {
-					pageIndex: this.pageIndex,
-					rowsPerPage: '10',
-					type: "Initialize",
-					Parameter: { //
-						Sorts: [{
-							FieldName: "DocEntry",
-							type: "Descending"
-						}],
-						LoadChildren: 'NoLoad',
-						Conditions: [{
-								FieldName: "Canceled",
-								Operation: "EQUAL",
-								ConditionValue: 'N',
-								Relationship: "AND"
-							},
-							{
-								FieldName: "Closed",
-								Operation: "EQUAL",
-								ConditionValue: "N",
-								Relationship: "AND"
-							},
-							{
-								FieldName: "DocStatus",
-								Operation: "EQUAL",
-								ConditionValue: "O",
-								Relationship: "AND"
-							},
-							{
-								FieldName: "ApproveStatus",
-								Operation: "EQUAL",
-								ConditionValue: "P",
-								Relationship: "AND"
-							},
-							{
-								FieldName: "CreatorId",
-								Operation: "EQUAL",
-								ConditionValue: uni.getStorageSync('JSUserInfo').UserId,
-								Relationship: "AND"
-							}
-						]
+					"type": "Initialize",
+					"rowsPerPage": 15,
+					"pageIndex": this.pageIndex,
+					"Parameter": {
+						"LoadChildren": "NoLoad",
+						"Conditions": [],
+						"Sorts": [{
+							"FieldName": "CreateDate",
+							"type": "Ascending"
+						}]
 					}
-				};
+				}
 				if (params != undefined && params.length > 0) {
 					params.forEach((item) => {
 						ajaxJSON.Parameter.Conditions.push(item);
@@ -360,6 +317,7 @@
 						});
 						return false;
 					}
+					console.log(ret.data.data)
 					//_this.dataList = [];
 					var _cacheList = [];
 					ret.data.data.forEach((item) => {
@@ -383,7 +341,7 @@
 							item.BBusinessType = "借款申请"
 						}
 
-						item.Amount = parseFloat(item.Amount).toFixed(2);
+						item.AllAmount = parseFloat(item.AllAmount).toFixed(2);
 						//_this.dataList.push(item);
 						_cacheList.push(item);
 					});
@@ -430,7 +388,7 @@
 				_this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - _this.CustomBar - res[0].height;
 			});
 			//#endif
-			
+
 			this.getTaskList();
 		}
 	}
@@ -444,12 +402,12 @@
 		overflow: hidden;
 		height: 100%;
 	}
-	
+
 	.ul-uni-tab-bar .ul-list {
 		width: 750upx;
 		height: 100%;
 	}
-	
+
 	.ul-uni-swiper-tab {
 		width: 100%;
 		white-space: nowrap;
@@ -458,7 +416,7 @@
 		border-bottom: 0.1px solid #eaffea;
 		text-align: -webkit-center;
 	}
-	
+
 	.ul-swiper-tab-list {
 		font-size: 30upx;
 		width: 150upx;
@@ -466,7 +424,7 @@
 		text-align: center;
 		color: #555;
 	}
-	
+
 	.ul-uni-tab-bar .ul-swiper-box {
 		-webkit-box-flex: 1;
 		-webkit-flex: 1;

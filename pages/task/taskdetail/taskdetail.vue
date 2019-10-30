@@ -308,7 +308,7 @@
 				}, er => {})
 			},
 			getStages: async function() {
-                var ajaxJSON = {approveNoteEntry: this.itemData.BusinessOrderNo};
+                var ajaxJSON = {approveNoteEntry: this.itemData.DocEntry};
 				var _this = this;
 				_this.numList = [];
 				this.$mbservices.Request(this.$webapi.getStages, 'POST', ajaxJSON, function(succ) {
@@ -329,7 +329,7 @@
 						Conditions: [{
 							FieldName: "DocEntry",
 							Operation: "EQUAL",
-							ConditionValue: this.itemData.BusinessOrderNo,
+							ConditionValue: this.itemData.DocEntry,
 							Relationship: "AND"
 						}]
 					}
@@ -338,7 +338,7 @@
 					title: '拼命加载中...'
 				});
 				var _this = this;
-				this.$mbservices.Request(this.$webapi.getReimList, 'POST', ajaxJSON, function(ret) {
+				this.$mbservices.Request(this.$webapi.getApprovalNotesList, 'POST', ajaxJSON, function(ret) {
 					if (!ret.data.data) {
 						uni.showToast({
 							title: '查无数据'
@@ -390,14 +390,15 @@
 			}
 		},
 		onLoad(e) {
+			console.log(JSON.parse(e.data))
 			try{
 				this.itemData = JSON.parse(e.data);
 			}catch(e){
 				//TODO handle the exception
 				if (this.$mbservices.isEmpty(e.data)) {
-					this.itemData.BusinessOrderNo=parseInt("0");
+					this.itemData.DocEntry=parseInt("0");
 				} else{
-					this.itemData.BusinessOrderNo=parseInt(e.data);
+					this.itemData.DocEntry=parseInt(e.data);
 				}
 			}
 			

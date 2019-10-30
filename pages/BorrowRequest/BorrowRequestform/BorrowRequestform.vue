@@ -9,7 +9,7 @@
                 <text class="icon-redpacket text-orange"></text>
                 总金额:{{totalJine}}(元)
             </view>
-            <view class="action">
+            <view class="action" v-if="edit === false">
                 <button
                     class="cu-btn round bg-blue shadow"
                     data-target="DialogModal2"
@@ -264,7 +264,8 @@ export default {
 				"InvCompanyName":"请选择",
                 pics: [],
             },
-            editItem: {}
+            editItem: {},
+			edit:false,
         };
     },
     onLoad(e) {
@@ -298,10 +299,15 @@ export default {
         /* 修改传递参数 */
        if (e.flag === "modify") {
          this.editflag = true;
+		  this.edit = false;
+		  console.log("modify"+this.edit);
        }else if(e.flag === "Original"){
        	  this.editflag = true;
-       	  this.edit = false;
-       	}
+       	  this.edit = true;
+       	}else if(e.flag === "tasklist"){
+			 this.editflag = true;
+			 this.edit = true;
+		}
        if (this.editflag) {
          this.editItem = JSON.parse(e.data);
          this.itemData.DocEntry=this.editItem.DocEntry;

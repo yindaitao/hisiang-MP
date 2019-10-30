@@ -6,7 +6,7 @@
 				<text class="icon-redpacket text-orange"></text>
 				还款金额:{{totalJine}}(元)
 			</view>
-			<view class="action">
+			<view class="action" v-if="edit === false">
 				<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
 					<text class="icon-upload"></text>提交
 				</button>
@@ -238,6 +238,7 @@ export default {
       totalJine: "0.00",
       editflag: false,
       editItem: {},
+	  edit:false,
       isDoSteps: false,
 	  BorrowRequestList:[],
 	  BorrowId:0,
@@ -908,10 +909,14 @@ export default {
     /* 修改传递参数 */
     if (e.flag === "modify") {
       this.editflag = true;
+	  this.edit = false;
     }else if(e.flag === "Original"){
     	  this.editflag = true;
-    	  this.edit = false;
-    	}
+    	  this.edit = true;
+    	}else if(e.flag === "tasklist"){
+			 this.editflag = true;
+			 this.edit = true;
+		}
     if (this.editflag) {
       this.editItem = JSON.parse(e.data);
       this.itemData.DocEntry=this.editItem.DocEntry;
