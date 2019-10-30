@@ -77,6 +77,7 @@
                 <view class="cu-form-group">
                     <view class="title">金额</view>
                     <input
+					:disabled="edit?true:false"
                         placeholder="支出金额"
                         name="input"
                         type="digit"
@@ -97,25 +98,26 @@
                 </view>
 				<view class="cu-form-group">
 					<view class="title">还款日期</view>
-					<picker mode="date" :value="itemData.BackDate" :start="startDate" :end="endDate" @change="bindDateChange(itemData,$event)">
+					<picker :disabled="edit?true:false" mode="date" :value="itemData.BackDate" :start="startDate" :end="endDate" @change="bindDateChange(itemData,$event)">
 						<view class="picker">{{itemData.BackDate}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">支付方式</view>
-					<picker @change="bindPickerChange1" :value="indexPayType" :range="PayType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexPayType" :range="PayType">
 						<view class="picker">{{PayType[indexPayType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">费用类型</view>
-					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange2" :value="indexCostType" :range="CostType">
 						<view class="picker">{{CostType[indexCostType]}}</view>
 					</picker>
 				</view>
                 <view class="cu-form-group">
                     <view class="title">账户(卡号)</view>
                     <input
+					:disabled="edit?true:false"
                         placeholder="账户(卡号)"
                         name="input"
                         style="text-align: right;"
@@ -130,6 +132,7 @@
                 <view class="cu-form-group">
                     <view class="title">受理单位(银行)</view>
                     <input
+					:disabled="edit?true:false"
                         placeholder="受理单位(银行)"
                         name="input"
                         style="text-align: right;"
@@ -313,7 +316,13 @@ export default {
          this.itemData.DocEntry=this.editItem.DocEntry;
          // 费用类型
          this.getCostType();
-         this.getDetailData();
+		 uni.showLoading({
+		   title: "拼命加载中..."
+		 });
+		 var _this = this;
+		 setTimeout(function(){
+		 		  _this.getDetailData();
+		 }, 1000);
        }
     },
 	computed: {

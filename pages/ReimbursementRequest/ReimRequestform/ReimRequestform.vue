@@ -30,7 +30,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal">
+		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioChange">
 					<view class="cu-list menu text-left">
@@ -51,49 +51,49 @@
 					<text class="cu-tag round bg-gray light">{{itemData.DocEntry}}</text>
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
-				<view class="cu-form-group">
+				<view class="cu-form-group" :disabled="edit">
 					<view class="title">公司</view>
 					<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1">{{itemData.InvCompanyName}}</text>
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">支付方式</view>
-					<picker @change="bindPickerChange1" :value="indexPayType" :range="PayType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexPayType" :range="PayType">
 						<view class="picker">{{PayType[indexPayType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">报销类型</view>
-					<picker @change="bindPickerChange3" :value="indexReimbursementType" :range="ReimbursementNameList">
+					<picker :disabled="edit?true:false" @change="bindPickerChange3" :value="indexReimbursementType" :range="ReimbursementNameList">
 						<view class="picker">{{ReimbursementNameList[indexReimbursementType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">费用类型</view>
-					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange2" :value="indexCostType" :range="CostType">
 						<view class="picker">{{CostType[indexCostType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">开户名</view>
-					<input placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)" :value="itemData.AccountName">
+					<input :disabled="edit?true:false" placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)" :value="itemData.AccountName">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">账户(卡号)</view>
-					<input placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountCode">
+					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountCode">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">受理单位(银行)</view>
-					<input placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.Bank">
+					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.Bank">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">备注</view>
 				</view>
 				<view class="cu-form-group">
-					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
+					<textarea :disabled="modalName!=null" @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1"
 					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
 					</view>
 				<block v-for="(item,index) in formList" :key="index">
@@ -102,7 +102,7 @@
 							<text class="icon-title text-orange"></text>
 							报销明细({{item.id}})
 						</view>
-						<view class="action" v-if="formList.length!=1">
+						<view class="action" v-if="formList.length!=1 && edit === false">
 							<button class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
 								<text class="icon-roundclosefill" style="font-size: 2em;color:red;"></text>
 							</button>
@@ -110,7 +110,7 @@
 					</view>
 					<view class="cu-form-group">
 						<view class="title">报销金额</view>
-						<input placeholder="请输入报销金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
+						<input :disabled="edit?true:false" placeholder="请输入报销金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
 						 :value="item.jine">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
@@ -122,25 +122,25 @@
 					</view>
 					<view class="cu-form-group">
 						<view class="title">报销日期</view>
-						<picker v-bind:id="item.id" v-bind:name="item.id" mode="date" :value="item.itemDate" :start="startDate" :end="endDate"
+						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" mode="date" :value="item.itemDate" :start="startDate" :end="endDate"
 						 @change="bindDateChange(item,$event)">
 							<view class="picker">{{item.itemDate}}</view>
 						</picker>
 					</view>
 					<view class="cu-form-group">
 						<view class="title">费用名称</view>
-						<picker v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange" :value="item.itemOptionIndex" :range="arrayType">
+						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange" :value="item.itemOptionIndex" :range="arrayType">
 							<view class="picker">{{arrayType[item.itemOptionIndex]}}</view>
 						</picker>
 					</view>
 					<view class="cu-form-group">
 						<view class="title">单据张数</view>
-						<input placeholder="单据张数" name="input" style="text-align: right;" @input="inputNumCount1(item,$event)" :value="item.Count1">
+						<input :disabled="edit?true:false" placeholder="单据张数" name="input" style="text-align: right;" @input="inputNumCount1(item,$event)" :value="item.Count1">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group">
 						<view class="title">发票类型</view>
-						<picker v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange4(item,$event)" :value="item.indexVatType" :range="VatType">
+						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange4(item,$event)" :value="item.indexVatType" :range="VatType">
 							<view class="picker">{{VatType[item.indexVatType]}}</view>
 						</picker>
 					</view>
@@ -148,8 +148,8 @@
 						<view class="title">明细备注</view>
 					</view>
 					<view class="cu-form-group">
-						<textarea @input="textareaInput" :class="item.itemReason?'value':''" v-bind:id="item.id" v-bind:name="item.id"
-						 maxlength="-1" :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入明细备注" :value="item.itemReason" />
+						<textarea :disabled="modalName!=null" @input="textareaInput" :class="item.itemReason?'value':''" v-bind:id="item.id" v-bind:name="item.id"
+						 maxlength="-1" placeholder-class="placeholder" data-placeholder="在此输入明细备注" :value="item.itemReason" />
 						</view>
           <!-- 图片开始 -->
           <view class="cu-bar bg-white">
@@ -158,19 +158,20 @@
           </view>
           <view class="cu-form-group">
             <view class="grid col-4 grid-square flex-sub">
-              <view class="padding-xs bg-img" :style="'background-image:url(' + item.imageList[index1].url +')'" v-for="(_item,index1) in item.imageList" :key="index1" @tap="previewImage(item,$event)" :data-url="item.imageList[index1].url">
-                <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1">
+				<view class="padding-xs bg-img" :style="'background-image:url(' + item.imageList[index1].url +')'" v-for="(_item,index1) in item.imageList" :key="index1" @tap="previewImage(item,$event)" :data-url="item.imageList[index1].url">
+                <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1" v-if="edit === false">
                   <text class="icon-delete"></text>
                 </view>
               </view>
-              <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9">
+              <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9 && edit === false">
                 <text class="icon-cameraadd"></text>
+				<text class="icon-delete" v-if="item.imageList>0">图片加载失败</text>
               </view>
             </view>
           </view>
           <!-- 图片结束 -->
         </block>
-        <uni-view class="uni-card-link margin-top" style="text-align: center;min-height: 100upx;top: 10px;">
+        <uni-view class="uni-card-link margin-top" style="text-align: center;min-height: 100upx;top: 10px;" v-if="edit === false">
           <i class="icon-add" @tap="addOption">增加&nbsp;&nbsp;报销明细</i>
         </uni-view>
       </form>
@@ -1143,7 +1144,49 @@ export default {
 	  this.itemData.DocEntry=this.editItem.DocEntry;
 	  // 费用类型
 	  this.getCostType();
-      this.getDetailData();
+	  // 发票类型
+	  this.getVatRecords();
+	  /* 初始化报销类型 */
+	  var ajaxJSON = {
+	    pageIndex: 0,
+	    rowsPerPage: "10000",
+	    type: "Initialize",
+	    Parameter: {
+	      LoadChildren: "NoLoad",
+	      Conditions: [
+	  				{ FieldName: "Activated", Operation: "EQUAL", ConditionValue: "Y", Relationship: "AND" },{ FieldName: "DataType", Operation: "EQUAL", ConditionValue: "P", Relationship: "AND" }
+	  			]
+	    }
+	  };
+	  var _this = this;
+	  this.$mbservices.Request(
+	    this.$webapi.getRemTypeList,
+	    "POST",
+	    ajaxJSON,
+	    function(success) {
+	      if (success.statusCode === 200) {
+	        _this.arrayType = [];
+	        _this.resourceArray = [];
+	        success.data.data.forEach(_item => {
+	          _this.arrayType.push(_item.ReimbursementTypeName);
+	          _this.resourceArray.push(_item);
+	        });
+	      }
+	    },
+	    function(err) {
+	      uni.showToast({
+	        title: "获取报销类型失败",
+	        icon: "none"
+	      });
+	    }
+	  );
+	  uni.showLoading({
+	    title: "拼命加载中..."
+	  });
+	  var _this = this;
+	  setTimeout(function(){
+		  _this.getDetailData();
+	  }, 1000);
     }
     if(!this.editflag)
 		{

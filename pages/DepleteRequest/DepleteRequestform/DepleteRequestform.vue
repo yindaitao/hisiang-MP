@@ -30,7 +30,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal">
+		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioChange">
 					<view class="cu-list menu text-left">
@@ -44,7 +44,7 @@
 				</radio-group>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalName=='RadioModalBaseEntry'?'show':''" @tap="hideModalBaseEntry" style="margin-top: 75px;">
+		<view class="cu-modal" :class="modalName=='RadioModalBaseEntry'?'show':''" @tap="hideModalBaseEntry" style="margin-top: 75px;" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioChangeBaseEntry">
 					<view class="cu-list menu text-left">
@@ -70,7 +70,7 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">申请日期</view>
-					<picker mode="date" :value="itemData.DocDate" :start="startDate" :end="endDate"
+					<picker :disabled="edit?true:false" mode="date" :value="itemData.DocDate" :start="startDate" :end="endDate"
 					 @change="bindDateChange(itemData,$event)">
 						<view class="picker">{{itemData.DocDate}}</view>
 					</picker>
@@ -89,13 +89,13 @@
 					</view>
 					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Quantity'">
 						<view class="title">数量</view>
-						<input placeholder="请输入数量" name="input" type="digit" style="text-align: right;" @input="inputQuantityNum(itemData,$event)"
+						<input :disabled="edit?true:false" placeholder="请输入数量" name="input" type="digit" style="text-align: right;" @input="inputQuantityNum(itemData,$event)"
 						 :value="itemData.num">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Amount'">
 						<view class="title">金额</view>
-						<input placeholder="请输入金额" name="input" type="digit" style="text-align: right;" @input="inputNum(itemData,$event)"
+						<input :disabled="edit?true:false" placeholder="请输入金额" name="input" type="digit" style="text-align: right;" @input="inputNum(itemData,$event)"
 						 :value="itemData.jine">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
@@ -107,13 +107,13 @@
 					</view>
 				<view class="cu-form-group">
 					<view class="title">费用类型</view>
-					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange2" :value="indexCostType" :range="CostType">
 						<view class="picker">{{CostType[indexCostType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">费用明细</view>
-					<picker @change="bindPickerChange3" :value="indexReimbursementType" :range="ReimbursementType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange3" :value="indexReimbursementType" :range="ReimbursementType">
 						<view class="picker">{{ReimbursementType[indexReimbursementType]}}</view>
 					</picker>
 				</view>
@@ -938,7 +938,6 @@ export default {
     if (this.editflag) {
       this.editItem = JSON.parse(e.data);
       this.itemData.DocEntry=this.editItem.DocEntry;
-	  console.log(this.editItem.DocEntry);
       // 费用类型
       this.getCostType();
 	  // 费用明细
@@ -977,7 +976,13 @@ export default {
           });
         }
       );
-      this.getDetailData();
+	  uni.showLoading({
+	    title: "拼命加载中..."
+	  });
+	  var _this = this;
+	  setTimeout(function(){
+	  		  _this.getDetailData();
+	  }, 1000);
     }
     if(!this.editflag)
 		{

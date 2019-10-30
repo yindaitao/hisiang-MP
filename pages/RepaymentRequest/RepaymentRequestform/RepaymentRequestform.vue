@@ -30,7 +30,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal" style="margin-top: 75px;">
+		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal" style="margin-top: 75px;" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioChange">
 					<view class="cu-list menu text-left">
@@ -78,25 +78,25 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">还款方式</view>
-					<picker @change="bindPickerChange1" :value="indexPayType" :range="PayType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexPayType" :range="PayType">
 						<view class="picker">{{PayType[indexPayType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">账户(卡号)</view>
-					<input placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
+					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">受理单位(银行)</view>
-					<input placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
+					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">备注</view>
 				</view>
 				<view class="cu-form-group">
-					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
+					<textarea :disabled="modalName!=null" @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1"
 					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
 					</view>
 				<block v-for="(item,index) in formList" :key="index">
@@ -105,7 +105,7 @@
 							<text class="icon-title text-orange"></text>
 							还款明细({{item.id}})
 						</view>
-						<view class="action" v-if="formList.length!=1">
+						<view class="action" v-if="formList.length!=1 && edit === false">
 							<button class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
 								<text class="icon-roundclosefill" style="font-size: 2em;color:red;"></text>
 							</button>
@@ -118,7 +118,7 @@
 					</view>
 					<view class="cu-form-group">
 						<view class="title">还款金额</view>
-						<input placeholder="请输入还款金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
+						<input :disabled="edit?true:false" placeholder="请输入还款金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
 						 :value="item.jine">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
@@ -154,18 +154,18 @@
           <view class="cu-form-group">
             <view class="grid col-4 grid-square flex-sub">
               <view class="padding-xs bg-img" :style="'background-image:url(' + item.imageList[index1].url +')'" v-for="(_item,index1) in item.imageList" :key="index1" @tap="previewImage(item,$event)" :data-url="item.imageList[index1].url">
-                <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1">
+                <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1" v-if="edit === false">
                   <text class="icon-delete"></text>
                 </view>
               </view>
-              <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9">
+              <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9 && edit === false">
                 <text class="icon-cameraadd"></text>
               </view>
             </view>
           </view>
           <!-- 图片结束 -->
         </block>
-        <uni-view class="uni-card-link margin-top" style="text-align: center;min-height: 100upx;top: 10px;">
+        <uni-view class="uni-card-link margin-top" style="text-align: center;min-height: 100upx;top: 10px;" v-if="edit === false">
           <i class="icon-add" @tap="addOption">增加&nbsp;&nbsp;还款明细</i>
         </uni-view>
       </form>
@@ -920,8 +920,13 @@ export default {
     if (this.editflag) {
       this.editItem = JSON.parse(e.data);
       this.itemData.DocEntry=this.editItem.DocEntry;
-	  console.log(this.editItem);
-      this.getDetailData();
+	  var _this = this;
+	  uni.showLoading({
+	    title: "拼命加载中..."
+	  });
+	  setTimeout(function(){
+	  		  _this.getDetailData();
+	  }, 1000);
     }
     if(!this.editflag)
 		{

@@ -30,7 +30,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal">
+		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioChange">
 					<view class="cu-list menu text-left">
@@ -44,7 +44,7 @@
 				</radio-group>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalNameType=='RadioModalType'?'show':''" @tap="hideModalType">
+		<view class="cu-modal" :class="modalNameType=='RadioModalType'?'show':''" @tap="hideModalType" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioTypeChange">
 					<view class="cu-list menu text-left">
@@ -58,7 +58,7 @@
 				</radio-group>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalNameTraffic=='RadioModalTraffic'?'show':''" @tap="hideModalTraffic">
+		<view class="cu-modal" :class="modalNameTraffic=='RadioModalTraffic'?'show':''" @tap="hideModalTraffic" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioTrafficChange">
 					<view class="cu-list menu text-left">
@@ -86,39 +86,39 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">支付方式</view>
-					<picker @change="bindPickerChange1" :value="indexPayType" :range="PayType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexPayType" :range="PayType">
 						<view class="picker">{{PayType[indexPayType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">费用类型</view>
-					<picker @change="bindPickerChange2" :value="indexCostType" :range="CostType">
+					<picker :disabled="edit?true:false" @change="bindPickerChange2" :value="indexCostType" :range="CostType">
 						<view class="picker">{{CostType[indexCostType]}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">开户名</view>
-					<input placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)" :value="itemData.AccountName">
+					<input :disabled="edit?true:false" placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)" :value="itemData.AccountName">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">账户(卡号)</view>
-					<input placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
+					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">受理单位(银行)</view>
-					<input placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
+					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">出差天数</view>
-					<input placeholder="出差天数" name="input" style="text-align: right;" @input="inputNumDays($event)" :value="itemData.Days">
+					<input :disabled="edit?true:false" placeholder="出差天数" name="input" style="text-align: right;" @input="inputNumDays($event)" :value="itemData.Days">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">出差补贴金额</view>
-					<input placeholder="出差补贴金额" name="input" style="text-align: right;" @input="inputNumAllowanceAmount($event)"
+					<input :disabled="edit?true:false" placeholder="出差补贴金额" name="input" style="text-align: right;" @input="inputNumAllowanceAmount($event)"
 					 :value="itemData.AllowanceAmount">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
@@ -126,7 +126,7 @@
 					<view class="title">出差事由</view>
 				</view>
 				<view class="cu-form-group">
-					<textarea @input="textareaInputReasons" :class="itemData.Reasons?'value':''" maxlength="-1" :disabled="modalName!=null"
+					<textarea :disabled="modalName!=null" @input="textareaInputReasons" :class="itemData.Reasons?'value':''" maxlength="-1"
 					 placeholder-class="placeholder" data-placeholder="在此输入出差事由" :value="itemData.Reasons" />
 					</view>
 				<view class="cu-form-group">
@@ -146,7 +146,7 @@
 							<text class="cu-tag round bg-blue light" data-target="RadioModalType" @tap="showModalType(item.id,$event)">{{item.DetailTypeName}}</text>
 							<text v-if="false" class="icon-roundclosefill text-orange"></text>
 						</view>
-						<view class="action" v-if="formList.length!=1">
+						<view class="action" v-if="formList.length!=1 && edit === false">
 							<button class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
 								<text class="icon-roundclosefill" style="font-size: 2em;color:red;"></text>
 							</button>
@@ -154,7 +154,7 @@
 					</view>
 					<view class="cu-form-group">
 						<view class="title">报销金额</view>
-						<input placeholder="请输入报销金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
+						<input :disabled="edit?true:false" placeholder="请输入报销金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
 						 :value="item.jine">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
@@ -171,41 +171,41 @@
 					</view>
 					<view class="cu-form-group">
 						<view class="title">报销类型</view>
-						<picker v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange(item,$event)" :value="item.itemOptionIndex" :range="arrayType">
+						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange(item,$event)" :value="item.itemOptionIndex" :range="arrayType">
 							<view class="picker">{{arrayType[item.itemOptionIndex]}}</view>
 						</picker>
 					</view>
 					<view class="cu-form-group">
 						<view class="title">单据张数</view>
-						<input placeholder="单据张数" name="input" style="text-align: right;" @input="inputNumCount1(item,$event)" :value="item.Count1">
+						<input :disabled="edit?true:false" placeholder="单据张数" name="input" style="text-align: right;" @input="inputNumCount1(item,$event)" :value="item.Count1">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group">
 						<view class="title">发票类型</view>
-						<picker v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange4(item,$event)" :value="item.indexVatType" :range="VatType">
+						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange4(item,$event)" :value="item.indexVatType" :range="VatType">
 							<view class="picker">{{VatType[item.indexVatType]}}</view>
 						</picker>
 					</view>
 					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
 						<view class="title">出发日期</view>
-						<picker mode="date" :value="item.DocDateStart" :start="startDate" :end="endDate" @change="bindDateStartChange(item,$event)">
+						<picker :disabled="edit?true:false" mode="date" :value="item.DocDateStart" :start="startDate" :end="endDate" @change="bindDateStartChange(item,$event)">
 							<view class="picker">{{item.DocDateStart}}</view>
 						</picker>
 					</view>
 					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
 						<view class="title">出发地点</view>
-						<input placeholder="出发地点" name="input" style="text-align: right;" @input="inputNumStartPlace(item,$event)" :value="item.StartPlace">
+						<input :disabled="edit?true:false" placeholder="出发地点" name="input" style="text-align: right;" @input="inputNumStartPlace(item,$event)" :value="item.StartPlace">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
 						<view class="title">到达日期</view>
-						<picker mode="date" :value="item.DocDateArrive" :start="startDate" :end="endDate" @change="bindDateArriveChange(item,$event)">
+						<picker :disabled="edit?true:false" mode="date" :value="item.DocDateArrive" :start="startDate" :end="endDate" @change="bindDateArriveChange(item,$event)">
 							<view class="picker">{{item.DocDateArrive}}</view>
 						</picker>
 					</view>
 					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
 						<view class="title">到达地点</view>
-						<input placeholder="到达地点" name="input" style="text-align: right;" @input="inputNumArrivePlace(item,$event)" :value="item.ArrivePlace">
+						<input :disabled="edit?true:false" placeholder="到达地点" name="input" style="text-align: right;" @input="inputNumArrivePlace(item,$event)" :value="item.ArrivePlace">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
@@ -218,7 +218,7 @@
 					</view>
 					<view class="cu-form-group">
 						<textarea @input="textareaInput(item,$event)" :class="item.Remarks1?'value':''"
-						 maxlength="-1" :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入明细备注" :value="item.Remarks1" />
+						 maxlength="-1" placeholder-class="placeholder" data-placeholder="在此输入明细备注" :value="item.Remarks1" />
 						</view>
           <!-- 图片开始 -->
           <view class="cu-bar bg-white">
@@ -228,11 +228,11 @@
           <view class="cu-form-group">
             <view class="grid col-4 grid-square flex-sub">
               <view class="padding-xs bg-img" :style="'background-image:url(' + item.imageList[index1].url +')'" v-for="(_item,index1) in item.imageList" :key="index1" @tap="previewImage(item,$event)" :data-url="item.imageList[index1].url">
-                <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1">
+                <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1" v-if="edit === false">
                   <text class="icon-delete"></text>
                 </view>
               </view>
-              <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9">
+              <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9 && edit === false">
                 <text class="icon-cameraadd"></text>
               </view>
             </view>
@@ -1431,7 +1431,13 @@ export default {
 	      });
 	    }
 	  );
-      this.getDetailData();
+	  uni.showLoading({
+	    title: "拼命加载中..."
+	  });
+	  var _this = this;
+	  setTimeout(function(){
+	  		  _this.getDetailData();
+	  }, 1000);
     }
     if(!this.editflag)
 		{
