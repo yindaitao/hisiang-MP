@@ -36,8 +36,8 @@
 					<view class="cu-list menu text-left">
 						<view class="cu-item" v-for="(item,index) in invCompanys" :key="index">
 							<label class="flex justify-between align-center flex-sub">
-								<view class="flex-sub">{{item.Name}}</view>
-								<radio class="round" :class="radio==item.Code?'checked':''" :checked="radio==item.Code?true:false" :value="item.Code"></radio>
+								<view class="flex-sub">{{item.ACName}}</view>
+								<radio class="round" :class="radio==item.ACCode?'checked':''" :checked="radio==item.ACCode?true:false" :value="item.ACCode"></radio>
 							</label>
 						</view>
 					</view>
@@ -74,16 +74,11 @@
 		</view>
 		<view class="ul-swiper-box margin-top" style="margin-top: 50px;">
 			<form>
-				<view class="cu-form-group" readonly>
+				<!-- <view class="cu-form-group" readonly>
 					<view class="title">单号</view>
 					<text class="cu-tag round bg-gray light">{{itemData.DocEntry}}</text>
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
-				<view class="cu-form-group" readonly>
-					<view class="title">公司</view>
-					<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1">{{itemData.InvCompanyName}}</text>
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
+				</view> -->
 				<view class="cu-form-group">
 					<view class="title">支付方式</view>
 					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexPayType" :range="PayType">
@@ -91,25 +86,16 @@
 					</picker>
 				</view>
 				<view class="cu-form-group">
+					<view class="title">报销类型</view>
+					<picker :disabled="edit?true:false" @change="bindPickerChange3" :value="indexReimbursementType" :range="ReimbursementNameList">
+						<view class="picker">{{ReimbursementNameList[indexReimbursementType]}}</view>
+					</picker>
+				</view>
+				<view class="cu-form-group">
 					<view class="title">费用类型</view>
 					<picker :disabled="edit?true:false" @change="bindPickerChange2" :value="indexCostType" :range="CostType">
 						<view class="picker">{{CostType[indexCostType]}}</view>
 					</picker>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">开户名</view>
-					<input :disabled="edit?true:false" placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)" :value="itemData.AccountName">
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">账户(卡号)</view>
-					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">受理单位(银行)</view>
-					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">出差天数</view>
@@ -128,13 +114,6 @@
 				<view class="cu-form-group">
 					<textarea :disabled="modalName!=null" @input="textareaInputReasons" :class="itemData.Reasons?'value':''" maxlength="-1"
 					 placeholder-class="placeholder" data-placeholder="在此输入出差事由" :value="itemData.Reasons" />
-					</view>
-				<view class="cu-form-group">
-					<view class="title">备注</view>
-				</view>
-				<view class="cu-form-group">
-					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
-					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
 				</view>
 				<block v-for="(item,index) in formList" :key="index">
 					<view class="cu-bar bg-gray solid-bottom margin-top">
@@ -170,7 +149,7 @@
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
 					</view>
 					<view class="cu-form-group">
-						<view class="title">报销类型</view>
+						<view class="title">费用名称</view>
 						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange(item,$event)" :value="item.itemOptionIndex" :range="arrayType">
 							<view class="picker">{{arrayType[item.itemOptionIndex]}}</view>
 						</picker>
@@ -182,7 +161,7 @@
 					</view>
 					<view class="cu-form-group">
 						<view class="title">发票类型</view>
-						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange4(item,$event)" :value="item.indexVatType" :range="VatType">
+						<picker :disabled="edit?true:false" @change="bindPickerChange4(item,$event)" :value="item.indexVatType" :range="VatType">
 							<view class="picker">{{VatType[item.indexVatType]}}</view>
 						</picker>
 					</view>
@@ -239,9 +218,38 @@
           </view>
           <!-- 图片结束 -->
         </block>
-        <uni-view class="uni-card-link margin-top" style="text-align: center;min-height: 100upx;top: 10px;">
-          <i class="icon-add" @tap="addOption">增加&nbsp;&nbsp;报销明细</i>
+        <uni-view class="cu-bar bg-gray solid-bottom" style="width: 100%;" v-if="edit === false">
+          <button class="cu-btn round bg-blue shadow" style="margin: 0 auto;" @tap="addOption">
+          	<text class="icon-add"></text>增加&nbsp;&nbsp;报销明细
+          </button>
         </uni-view>
+		<view class="cu-form-group" readonly>
+			<view class="title">公司</view>
+			<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1">{{itemData.InvCompanyName}}</text>
+			<text v-if="false" class="icon-roundclosefill text-orange"></text>
+		</view>
+		<view class="cu-form-group">
+			<view class="title">开户名</view>
+			<input :disabled="edit?true:false" placeholder="开户名" name="input" style="text-align: right;" @input="inputNumAN($event)" :value="itemData.AccountName">
+			<text v-if="false" class="icon-roundclosefill text-orange"></text>
+		</view>
+		<view class="cu-form-group">
+			<view class="title">账户(卡号)</view>
+			<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
+			<text v-if="false" class="icon-roundclosefill text-orange"></text>
+		</view>
+		<view class="cu-form-group">
+			<view class="title">受理单位(银行)</view>
+			<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
+			<text v-if="false" class="icon-roundclosefill text-orange"></text>
+		</view>
+		<view class="cu-form-group">
+			<view class="title">备注</view>
+		</view>
+		<view class="cu-form-group">
+			<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
+			 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
+		</view>
       </form>
     </view>
   </view>
@@ -261,7 +269,7 @@ export default {
   },
   data() {
     return {
-			PayType:["请选择支付方式","转账给申请人","转账给第三人(需备注)","银行转账(需备注)","现金支付给申请人","按发票汇款","银行托收","申请支票",
+			PayType:["转账给申请人","转账给第三人(需备注)","银行转账(需备注)","现金支付给申请人","按发票汇款","银行托收","申请支票",
 			"其他现金支付","其他银行汇款"],
 			indexPayType:0,
 			indexCostType: 0,
@@ -382,11 +390,11 @@ export default {
 		  indexPayType:0,
 		  AccountNumber:"",
 		  AcceptingUnit:"",
-		  PayTypeCode:"",
-		  PayTypeName:"请选择支付方式",
+		  PayTypeCode:"ToRequestUser",
+		  PayTypeName:"转账给申请人",
 		  Remarks:"",
-		  "InvCompanyId":"",
-		  "InvCompanyName":"请选择",
+		  InvCompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+		  InvCompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
 			CostType: [],
 			CostTypeCode:"",
 			CostTypeName:"",
@@ -420,8 +428,8 @@ export default {
           imageList: [],
           bigjine: "",
 		  Count1: 1,
-		  VatTypeCode:"",
-		  VatTypeName:"请选择",
+		  VatTypeCode:"1",
+		  VatTypeName:"定额发票",
 		  indexVatType: 0,
         }
       ],
@@ -536,56 +544,49 @@ export default {
 			this.modalNameTraffic = e.currentTarget.dataset.target;
 		},
     showModal(e) {
-			if(this.$mbservices.isEmpty(this.itemData.InvCompanyId))
+			if(this.$mbservices.isEmpty(this.itemData.ReimbursementTypeCode1))
 			{
-				uni.showToast({
-					title:'请选择开票公司',
-					icon:'none'
+				uni.showModal({
+					title:"提示",
+					content:"请选择报销类型",
+					showCancel:false,
+					
 				});
 				return false;
 			}
-			if(this.itemData.PayTypeCode==="BankToUser")
+			if(this.$mbservices.isEmpty(this.itemData.CostTypeCode))
 			{
-				if(this.$mbservices.isEmpty(this.itemData.AccountName))
-				{
-					uni.showToast({
-						title:'请输入开户名',
-						icon:'none'
-					});
-					return false;
-				}
-				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
-				{
-					uni.showToast({
-						title:'请输入银行卡号',
-						icon:'none'
-					});
-					return false;
-				}
-				if(this.$mbservices.isEmpty(this.itemData.AcceptingUnit))
-				{
-					uni.showToast({
-						title:'请输入受理银行',
-						icon:'none'
-					});
-					return false;
-				}
+				uni.showModal({
+					title:"提示",
+					content:"请选择费用类型",
+					showCancel:false,
+					
+				});
+				return false;
 			}
-			if(this.itemData.PayType!=="BankToUser"&&this.itemData.PayType!=="MoneyToUser")
+			if(this.$mbservices.isEmpty(this.itemData.Days))
 			{
-				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
-				{
-					uni.showToast({
-						title:'请输入收款账户',
-						icon:'none'
-					});
-					return false;
-				}
+				uni.showModal({
+					title:"提示",
+					content:"请输入出差天数",
+					showCancel:false,
+					
+				});
+				return false;
 			}
 			
       var isNull_ = false;
       var content = "";
       this.formList.forEach(_item => {
+		if (
+		  _item.DetailTypeName === "" ||
+		  _item.DetailTypeName === undefined ||
+		  _item.DetailTypeName === null ||
+		  _item.DetailTypeName === "请选择明细类型"
+		) {
+		  isNull_ = true;
+		  content = "请选择明细类型";
+		}  
         if (
           _item.jine === "" ||
           _item.jine === undefined ||
@@ -594,9 +595,23 @@ export default {
           isNull_ = true;
           content = "请输入报销金额";
         }
+		if (
+		  _item.VatTypeName === "" ||
+		  _item.VatTypeName === undefined ||
+		  _item.VatTypeName === null ||
+		  _item.VatTypeName === "请选择"
+		) {
+		  isNull_ = true;
+		  content = "请选择发票类型";
+		}
       });
       if (isNull_) {
-        uni.showToast({ title: content, icon: "none" });
+		  uni.showModal({
+		  	title:"提示",
+		  	content:content,
+		  	showCancel:false,
+		  	
+		  });
         return false;
       }
       this.modalName = e.currentTarget.dataset.target;
@@ -761,24 +776,25 @@ export default {
           Canceled: "No",
           Closed: "No",
           Amount: parseFloat(_this.totalJine).toFixed(2),
-          Attachment: "",
+          Attachments: "",
           Imgs: "",
           DocDate: _this.formatDate(),
           OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
-					CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
-					PayType:_this.itemData.PayTypeCode,
-					AccountCode: _this.itemData.AccountNumber,
-					 Bank: _this.itemData.AcceptingUnit,
-					 AccountName: _this.itemData.AccountName,
+		  OrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
+		  CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+		  CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
+		  PayType:_this.itemData.PayTypeCode,
+		  AccountCode: _this.itemData.AccountNumber,
+		  Bank: _this.itemData.AcceptingUnit,
+		  AccountName: _this.itemData.AccountName,
           ReimbursementType: _this.itemData.ReimbursementTypeCode1,
 		  InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  InvOrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 		  CostTypeCode: _this.itemData.CostTypeCode,
 		  CostTypeName: _this.itemData.CostTypeName,
-		  ReimbursementAmount: 1897,
 		  ReimbursementAmount: parseFloat(_this.totalJine).toFixed(2),
-					InvCompanyId:_this.itemData.InvCompanyId,
-					InvCompanyName:_this.itemData.InvCompanyName,
+		  InvCompanyId:_this.itemData.InvCompanyId,
+		  InvCompanyName:_this.itemData.InvCompanyName,
           BusinessTravelRequestLines: _lines,
           UIStatus: "New",
         };
@@ -868,8 +884,8 @@ export default {
         imageList: [],
         bigjine: "",
 		Count1: 1,
-		VatTypeCode:"",
-		VatTypeName:"请选择",
+		VatTypeCode:"1",
+		VatTypeName:"定额发票",
 		indexVatType: 0,
       });
     },
@@ -925,6 +941,15 @@ export default {
 				if(this.CostType[this.indexCostType] === this.CostTypeList[i].Name){
 					this.itemData.CostTypeCode = this.CostTypeList[i].Code;
 					this.itemData.CostTypeName = this.CostType[this.indexCostType];
+				}
+			}
+		},
+		bindPickerChange3: function(e) {
+			this.indexReimbursementType = e.target.value;
+			for(var i in this.ReimbursementTypeList){
+				if(this.ReimbursementNameList[this.indexReimbursementType] === this.ReimbursementTypeList[i].Name){
+					this.itemData.ReimbursementTypeCode1 = this.ReimbursementTypeList[i].Code;
+					this.itemData.ReimbursementTypeName1 = this.ReimbursementNameList[this.indexReimbursementType];
 				}
 			}
 		},
@@ -992,6 +1017,7 @@ export default {
 				this.$mbservices.Request(this.$webapi.getVatRecords,"POST",ajaxJSON,res=>{
 					if(res.data.RecordCount>0)
 					{
+						console.log(res.data.data)
 						res.data.data.forEach(item =>{
 							this.VatType.push(item.Name)
 							this.VatTypeList.push(item)

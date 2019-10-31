@@ -36,6 +36,34 @@
 					<view class="cu-list menu text-left">
 						<view class="cu-item" v-for="(item,index) in invCompanys" :key="index">
 							<label class="flex justify-between align-center flex-sub">
+								<view class="flex-sub">{{item.ACName}}</view>
+								<radio class="round" :class="radio==item.ACCode?'checked':''" :checked="radio==item.ACCode?true:false" :value="item.ACCode"></radio>
+							</label>
+						</view>
+					</view>
+				</radio-group>
+			</view>
+		</view>
+		<view class="cu-modal" :class="modalName=='RadioModalUser'?'show':''" @tap="hideModal" v-if="edit === false">
+			<view class="cu-dialog" @tap.stop="">
+				<radio-group class="block" @change="RadioChangeUser">
+					<view class="cu-list menu text-left">
+						<view class="cu-item" v-for="(item,index) in Users" :key="index">
+							<label class="flex justify-between align-center flex-sub">
+								<view class="flex-sub">{{item.UserName}}</view>
+								<radio class="round" :class="radio==item.UserId?'checked':''" :checked="radio==item.UserId?true:false" :value="item.UserId"></radio>
+							</label>
+						</view>
+					</view>
+				</radio-group>
+			</view>
+		</view>
+		<view class="cu-modal" :class="modalName=='RadioModalVehicle'?'show':''" @tap="hideModal" v-if="edit === false">
+			<view class="cu-dialog" @tap.stop="">
+				<radio-group class="block" @change="RadioChangeVehicle">
+					<view class="cu-list menu text-left">
+						<view class="cu-item" v-for="(item,index) in Vehicles" :key="index">
+							<label class="flex justify-between align-center flex-sub">
 								<view class="flex-sub">{{item.Name}}</view>
 								<radio class="round" :class="radio==item.Code?'checked':''" :checked="radio==item.Code?true:false" :value="item.Code"></radio>
 							</label>
@@ -44,7 +72,7 @@
 				</radio-group>
 			</view>
 		</view>
-		<view class="cu-modal" :class="modalName=='RadioModalBaseEntry'?'show':''" @tap="hideModalBaseEntry" style="margin-top: 75px;" v-if="edit === false">
+		<view class="cu-modal" :class="modalName=='RadioModalBaseEntry'?'show':''" @tap="hideModalBaseEntry" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioChangeBaseEntry">
 					<view class="cu-list menu text-left">
@@ -63,11 +91,11 @@
 		</view>
 		<view class="ul-swiper-box margin-top" style="margin-top: 50px;">
 			<form>
-				<view class="cu-form-group" readonly>
+				<!-- <view class="cu-form-group" readonly>
 					<view class="title">单号</view>
 					<text class="cu-tag round bg-gray light">{{itemData.DocEntry}}</text>
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
+				</view> -->
 				<view class="cu-form-group">
 					<view class="title">申请日期</view>
 					<picker :disabled="edit?true:false" mode="date" :value="itemData.DocDate" :start="startDate" :end="endDate"
@@ -80,31 +108,24 @@
 					<text class="cu-tag round bg-blue light" data-target="RadioModalBaseEntry" @tap="showModalBaseEntry">{{itemData.BaseEntry}}</text>
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
-				<view class="cu-form-group">
-					<view class="title">用途</view>
-				</view>
-				<view class="cu-form-group">
-					<textarea @input="textareaInput" :class="itemData.itemReason?'value':''"
-					 maxlength="-1" :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入用途" :value="itemData.itemReason" />
-					</view>
-					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Quantity'">
+				<view class="cu-form-group" v-if="itemData.AdvanceType === 'Quantity'">
 						<view class="title">数量</view>
 						<input :disabled="edit?true:false" placeholder="请输入数量" name="input" type="digit" style="text-align: right;" @input="inputQuantityNum(itemData,$event)"
 						 :value="itemData.num">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
-					</view>
-					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Amount'">
+				</view>
+				<view class="cu-form-group" v-if="itemData.AdvanceType === 'Amount'">
 						<view class="title">金额</view>
 						<input :disabled="edit?true:false" placeholder="请输入金额" name="input" type="digit" style="text-align: right;" @input="inputNum(itemData,$event)"
 						 :value="itemData.jine">
 						<text v-if="false" class="icon-roundclosefill text-orange"></text>
-					</view>
-					<view class="cu-form-group" v-if="itemData.AdvanceType === 'Amount'">
+				</view>
+				<view class="cu-form-group" v-if="itemData.AdvanceType === 'Amount'">
 						<view class="title">大写金额</view>
 						<view class="action">
 							<view class="cu-tag round bg-blue light">{{itemData.bigjine}}</view>
 						</view>
-					</view>
+				</view>
 				<view class="cu-form-group">
 					<view class="title">费用类型</view>
 					<picker :disabled="edit?true:false" @change="bindPickerChange2" :value="indexCostType" :range="CostType">
@@ -116,6 +137,23 @@
 					<picker :disabled="edit?true:false" @change="bindPickerChange3" :value="indexReimbursementType" :range="ReimbursementType">
 						<view class="picker">{{ReimbursementType[indexReimbursementType]}}</view>
 					</picker>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">用途</view>
+				</view>
+				<view class="cu-form-group">
+					<textarea @input="textareaInput" :class="itemData.itemReason?'value':''" maxlength="-1" :disabled="modalName!=null"
+					 placeholder-class="placeholder" data-placeholder="在此输入用途" :value="itemData.itemReason" />
+				</view>
+				<view class="cu-form-group" readonly>
+					<view class="title">使用人</view>
+					<text class="cu-tag round bg-blue light" data-target="RadioModalUser" @tap="showModalUser">{{itemData.UserName}}</text>
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group" readonly>
+					<view class="title">使用车辆</view>
+					<text class="cu-tag round bg-blue light" data-target="RadioModalVehicle" @tap="showModalVehicle">{{itemData.VehicleName}}</text>
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group" readonly>
 					<view class="title">公司</view>
@@ -134,7 +172,7 @@
 					
           <!-- 图片开始 -->
           <view class="cu-bar bg-white">
-            <view class="action">选择图片</view>
+			<view class="action">选择图片</view>
             <view class="action">{{item.imageList.length}}/9</view>
           </view>
           <view class="cu-form-group">
@@ -175,6 +213,8 @@ export default {
 			radio: 'radio1',
 			radio2: 'radio2',
 			invCompanys:[],
+			Users:[],
+			Vehicles:[],
 			CostType:["请选择"],
 			CostTypeList:[],
 			ReimbursementType:["请选择"],
@@ -199,8 +239,10 @@ export default {
 		  BaseEntry:"请选择",
 		  itemReason:"",
 		  Remarks:"",
-		  "InvCompanyId":"",
-		  "InvCompanyName":"请选择",
+		  // "InvCompanyId":"",
+		  // "InvCompanyName":"请选择",
+		  InvCompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+		  InvCompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
 		  CostType: [],
 		  CostTypeCode:"",
 		  CostTypeName:"",
@@ -211,6 +253,10 @@ export default {
 		  AdvanceType:"",
 		  jine:"",
 		  bigjine:"",
+		  UserId: "",
+		  UserName: "请选择",
+		  VehicleCode: "",
+		  VehicleName:"请选择",
 	},
 	DepletesList:[],
       formList: [
@@ -251,20 +297,64 @@ export default {
 				      Operation: "EQUAL",
 				      ConditionValue: "Y",
 				      Relationship: "AND"
-				    },
-						{
-							FieldName: "OrganizationType",
-							Operation: "EQUAL",
-							ConditionValue: "B",
-							Relationship: "AND"
-						}
+				    }
 				  ]
 				}
 			};
-			this.$mbservices.Request(this.$webapi.getOrgList,"POST",ajaxJSON,res=>{
+			this.$mbservices.Request(this.$webapi.getInvCompany,"POST",ajaxJSON,res=>{
 				if(res.data.RecordCount>0)
 				{
 					this.invCompanys=res.data.data;
+				}
+				
+			},err=>{})
+		},
+		GetUsers:async function(){
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
+			this.$mbservices.Request(this.$webapi.GetUsers,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					this.Users=res.data.data;
+				}
+				
+			},err=>{})
+		},
+		GetVehicle:async function(){
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
+			this.$mbservices.Request(this.$webapi.GetVehicle,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					this.Vehicles=res.data.data;
 				}
 				
 			},err=>{})
@@ -273,31 +363,78 @@ export default {
 		RadioChange(e) {
 			this.radio = e.detail.value;
 			this.itemData.InvCompanyId=e.detail.value;
-			//this.itemData.InvCompanyName=this.
 			this.invCompanys.forEach(item=>{
-				if(item.Code===e.detail.value)
+				if(item.ACCode===e.detail.value)
 				{
-					this.itemData.InvCompanyName=item.Name;
+					this.itemData.InvCompanyName=item.ACName;
 				}
 			})
-			this.modalName = null
-			console.log(e);
+			this.modalName = null;
+			this.radio = "";
+		},
+		RadioChangeUser(e) {
+			this.radio = e.detail.value;
+			this.itemData.UserId=e.detail.value;
+			this.Users.forEach(item=>{
+				if(item.UserId.toString()===e.detail.value.toString())
+				{
+					this.itemData.UserName=item.UserName;
+				}
+			})
+			this.modalName = null;
+			this.radio = "";
+		},
+		RadioChangeVehicle(e) {
+			this.radio = e.detail.value;
+			this.itemData.VehicleCode=e.detail.value;
+			this.Vehicles.forEach(item=>{
+				if(item.Code===e.detail.value)
+				{
+					this.itemData.VehicleName=item.Name;
+				}
+			})
+			this.modalName = null;
+			this.radio = "";
 		},
 		showModal1(e) {
+			this.modalName = e.currentTarget.dataset.target;
+		},
+		showModalUser(e) {
+			this.modalName = e.currentTarget.dataset.target;
+		},
+		showModalVehicle(e) {
 			this.modalName = e.currentTarget.dataset.target;
 		},
 		showModalBaseEntry(e) {
 			this.modalName = e.currentTarget.dataset.target;
 		},
     showModal(e) {
-			if(this.$mbservices.isEmpty(this.itemData.InvCompanyId))
-			{
-				uni.showToast({
-					title:'请选择开票公司',
-					icon:'none'
-				});
-				return false;
-			}
+		if(this.$mbservices.isEmpty(this.itemData.BaseEntry) || this.itemData.BaseEntry === "请选择")
+		{
+			uni.showModal({
+				title: "提示",
+				content: "请选择消耗单",
+				showCancel: false
+			});
+			return false;
+		}
+		if(this.$mbservices.isEmpty(this.itemData.jine)&&this.itemData.AdvanceType === 'Amount')
+		{
+			uni.showModal({
+				title: "提示",
+				content: "请输入金额",
+				showCancel: false
+			});
+			return false;
+		}
+		if(this.$mbservices.isEmpty(this.itemData.num)&&this.itemData.AdvanceType === 'Quantity'){
+			uni.showModal({
+				title: "提示",
+				content: "请输入数量",
+				showCancel: false
+			});
+			return false;
+		}
 			
       var isNull_ = false;
       var content = "";
@@ -395,7 +532,7 @@ export default {
 		  ).toFixed(2));
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
 				_this.editEntitysList[0].InvCompanyId=_this.itemData.InvCompanyId;
-				_this.editEntitysList[0].InvCompanyName=_this.itemData.InvCompanyName;11
+				_this.editEntitysList[0].InvCompanyName=_this.itemData.InvCompanyName;
 				_this.editEntitysList[0].InvOrganizationCode=uni.getStorageSync("JSUserInfo").OrganizationCode;
 				_this.editEntitysList[0].InvOrganizationName=uni.getStorageSync("JSUserInfo").OrganizationName;
 				_this.editEntitysList[0].CostTypeCode= _this.itemData.CostTypeCode;
@@ -406,7 +543,11 @@ export default {
 				_this.editEntitysList[0].AdvanceType = _this.itemData.AdvanceType;
 				_this.editEntitysList[0].AmountOrQuantity=parseFloat(_this.totalJine).toFixed(2);
 				_this.editEntitysList[0].BaseEntry = _this.itemData.BaseEntry;
-        _this.editEntitysList[0].UIStatus = "Modify";
+				_this.editEntitysList[0].VehicleCode = _this.itemData.VehicleCode;
+				_this.editEntitysList[0].VehicleName = _this.itemData.VehicleName;
+				_this.editEntitysList[0].UserId = _this.itemData.UserId;
+				_this.editEntitysList[0].UserName = _this.itemData.UserName
+                _this.editEntitysList[0].UIStatus = "Modify";
         ajaxJSON = _this.editEntitysList[0];
       } else {
         ajaxJSON = {
@@ -424,10 +565,12 @@ export default {
           ApproveStatus: "Pending",
           Canceled: "No",
           Closed: "No",
-          Attachment: "",
+          Attachments: "",
           DocDate: _this.getDate(),
           OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
+		  OrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 		  CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+		  CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
 		  InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  InvOrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 		  CostTypeCode: _this.itemData.CostTypeCode,
@@ -436,14 +579,17 @@ export default {
 		  ReimbursementTypeName: _this.itemData.ReimbursementTypeName,
 		  InvCompanyId:_this.itemData.InvCompanyId,
 		  InvCompanyName:_this.itemData.InvCompanyName,
-		  UserId: null,
-		  UserName: null,
+		  UserId: _this.itemData.UserId,
+		  UserName: _this.itemData.UserName,
+		  VehicleCode: _this.itemData.VehicleCode,
+		  VehicleName: _this.itemData.VehicleName,
           UIStatus: "New"
         };
 		if(_this.itemData.AdvanceType === 'Quantity'){
 			ajaxJSON.AmountOrQuantity = itemData.num;
 		}
       }
+	  console.log(ajaxJSON);
       var requestUrl = _this.editflag
         ? _this.$webapi.submitDepleteRequestList
         : _this.$webapi.submitDepleteRequestList;
@@ -845,6 +991,16 @@ export default {
 			});
 			_$this.itemData.InvCompanyId = item.InvCompanyId;
 			_$this.itemData.InvCompanyName = item.InvCompanyName;
+			_$this.itemData.UserId = item.UserId;
+			_$this.itemData.UserName = item.UserName;
+			if(_$this.$mbservices.isEmpty(_$this.itemData.UserName)){
+				_$this.itemData.UserName = "无";
+			}
+			_$this.itemData.VehicleCode = item.VehicleCode;
+			_$this.itemData.VehicleName = item.VehicleName;
+			if(_$this.$mbservices.isEmpty(_$this.itemData.VehicleName)){
+				_$this.itemData.VehicleName = "无";
+			}
             _this.formList = [];
             _this.totalJine = parseFloat(item.AmountOrQuantity).toFixed(2);
             // item.ReimbursementRequestLines.forEach((_item, _indx) => {
@@ -945,6 +1101,10 @@ export default {
       this.getCostType();
 	  // 费用明细
 	  this.GetReimbursementType();
+	  // 获取使用人
+	  this.GetUsers();
+	  // 获取使用车辆
+	  this.GetVehicle();
       /* 初始化报销类型 */
       var ajaxJSON = {
         pageIndex: 0,
@@ -1002,6 +1162,10 @@ export default {
 		this.GetOpenDepletes();
 		// 在消耗申请中获取费用明细
 		this.GetReimbursementType();
+		// 获取使用人
+		this.GetUsers();
+		// 获取使用车辆
+		this.GetVehicle();
     /* 初始化报销类型 */
     var ajaxJSON = {
       pageIndex: 0,

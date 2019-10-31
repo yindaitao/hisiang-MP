@@ -55,6 +55,8 @@ module.exports = {
 	updateCostItem: websiteUrl + '/api/ReimbursementRequest/Update',
 	/* 获取报销列表 */
 	getReimList: websiteUrl + '/api/ReimbursementRequest/GetRecords',
+	// 获取收款公司
+	getBusinessPartner: websiteUrl + '/api/BusinessPartner/GetRecords',
 	/* 获取审核步骤 */
 	getStages: websiteUrl + '/api/ApprovalTemplate/GetApprovalStage',
 	/* 获取待办任务列表 */
@@ -105,10 +107,14 @@ module.exports = {
 	getDepleteRequestList: websiteUrl + '/api/DepleteDetails/GetRecords',
 	/* 消耗申请最大编号 */
 	maxNumDepleteRequest: websiteUrl + '/api/DepleteDetails/GetMaxDocEntry',
-	// 在消耗申请中获取消耗管理
+	// 在消耗申请中获取消耗品管理
 	GetOpenDepletes: websiteUrl + '/api/Deplete/GetOpenDepletes',
 	// 消耗申请中获取费用明细
 	GetReimbursementType: websiteUrl + '/api/ReimbursementType/GetRecords',
+	// 在消耗申请中获取使用人
+	GetUsers: websiteUrl + '/api/User/GetUsers',
+	// 在消耗申请中获取使用车辆
+	GetVehicle: websiteUrl + '/api/VehicleManagement/GetRecords',
 	// 保存消耗申请
 	submitDepleteRequestList: websiteUrl + '/api/DepleteDetails/Save',
 	/* 获取我的审核列表 */

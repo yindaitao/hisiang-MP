@@ -30,6 +30,20 @@
 				</view>
 			</view>
 		</view>
+		<view class="cu-modal" :class="modalName=='RadioModalInvC'?'show':''" @tap="hideModalInvC" v-if="edit === false">
+			<view class="cu-dialog" @tap.stop="">
+				<radio-group class="block" @change="RadioChangeInvC">
+					<view class="cu-list menu text-left">
+						<view class="cu-item" v-for="(item,index) in invCompanys" :key="index">
+							<label class="flex justify-between align-center flex-sub">
+								<view class="flex-sub">{{item.ACName}}</view>
+								<radio class="round" :class="radio==item.ACCode?'checked':''" :checked="radio==item.ACCode?true:false" :value="item.ACCode"></radio>
+							</label>
+						</view>
+					</view>
+				</radio-group>
+			</view>
+		</view>
 		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal" style="margin-top: 75px;" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioChange">
@@ -71,25 +85,103 @@
 		</view>
 		<view class="ul-swiper-box margin-top" style="margin-top: 50px;">
 			<form>
-				<view class="cu-form-group" readonly>
+				<!-- <view class="cu-form-group" readonly>
 					<view class="title">单号</view>
 					<text class="cu-tag round bg-gray light">{{itemData.DocEntry}}</text>
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
+				</view> -->
+				<block v-for="(item,index) in formList" :key="index">
+							<view class="cu-bar bg-gray solid-bottom margin-top">
+								<view class="action">
+									<text class="icon-title text-orange"></text>
+									还款明细({{item.id}})
+								</view>
+								<view class="action" v-if="formList.length!=1 && edit === false">
+									<button class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
+										<text class="icon-roundclosefill" style="font-size: 2em;color:red;"></text>
+									</button>
+								</view>
+							</view>
+							<view class="cu-form-group" readonly>
+								<view class="title">还款日期</view>
+								<text class="cu-tag round bg-gray light">{{formatDate(time)}}</text>
+								<text v-if="false" class="icon-roundclosefill text-orange"></text>
+							</view>
+							<view class="cu-form-group">
+								<view class="title">还款金额</view>
+								<input :disabled="edit?true:false" placeholder="请输入还款金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
+								 :value="item.jine">
+								<text v-if="false" class="icon-roundclosefill text-orange"></text>
+							</view>
+							<view class="cu-form-group">
+								<view class="title">大写金额</view>
+								<view class="action">
+									<view class="cu-tag round bg-blue light">{{item.bigjine}}</view>
+								</view>
+							</view>
+							<view class="cu-form-group" readonly>
+								<view class="title">借款单号</view>
+								<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1(item.id,$event)">{{item.BaseEntry}}</text>
+								<text v-if="false" class="icon-roundclosefill text-orange"></text>
+							</view>
+							<view class="cu-form-group">
+								<view class="title">借款日期</view>
+								<view class="action">
+									<view class="cu-tag round bg-gray light">{{item.BorrowDate}}</view>
+								</view>
+							</view>
+							<view class="cu-form-group">
+								<view class="title">借款备注</view>
+							</view>
+							<view class="cu-form-group" readonly>
+								<textarea :disabled="true" :class="item.BorrowReason?'value':''"
+								 maxlength="-1" placeholder-class="placeholder" :value="item.BorrowReason" />
+							</view>
+				  <!-- 图片开始 -->
+				  <view class="cu-bar bg-white">
+				    <view class="action">选择图片</view>
+				    <view class="action">{{item.imageList.length}}/9</view>
+				  </view>
+				  <view class="cu-form-group">
+				    <view class="grid col-4 grid-square flex-sub">
+				      <view class="padding-xs bg-img" :style="'background-image:url(' + item.imageList[index1].url +')'" v-for="(_item,index1) in item.imageList" :key="index1" @tap="previewImage(item,$event)" :data-url="item.imageList[index1].url">
+				        <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1" v-if="edit === false">
+				          <text class="icon-delete"></text>
+				        </view>
+				      </view>
+				      <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9 && edit === false">
+				        <text class="icon-cameraadd"></text>
+				      </view>
+				    </view>
+				  </view>
+				  <!-- 图片结束 -->
+				</block>
+				<uni-view class="cu-bar bg-gray solid-bottom" style="width: 100%;" v-if="edit === false">
+				  <button class="cu-btn round bg-blue shadow" style="margin: 0 auto;" @tap="addOption">
+				  	<text class="icon-add"></text>增加&nbsp;&nbsp;报销明细
+				  </button>
+				</uni-view>
 				<view class="cu-form-group">
 					<view class="title">还款方式</view>
 					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexPayType" :range="PayType">
 						<view class="picker">{{PayType[indexPayType]}}</view>
 					</picker>
 				</view>
+				<view class="cu-form-group" :disabled="edit">
+					<view class="title">公司</view>
+					<text class="cu-tag round bg-blue light" data-target="RadioModalInvC" @tap="showModalInvC">{{itemData.InvCompanyName}}</text>
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
 				<view class="cu-form-group">
 					<view class="title">账户(卡号)</view>
-					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)" :value="itemData.AccountNumber">
+					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)"
+					 :value="itemData.AccountNumber">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">受理单位(银行)</view>
-					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)" :value="itemData.AcceptingUnit">
+					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)"
+					 :value="itemData.AcceptingUnit">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
@@ -99,75 +191,6 @@
 					<textarea :disabled="modalName!=null" @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1"
 					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
 					</view>
-				<block v-for="(item,index) in formList" :key="index">
-					<view class="cu-bar bg-gray solid-bottom margin-top">
-						<view class="action">
-							<text class="icon-title text-orange"></text>
-							还款明细({{item.id}})
-						</view>
-						<view class="action" v-if="formList.length!=1 && edit === false">
-							<button class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
-								<text class="icon-roundclosefill" style="font-size: 2em;color:red;"></text>
-							</button>
-						</view>
-					</view>
-					<view class="cu-form-group" readonly>
-						<view class="title">还款日期</view>
-						<text class="cu-tag round bg-gray light">{{formatDate(time)}}</text>
-						<text v-if="false" class="icon-roundclosefill text-orange"></text>
-					</view>
-					<view class="cu-form-group">
-						<view class="title">还款金额</view>
-						<input :disabled="edit?true:false" placeholder="请输入还款金额" name="input" type="digit" style="text-align: right;" @input="inputNum(item,$event)"
-						 :value="item.jine">
-						<text v-if="false" class="icon-roundclosefill text-orange"></text>
-					</view>
-					<view class="cu-form-group">
-						<view class="title">大写金额</view>
-						<view class="action">
-							<view class="cu-tag round bg-blue light">{{item.bigjine}}</view>
-						</view>
-					</view>
-					<view class="cu-form-group" readonly>
-						<view class="title">借款单号</view>
-						<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1(item.id,$event)">{{item.BaseEntry}}</text>
-						<text v-if="false" class="icon-roundclosefill text-orange"></text>
-					</view>
-					<view class="cu-form-group">
-						<view class="title">借款日期</view>
-						<view class="action">
-							<view class="cu-tag round bg-gray light">{{item.BorrowDate}}</view>
-						</view>
-					</view>
-					<view class="cu-form-group">
-						<view class="title">借款备注</view>
-					</view>
-					<view class="cu-form-group" readonly>
-						<textarea :disabled="true" :class="item.BorrowReason?'value':''"
-						 maxlength="-1" placeholder-class="placeholder" :value="item.BorrowReason" />
-					</view>
-          <!-- 图片开始 -->
-          <view class="cu-bar bg-white">
-            <view class="action">选择图片</view>
-            <view class="action">{{item.imageList.length}}/9</view>
-          </view>
-          <view class="cu-form-group">
-            <view class="grid col-4 grid-square flex-sub">
-              <view class="padding-xs bg-img" :style="'background-image:url(' + item.imageList[index1].url +')'" v-for="(_item,index1) in item.imageList" :key="index1" @tap="previewImage(item,$event)" :data-url="item.imageList[index1].url">
-                <view class="cu-tag bg-red" @tap.stop="deleteImage(item,_item)" :data-index="index1" v-if="edit === false">
-                  <text class="icon-delete"></text>
-                </view>
-              </view>
-              <view class="padding-xs solids" @tap="chooseImage(item)" v-if="item.imageList.length<9 && edit === false">
-                <text class="icon-cameraadd"></text>
-              </view>
-            </view>
-          </view>
-          <!-- 图片结束 -->
-        </block>
-        <uni-view class="uni-card-link margin-top" style="text-align: center;min-height: 100upx;top: 10px;" v-if="edit === false">
-          <i class="icon-add" @tap="addOption">增加&nbsp;&nbsp;还款明细</i>
-        </uni-view>
       </form>
     </view>
   </view>
@@ -201,6 +224,7 @@ export default {
 				Name:"现金还款",
 			}],
 			radio: 'radio1',
+			invCompanys:[],
       modalName: null,
       resourceArray: ["选项一", "选项二", "选项三"],
       arrayType: ["选项一", "选项二", "选项三"],
@@ -216,7 +240,16 @@ export default {
       sizeType: ["压缩", "原图", "压缩或原图"],
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-			itemData:{DocEntry:"",indexPayType:0,AccountNumber:"",AcceptingUnit:"",PayTypeCode:"",PayTypeName:"请选择支付方式",Remarks:"",
+	  itemData:{
+		  DocEntry:"",
+		  indexPayType:0,
+		  AccountNumber:"",
+		  AcceptingUnit:"",
+		  PayTypeCode:"",
+		  PayTypeName:"请选择还款方式",
+		  Remarks:"",
+		  InvCompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+		  InvCompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
 			},
       formList: [
         {
@@ -261,43 +294,41 @@ export default {
 	                  s = s < 10 ? ('0' + s) : s;
 	                  return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
 	              },
+				  getInvCompany:async function(){
+				  	//invCompanys
+				  	var ajaxJSON={
+				  		pageIndex: 1,
+				  		rowsPerPage: "10000",
+				  		type: "Initialize",
+				  		Parameter: {
+				  		  LoadChildren: "NoLoad",
+				  		  Conditions: [
+				  		    {
+				  		      FieldName: "Activated",
+				  		      Operation: "EQUAL",
+				  		      ConditionValue: "Y",
+				  		      Relationship: "AND"
+				  		    }
+				  		  ]
+				  		}
+				  	};
+				  	this.$mbservices.Request(this.$webapi.getInvCompany,"POST",ajaxJSON,res=>{
+				  		if(res.data.RecordCount>0)
+				  		{
+				  			this.invCompanys=res.data.data;
+				  		}
+				  		
+				  	},err=>{})
+				  },
 		selectOption(e){},
 		showModal1(ID,e) {
 			this.BorrowId = ID;
 			this.modalName = e.currentTarget.dataset.target;
 		},
+		showModalInvC(e) {
+			this.modalName = e.currentTarget.dataset.target;
+		},
     showModal(e) {
-			if(this.itemData.PayTypeCode==="BankToUser")
-			{
-				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
-				{
-					uni.showToast({
-						title:'请输入银行卡号',
-						icon:'none'
-					});
-					return false;
-				}
-				if(this.$mbservices.isEmpty(this.itemData.AcceptingUnit))
-				{
-					uni.showToast({
-						title:'请输入受理银行',
-						icon:'none'
-					});
-					return false;
-				}
-			}
-			if(this.itemData.PayTypeCode!=="BankToUser"&&this.itemData.PayTypeCode!=="MoneyToUser")
-			{
-				if(this.$mbservices.isEmpty(this.itemData.AccountNumber))
-				{
-					uni.showToast({
-						title:'请输入收款账户',
-						icon:'none'
-					});
-					return false;
-				}
-			}
-			
       var isNull_ = false;
       var content = "";
       this.formList.forEach(_item => {
@@ -309,16 +340,43 @@ export default {
           isNull_ = true;
           content = "请输入还款金额";
         }
+		if (
+		  _item.BaseEntry === "" ||
+		  _item.BaseEntry === undefined ||
+		  _item.BaseEntry === null ||
+		  _item.BaseEntry === "请选择"
+		) {
+		  isNull_ = true;
+		  content = "请选择借款单号";
+		}
       });
       if (isNull_) {
-        uni.showToast({ title: content, icon: "none" });
+		  uni.showModal({
+		  	title:"提示",
+		  	content: content,
+		  	showCancel:false,
+		  	
+		  });
         return false;
       }
+	  if(this.$mbservices.isEmpty(this.itemData.PayTypeName) || this.itemData.PayTypeName === "请选择还款方式")
+	  {
+	  	uni.showModal({
+	  		title:"提示",
+	  		content:"请选择还款方式",
+	  		showCancel:false,
+	  		
+	  	});
+	  	return false;
+	  }
       this.modalName = e.currentTarget.dataset.target;
     },
     hideModal(e) {
       this.modalName = null;
     },
+	hideModalInvC(e) {
+	  this.modalName = null;
+	},
 	RadioChange(e) {
 		this.radio = e.detail.value;
 		this.formList[this.BorrowId-1].BaseEntry = "";
@@ -333,6 +391,19 @@ export default {
 		})
 		this.modalName = null;
 		this.radio = "";
+	},
+	RadioChangeInvC(e) {
+		this.radio = e.detail.value;
+		this.itemData.InvCompanyId=e.detail.value;
+		this.invCompanys.forEach(item=>{
+			if(item.ACCode===e.detail.value)
+			{
+				this.itemData.InvCompanyName=item.ACName;
+			}
+		})
+		this.modalName = null;
+		this.radio = "";
+		console.log(e);
 	},
     onlySave() {
       this.modalName = null;
@@ -416,7 +487,7 @@ export default {
           ).toFixed(2));
 				_this.editEntitysList[0].RePayType=_this.itemData.PayTypeCode;
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
-				_this.editEntitysList[0].InvCompanyId=uni.getStorageSync("JSUserInfo").CompanyId;
+				_this.editEntitysList[0].InvCompanyId=_this.itemData.InvCompanyId;
 				_this.editEntitysList[0].InvCompanyName=_this.itemData.InvCompanyName;
 				_this.editEntitysList[0].InvOrganizationCode=uni.getStorageSync("JSUserInfo").OrganizationCode;
 				_this.editEntitysList[0].InvOrganizationName=uni.getStorageSync("JSUserInfo").OrganizationName;
@@ -441,8 +512,8 @@ export default {
 		  CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
 		  CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
 		  RePayType:_this.itemData.PayTypeCode,
-		  InvCompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
-		  InvCompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
+		  InvCompanyId: _this.itemData.InvCompanyId,
+		  InvCompanyName: _this.itemData.InvCompanyName,
 		  InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  InvOrganizationName:uni.getStorageSync("JSUserInfo").OrganizationName,
 		  RepaymentRequestLines: _lines,
@@ -454,37 +525,37 @@ export default {
         ? _this.$webapi.submitpaymentRequest
         : _this.$webapi.submitpaymentRequest;
 				var _$this=_this;
-      _this.$mbservices.Request(
-        requestUrl,
-        "POST",
-        ajaxJSON,
-        function(succ) {
-          setTimeout(function() {
-            uni.hideLoading();
-          }, 1000);
-          if (
-            succ.data.RecordCount == undefined ||
-            succ.data.RecordCount <= 0
-          ) {
-            uni.showToast({
-              title: "" + succ.data
-            });
-            return false;
-          }
-          uni.showToast({
-            title: "成功"
-          });
-					_$this.$mbservices.setIsRefresh(true);
-          uni.navigateBack({
-            animationDuration: 500
-          });
-        },
-        function(err) {
-          uni.showToast({
-            title: "失败:" + err.data
-          });
-        }
-      );
+     //  _this.$mbservices.Request(
+     //    requestUrl,
+     //    "POST",
+     //    ajaxJSON,
+     //    function(succ) {
+     //      setTimeout(function() {
+     //        uni.hideLoading();
+     //      }, 1000);
+     //      if (
+     //        succ.data.RecordCount == undefined ||
+     //        succ.data.RecordCount <= 0
+     //      ) {
+     //        uni.showToast({
+     //          title: "" + succ.data
+     //        });
+     //        return false;
+     //      }
+     //      uni.showToast({
+     //        title: "成功"
+     //      });
+					// _$this.$mbservices.setIsRefresh(true);
+     //      uni.navigateBack({
+     //        animationDuration: 500
+     //      });
+     //    },
+     //    function(err) {
+     //      uni.showToast({
+     //        title: "失败:" + err.data
+     //      });
+     //    }
+     //  );
     },
     inputNum(item, event) {
       item.jine = event.detail.value;
@@ -821,6 +892,13 @@ export default {
 						_$this.itemData.PayTypeCode=item.RePayType;
 						_$this.itemData.AccountNumber=item.AccountNumber;
 						_$this.itemData.AcceptingUnit=item.AcceptingUnit;
+						_$this.itemData.InvCompanyId = item.InvCompanyId;
+						_$this.invCompanys.forEach(item => {
+							if(item.ACCode===_$this.itemData.InvCompanyId)
+							{
+								_$this.itemData.InvCompanyName=item.ACName;
+							}
+						})
 						_$this.itemData.Remarks=item.Remarks;
 						_$this.PayTypeList.forEach(inner => {
 							if (inner.Code === _$this.itemData.PayTypeCode) {
@@ -928,6 +1006,9 @@ export default {
 	  uni.showLoading({
 	    title: "拼命加载中..."
 	  });
+	  /* 所属公司 */
+	  this.getInvCompany();
+	  
 	  setTimeout(function(){
 	  		  _this.getDetailData();
 	  }, 1000);
@@ -939,6 +1020,8 @@ export default {
 				this.itemData.DocEntry=res.data;
 			},null);
 		}
+		/* 所属公司 */
+		this.getInvCompany();
     // 获取借款单据列表
 	this.getBorrowRequestList();
   },

@@ -1,104 +1,78 @@
 <template>
-    <view class="page">
-        <custom>借款申请</custom>
-        <view
-            class="cu-bar bg-white solid-bottom"
-            style="position: fixed;display: flex;z-index: 2;z-index: 999;width: 100%;"
-        >
-            <view class="action">
-                <text class="icon-redpacket text-orange"></text>
-                总金额:{{totalJine}}(元)
-            </view>
-            <view class="action" v-if="edit === false">
-                <button
-                    class="cu-btn round bg-blue shadow"
-                    data-target="DialogModal2"
-                    @tap="showModal"
-                >
-                    <text class="icon-upload"></text>提交
-                </button>
-            </view>
-        </view>
-        <view
-            class="cu-modal"
-            :class="modalName=='DialogModal2'?'show':''"
-        >
-            <view class="cu-dialog">
-                <view class="cu-bar bg-white justify-end">
-                    <view class="content">操作提示</view>
-                    <view
-                        class="action"
-                        @tap="hideModal"
-                    >
-                        <text class="icon-roundclose text-black"></text>
-                    </view>
-                </view>
-                <view class="padding-xl bg-white">
-                    <text class="text-black text-bold">确定提交申请?</text>
-                </view>
-                <view class="cu-bar bg-white">
-                    <view
-                        class="action margin-0 flex-sub text-grey"
-                        @tap="onlySave"
-                    >存草稿</view>
-                    <view
-                        class="action margin-0 flex-sub text-black solid-left"
-                        @tap="hideModal"
-                    >取消</view>
-                    <view
-                        class="action margin-0 flex-sub text-green solid-left"
-                        @tap="saveAndDoSteps"
-                    >确定提交</view>
-                </view>
-            </view>
-        </view>
-        <view
-            class="ul-swiper-box margin-top"
-            style="margin-top: 50px;"
-        >
-            <form @submit="setNaivgationBarTitle">
-                <view
-                    class="cu-form-group"
-                    readonly
-                >
-                    <view class="title">单号</view>
-                    <text class="cu-tag round bg-gray light">{{itemData.DocEntry}}</text>
-                    <text
-                        v-if="false"
-                        class="icon-roundclosefill text-orange"
-                    ></text>
-                </view>
-                <!-- <view class="cu-form-group">
+	<view class="page">
+		<custom>借款申请</custom>
+		<view class="cu-bar bg-white solid-bottom" style="position: fixed;display: flex;z-index: 2;z-index: 999;width: 100%;">
+			<view class="action">
+				<text class="icon-redpacket text-orange"></text>
+				总金额:{{totalJine}}(元)
+			</view>
+			<view class="action" v-if="edit === false">
+				<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
+					<text class="icon-upload"></text>提交
+				</button>
+			</view>
+		</view>
+		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">操作提示</view>
+					<view class="action" @tap="hideModal">
+						<text class="icon-roundclose text-black"></text>
+					</view>
+				</view>
+				<view class="padding-xl bg-white">
+					<text class="text-black text-bold">确定提交申请?</text>
+				</view>
+				<view class="cu-bar bg-white">
+					<view class="action margin-0 flex-sub text-grey" @tap="onlySave">存草稿</view>
+					<view class="action margin-0 flex-sub text-black solid-left" @tap="hideModal">取消</view>
+					<view class="action margin-0 flex-sub text-green solid-left" @tap="saveAndDoSteps">确定提交</view>
+				</view>
+			</view>
+		</view>
+		<view class="cu-modal" :class="modalName=='RadioModal'?'show':''" @tap="hideModal" v-if="edit === false">
+			<view class="cu-dialog" @tap.stop="">
+				<radio-group class="block" @change="RadioChange">
+					<view class="cu-list menu text-left">
+						<view class="cu-item" v-for="(item,index) in invCompanys" :key="index">
+							<label class="flex justify-between align-center flex-sub">
+								<view class="flex-sub">{{item.ACName}}</view>
+								<radio class="round" :class="radio==item.ACCode?'checked':''" :checked="radio==item.ACCode?true:false" :value="item.ACCode"></radio>
+							</label>
+						</view>
+					</view>
+				</radio-group>
+			</view>
+		</view>
+		<view class="ul-swiper-box margin-top" style="margin-top: 50px;">
+			<form @submit="setNaivgationBarTitle">
+				<!-- <view class="cu-form-group" readonly>
+					<view class="title">单号</view>
+					<text class="cu-tag round bg-gray light">{{itemData.DocEntry}}</text>
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view> -->
+				<!-- <view class="cu-form-group">
 					<view class="title">支出类型</view>
 					<picker @change="bindPickerChange" :value="indexBorrowType" :range="BorrowType">
 						<view class="picker">{{BorrowType[indexBorrowType]}}</view>
 					</picker>
 				</view> -->
-                <view class="cu-form-group">
-                    <view class="title">金额</view>
-                    <input
-					:disabled="edit?true:false"
-                        placeholder="支出金额"
-                        name="input"
-                        type="digit"
-                        style="text-align: right;"
-                        @input="inputNum"
-                        :value="itemData.Amount"
-                    >
-                    <text
-                        v-if="false"
-                        class="icon-roundclosefill text-orange"
-                    ></text>
-                </view>
-                <view class="cu-form-group">
-                    <view class="title">大写</view>
-                    <view class="action">
-                        <view class="cu-tag round bg-blue light">{{itemData.bigjine}}</view>
-                    </view>
-                </view>
+				<view class="cu-form-group">
+					<view class="title">金额</view>
+					<input :disabled="edit?true:false" placeholder="支出金额" name="input" type="digit" style="text-align: right;" @input="inputNum"
+					 :value="itemData.Amount">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">大写</view>
+					<view class="action">
+						<view class="cu-tag round bg-blue light">{{itemData.bigjine}}</view>
+					</view>
+				</view>
 				<view class="cu-form-group">
 					<view class="title">还款日期</view>
-					<picker :disabled="edit?true:false" mode="date" :value="itemData.BackDate" :start="startDate" :end="endDate" @change="bindDateChange(itemData,$event)">
+					<picker :disabled="edit?true:false" mode="date" :value="itemData.BackDate" :start="startDate" :end="endDate"
+					 @change="bindDateChange(itemData,$event)">
 						<view class="picker">{{itemData.BackDate}}</view>
 					</picker>
 				</view>
@@ -114,55 +88,33 @@
 						<view class="picker">{{CostType[indexCostType]}}</view>
 					</picker>
 				</view>
-                <view class="cu-form-group">
-                    <view class="title">账户(卡号)</view>
-                    <input
-					:disabled="edit?true:false"
-                        placeholder="账户(卡号)"
-                        name="input"
-                        style="text-align: right;"
-                        @input="inputNum1($event)"
-                        :value="itemData.AccountNumber"
-                    >
-                    <text
-                        v-if="false"
-                        class="icon-roundclosefill text-orange"
-                    ></text>
-                </view>
-                <view class="cu-form-group">
-                    <view class="title">受理单位(银行)</view>
-                    <input
-					:disabled="edit?true:false"
-                        placeholder="受理单位(银行)"
-                        name="input"
-                        style="text-align: right;"
-                        @input="inputNum2($event)"
-                        :value="itemData.AcceptingUnit"
-                    >
-                    <text
-                        v-if="false"
-                        class="icon-roundclosefill text-orange"
-                    ></text>
-                </view>
-                <view class="cu-form-group">
-                    <view class="title">备注</view>
-                    <!-- <view class="action">
+				<view class="cu-form-group" :disabled="edit">
+					<view class="title">公司</view>
+					<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1">{{itemData.InvCompanyName}}</text>
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">账户(卡号)</view>
+					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum1($event)"
+					 :value="itemData.AccountNumber">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">受理单位(银行)</view>
+					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum2($event)"
+					 :value="itemData.AcceptingUnit">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">备注</view>
+					<!-- <view class="action">
 						<view>已输入({{itemData.Remarks.length!==undefined?itemData.Remarks.length:0}})个字符</view>
 					</view> -->
-                </view>
-                <view class="cu-form-group">
-                    <textarea
-                        @input="textareaInput"
-                        :class="itemData.Remarks?'value':''"
-                        maxlength="-1"
-                        :disabled="modalName!=null"
-                        id="_Remarks"
-                        name="_Remarks"
-                        placeholder-class="placeholder"
-                        data-placeholder="在此输入备注"
-                        :value="itemData.Remarks"
-                    />
-                    </view>
+				</view>
+				<view class="cu-form-group">
+					<textarea @input="textareaInput" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
+					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
+					</view>
 					
 		</form>
 		</view>
@@ -191,7 +143,9 @@ export default {
             BaseBorrowType: [],
             BorrowType: ["选项一", "选项二", "选项三"],
             indexBorrowType: 0,
-            PayType:["请选择支付方式","转账给申请人","转账给第三人(需备注)","银行转账(需备注)","现金支付给申请人","按发票汇款","银行托收","申请支票",
+			invCompanys:[],
+			radio: 'radio1',
+            PayType:["转账给申请人","转账给第三人(需备注)","银行转账(需备注)","现金支付给申请人","按发票汇款","银行托收","申请支票",
             "其他现金支付","其他银行汇款"],
             indexPayType:0,
 			PayTypeList:[{
@@ -253,8 +207,8 @@ export default {
                 indexPayType:0,
                 AccountNumber: "",
                 AcceptingUnit: "",
-				PayTypeCode:"",
-				PayTypeName:"请选择支付方式",
+				PayTypeCode:"ToRequestUser",
+				PayTypeName:"转账给申请人",
                 Remarks: "",
                 invoicetext: "",
 				BackDate:this.getDate({
@@ -263,8 +217,8 @@ export default {
 				CostTypeName:"",
 				InvOrganizationCode:"",
 				InvOrganizationName: "",
-				InvCompanyId :"",
-				"InvCompanyName":"请选择",
+				InvCompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+				InvCompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
                 pics: [],
             },
             editItem: {},
@@ -285,6 +239,8 @@ export default {
         );
 		// 费用类型
 		this.getCostType();
+		/* 所属公司 */
+		this.getInvCompany();
         //获取支出分类
         /* var conds = [{ FieldName: "Activated", Operation: "EQUAL", ConditionValue: "Y", Relationship: "AND" },{ FieldName: "DataType", Operation: "EQUAL", ConditionValue: "S", Relationship: "AND" }];
 			
@@ -316,6 +272,8 @@ export default {
          this.itemData.DocEntry=this.editItem.DocEntry;
          // 费用类型
          this.getCostType();
+		 /* 所属公司 */
+		 this.getInvCompany();
 		 uni.showLoading({
 		   title: "拼命加载中..."
 		 });
@@ -334,6 +292,32 @@ export default {
 	  }
 	},
     methods: {
+		getInvCompany:async function(){
+			//invCompanys
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
+			this.$mbservices.Request(this.$webapi.getInvCompany,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					this.invCompanys=res.data.data;
+				}
+				
+			},err=>{})
+		},
 		getDate(type) {
 		  const date = new Date();
 		
@@ -350,6 +334,21 @@ export default {
 		  day = day > 9 ? day : "0" + day;
 		
 		  return `${year}-${month}-${day}`;
+		},
+		RadioChange(e) {
+			this.radio = e.detail.value;
+			this.itemData.InvCompanyId=e.detail.value;
+			this.invCompanys.forEach(item=>{
+				if(item.ACCode===e.detail.value)
+				{
+					this.itemData.InvCompanyName=item.ACName;
+				}
+			})
+			this.modalName = null;
+			console.log(e);
+		},
+		showModal1(e) {
+			this.modalName = e.currentTarget.dataset.target;
 		},
         getDetailData: function() {
             this.pageIndex = parseInt(this.pageIndex) + 1;
@@ -387,6 +386,13 @@ export default {
                     console.log("看编辑");
                     console.log(ret.data.data);
                     _this.itemData = ret.data.data[0];
+					_this.itemData.InvCompanyId = _this.itemData.InvCompanyId;
+					_this.invCompanys.forEach(item => {
+						if(item.ACCode===_this.itemData.InvCompanyId)
+						{
+							_this.itemData.InvCompanyName=item.ACName;
+						}
+					})
 					_this.itemData.PayTypeCode=_this.itemData.PayType;
 					_this.PayTypeList.forEach(inner => {
 						if (inner.Code === _this.itemData.PayTypeCode) {
@@ -498,14 +504,14 @@ export default {
 				_this.itemData.CostTypeName = _this.itemData.CostTypeName;
 				_this.itemData.InvOrganizationCode = uni.getStorageSync("JSUserInfo").OrganizationCode;
 				_this.itemData.InvOrganizationName=uni.getStorageSync("JSUserInfo").OrganizationName;
-				_this.itemData.InvCompanyId = uni.getStorageSync("JSUserInfo").CompanyId;
-				_this.itemData.InvCompanyName=_this.itemData.InvCompanyName;
+				_this.itemData.InvCompanyId = _this.itemData.InvCompanyId;
+				_this.itemData.InvCompanyName = _this.itemData.InvCompanyName;
                 _this.itemData.UIStatus = "Modify";
                 ajaxJSON = _this.itemData;
             } else {
                 ajaxJSON = {
                     DocNum: _this.itemData.DocEntry,
-                    ObjType: "BorrowRequest",
+                    ObjectType: "BorrowRequest",
                     CreatorId: parseInt(
                         uni.getStorageSync("JSUserInfo").UserId
                     ),
@@ -518,15 +524,17 @@ export default {
                     Amount: parseFloat(_this.itemData.Amount).toFixed(2),
                     OrganizationCode: uni.getStorageSync("JSUserInfo")
                         .OrganizationCode,
+					OrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
                     CompanyId: uni.getStorageSync("JSUserInfo").CompanyId,
+					CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
                     PayType: _this.itemData.PayTypeCode,
 					BackDate: _this.itemData.BackDate,
 					CostTypeCode: _this.itemData.CostTypeCode,
 					CostTypeName: _this.itemData.CostTypeName,
 					InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 					InvOrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
-					InvCompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
-					InvCompanyName:_this.itemData.InvCompanyName,
+					InvCompanyId: _this.itemData.InvCompanyId,
+					InvCompanyName: _this.itemData.InvCompanyName,
                     AccountNumber: _this.itemData.AccountNumber,
                     AcceptingUnit: _this.itemData.AcceptingUnit,
                     //BorrowTypeCode:_this.BaseBorrowType[_this.indexBorrowType].BorrowTypeCode,
@@ -605,40 +613,23 @@ export default {
         },
         showModal(e) {
             if (this.$mbservices.isEmpty(this.itemData.Amount)) {
-                uni.showToast({
-                    title: "请输入支出金额",
-                    icon: "none"
-                });
+				uni.showModal({
+					title:"提示",
+					content:"请输入金额",
+					showCancel:false,
+				});
                 return false;
             }
-            if (this.itemData.PayType === "BankToUser") {
-                if (this.$mbservices.isEmpty(this.itemData.AccountNumber)) {
-                    uni.showToast({
-                        title: "请输入银行卡号",
-                        icon: "none"
-                    });
-                    return false;
-                }
-                if (this.$mbservices.isEmpty(this.itemData.AcceptingUnit)) {
-                    uni.showToast({
-                        title: "请输入受理银行",
-                        icon: "none"
-                    });
-                    return false;
-                }
-            }
-            if (
-                this.itemData.PayType !== "BankToUser" &&
-                this.itemData.PayType !== "MoneyToUser"
-            ) {
-                if (this.$mbservices.isEmpty(this.itemData.AccountNumber)) {
-                    uni.showToast({
-                        title: "请输入收款账户",
-                        icon: "none"
-                    });
-                    return false;
-                }
-            }
+			if(this.$mbservices.isEmpty(this.itemData.CostTypeCode))
+			{
+				uni.showModal({
+					title:"提示",
+					content:"请选择费用类型",
+					showCancel:false,
+					
+				});
+				return false;
+			}
             this.modalName = e.currentTarget.dataset.target;
         },
         setNaivgationBarTitle: function(e) {

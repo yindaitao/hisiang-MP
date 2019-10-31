@@ -1,17 +1,31 @@
 <template>
 	<view>
 		<callback :baseEntry="from" :backFrom="backFrom">我的审批列表</callback>
+		<view id="_tabBar" ref="_tabBar" class="cu-bar search bg-white">
+			<view class="search-form round">
+				<text class="icon-search"></text>
+				<input @focus="InputFocus" @blur="InputBlur" @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词"
+				 confirm-type="search" :value="searchValue" />
+			</view>
+			<view class="action">
+				<button class="cu-btn icon" @click="doSearch">
+					<!-- showModalSearch -->
+					<text class="icon-search"></text>
+				</button>
+			</view>
+			<view class="action">
+				<button class="cu-btn icon bg-gray" @tap="doRefresh" data-target="DrawerModalR">
+					<text class="icon-refresh"></text>
+				</button>
+			</view>
+		</view>
 		<scroll-view id="_tabBar" ref="_tabBar" scroll-x class="cu-bar bg-white nav text-center">
-			<button class="cu-btn icon bg-gray" style="position: absolute;left: 2px;" @tap="showModalSearch" data-target="DrawerModalR"><text
-				 class="icon-filter"><span></span></text></button>
 			<view class="cu-item" :class="index==TabCur?'text-blue cur':''" v-for="(item,index) in tabBars" :key="index" @tap="tapTab(index,$event)"
 			 :data-current="index" :data-id="index" :id="'_tabBarItem'+item.id">
 				<text>
 					{{item.name}}
 				</text>
 			</view>
-			<button class="cu-btn icon bg-gray" style="position: absolute;right: 2px;" @tap="doRefresh" data-target="DrawerModalR"><text
-				 class="icon-refresh"><span></span></text></button>
 		</scroll-view>
 		<swiper :current="TabCur" class="swiper-box" duration="300" @change="changeTab" :style="{'height':scrollBarHeight+'px'}">
 			<swiper-item v-for="(tab,index1) in newsitems" :key="index1">
@@ -704,8 +718,7 @@
 						}],
 						LoadChildren: "NoLoad",
 						Conditions: this.newsitems[this.TabCur].SearchConditions.length > 0 ?
-							this.newsitems[this.TabCur].SearchConditions :
-							cons
+							this.newsitems[this.TabCur].SearchConditions : cons
 					}
 				};
 				this.$mbservices.Request(
@@ -809,13 +822,13 @@
 			}
 		},
 		onLoad(e) {
-			if(!this.$mbservices.isEmpty(e.data)){
-				if(!this.$mbservices.isEmpty(JSON.parse(e.data).from)){
+			if (!this.$mbservices.isEmpty(e.data)) {
+				if (!this.$mbservices.isEmpty(JSON.parse(e.data).from)) {
 					this.from = JSON.parse(e.data).from;
-				}else{
+				} else {
 					this.from = null;
 				}
-			}else{
+			} else {
 				this.from = null;
 			}
 			//#ifdef MP-WEIXIN
@@ -828,7 +841,7 @@
 				res[1].scrollTop; // 显示区域的竖直滚动位置
 				_this.scrollBarHeight =
 					uni.getSystemInfoSync().screenHeight -
-					_this.CustomBar -
+					_this.CustomBar - res[0].height -
 					res[0].height;
 			});
 			//#endif

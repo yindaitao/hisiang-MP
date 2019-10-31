@@ -50,6 +50,11 @@
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
+								单号:{{list.DocEntry}}
+								<text v-if="list.PayType ==='BankToUser'"></text>
+							</view>
+							<view>
+								<text class="icon-title text-orange"></text>
 								金额：{{list.Amount}}
 								<text v-if="list.PayType ==='BankToUser'"></text>
 							</view>

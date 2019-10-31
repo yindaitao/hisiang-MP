@@ -50,6 +50,10 @@
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
+								单号:{{list.DocEntry}}
+							</view>
+							<view>
+								<text class="icon-title text-orange"></text>
 								金额:{{list.Amount}}
 							</view>
 							<view class="text-gray text-sm">

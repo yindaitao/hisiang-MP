@@ -48,6 +48,10 @@
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
 								{{list.InvOrganizationName}}-{{list.Creator}}的{{list.CostTypeName}}消耗申请
 							</view>
+							<view>
+								<text class="icon-title text-orange"></text>
+								单号:{{list.DocEntry}}
+							</view>
 							<view v-if="list.AdvanceType === 'Amount'">
 								<text class="icon-title text-orange"></text>
 								金额:{{list.AmountOrQuantity}}
