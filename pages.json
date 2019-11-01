@@ -252,7 +252,33 @@
                     "style": {}
                 }
             ]
-        }
+        },
+		{
+		    "root": "pages/ExtraWork",
+		    "pages": [
+		        {
+		            "path": "ExtraWorklist/ExtraWorklist",
+		            "style": {}
+		        },
+		        {
+		            "path": "ExtraWorkform/ExtraWorkform",
+		            "style": {}
+		        }
+		    ]
+		},
+		{
+		    "root": "pages/Leave",
+		    "pages": [
+		        {
+		            "path": "Leavelist/Leavelist",
+		            "style": {}
+		        },
+		        {
+		            "path": "Leaveform/Leaveform",
+		            "style": {}
+		        }
+		    ]
+		}
     ],
     "tabBar": {
         "color": "#7A7E83",

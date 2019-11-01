@@ -120,6 +120,18 @@
 							title: "消耗申请"
 						});
 						break;
+					case "Leave1":
+						uni.navigateTo({
+							url: "/pages/Leave/Leavelist/Leavelist",
+							title: "请假"
+						});
+						break;
+					case "ExtraWork1":
+						uni.navigateTo({
+							url: "/pages/ExtraWork/ExtraWorklist/ExtraWorklist",
+							title: "加班"
+						});
+						break;
 					case "deplist":
 						uni.navigateTo({
 							url: "/pages/department/deplist/deplist",
@@ -350,6 +362,7 @@
 							return;
 						}
 						_this.iconList = [];
+						console.log(resultM.data);
 						resultM.data.forEach(item => {
 							item.children.forEach(_item => {
 								_item.children.forEach(__item => {

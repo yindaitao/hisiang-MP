@@ -40,9 +40,17 @@ module.exports = {
 	/* 删除选中的图片 */
 	deleteImage: websiteUrl + '/api/Upload/appDeleteImage',
 	/* 添加请假审批 */
-	addLeaveEntity: websiteUrl + '/api/Leave/Save',
+	saveLeaveEntity: websiteUrl + '/api/Leave/Save',
 	/* 获取请假列表 */
 	getLeaveList: websiteUrl + '/api/Leave/GetRecords',
+	/* 请假最大ID*/
+	maxNumLeave: websiteUrl + '/api/Leave/GetMaxDocEntry',
+	/* 获取请假类型*/
+	getHolidayType: websiteUrl + '/api/HolidayType/GetRecords',
+	/* 获取加班列表 */
+	getExtraWorkList: websiteUrl + '/api/ExtraWork/GetRecords',
+	// 加班最大ID
+	maxNumExtraWork: websiteUrl + '/api/ExtraWork/GetMaxDocEntry',
 	/* 报销最大ID */
 	maxNumReimRequest: websiteUrl + '/api/ReimbursementRequest/GetMaxDocEntry',
 	/* 得到费用报销类型 */

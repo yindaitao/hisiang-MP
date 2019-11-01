@@ -1,6 +1,6 @@
 <template>
 	<view class="ul-uni-tab-bar">
-		<custom>报销申请列表</custom>
+		<custom>加班申请列表</custom>
 		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
@@ -133,13 +133,13 @@
 		onShow() {
 			/* if (!this.isFirstLoad) {
 				this.pageIndex = parseInt(this.pageIndex) - 1;
-				this.newShowGetReimList();
+				this.newShowgetExtraWorkList();
 			} */
 			if(this.$mbservices.getIsRefresh())
 			{
 				this.pageIndex = 0; // parseInt(this.pageIndex) - 1;
 				this.$mbservices.setIsRefresh(false);
-				this.newShowGetReimList();
+				this.newShowgetExtraWorkList();
 			}
 			this.isFirstLoad = false;
 			this.isLoadMore = false;
@@ -158,14 +158,14 @@
 			//#endif
 			//this.dataList = [];
 			/*加载数据*/
-			this.getReimList();
+			this.getExtraWorkList();
 		},
 		onReachBottom() {
 			this.searchParams = [];
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowGetReimList();
+			this.newShowgetExtraWorkList();
 			/* setTimeout(() => {
 				uni.stopPullDownRefresh();
 			}, 1000) */
@@ -176,7 +176,7 @@
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowGetReimList();
+			this.newShowgetExtraWorkList();
 		},
 		methods: {
 			goDetail(item) {
@@ -242,14 +242,14 @@
 				//this.dataList = [];
 				this.makeParams();
 				this.pageIndex = 0;
-				this.getReimList(this.searchParams);
+				this.getExtraWorkList(this.searchParams);
 			},
 			loadMore() {
 				if (this.searchValue != undefined && this.searchValue.length > 0) {
 					this.makeParams();
 				}
 				this.isLoadMore = true;
-				this.newShowGetReimList(this.searchParams);
+				this.newShowgetExtraWorkList(this.searchParams);
 			},
 			makeParams() {
 				if (this.$mbservices.isEmpty(this.searchValue)) {
@@ -282,7 +282,7 @@
 					}
 				];
 			},
-			newShowGetReimList: async function(params) {
+			newShowgetExtraWorkList: async function(params) {
 				this.pageIndex = parseInt(this.pageIndex) + 1;
 				var ajaxJSON = {
 					pageIndex: this.pageIndex,
@@ -314,7 +314,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getReimList,
+					this.$webapi.getExtraWorkList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
@@ -367,7 +367,7 @@
 					}
 				);
 			},
-			getReimList(params) {
+			getExtraWorkList(params) {
 				uni.showLoading({
 					title: "拼命加载中..."
 				});
@@ -402,7 +402,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getReimList,
+					this.$webapi.getExtraWorkList,
 					"POST",
 					ajaxJSON,
 					function(ret) {

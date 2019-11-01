@@ -1,18 +1,12 @@
 <template>
 	<view>
 		<custom :isBack="false">打卡</custom>
-		<scroll-view scroll-y class="page" :style="{'height':scrollBarHeight+'px'}">
+		<view>
 			<view class="bg-white">
 				<map id="_mapController" :latitude="latitude" @markertap="openMap()" @callouttap="openMap()" :longitude="longitude"
 				 :markers="covers"></map>
 			</view>
 			<view class="flex padding justify-center" style="position: relative;">
-				<button @tap="showModal" data-target="ConfirmModal" class="cu-btn lg bg-gradual-blue text-white text-center" style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;vertical-align:middle;">
-					<text>考勤打卡</text><br />
-				</button>
-				<text class="text-white" style="position: absolute;margin-top: 75px;">{{TimeShow}}</text>
-			</view>
-			<view class="flex solid-bottom padding justify-center" style="position: relative;">
 				<view>
 					<text class="icon-locationfill text-grey"></text>
 					<text class="text-center text-grey">{{currentArea.address}}附近</text>
@@ -20,6 +14,12 @@
 						<text class="icon-refresh text-blue"><span></span></text>
 					</button>
 				</view>
+			</view>
+			<view class="flex solid-bottom padding justify-center" style="position: relative;">
+				<button @tap="showModal" data-target="ConfirmModal" class="cu-btn lg bg-gradual-blue text-white text-center" style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;vertical-align:middle;">
+					<text>考勤打卡</text><br />
+					<text class="text-white" style="position: absolute;margin-top: 30px;">{{TimeShow}}</text>
+				</button>
 			</view>
 			<view class="cu-timeline" style="background-color: rgba(0,0,0,0);" v-for="(item,index) in WorkRecords" :key="index">
 				<view class="cu-time">第{{index+1}}次打卡</view>
@@ -49,7 +49,7 @@
 					</view>
 				</view>
 			</view>
-		</scroll-view>
+		</view>
 		<view class="cu-modal" :class="modalName==='ConfirmModal'?'show':''">
 			<view class="cu-dialog" @tap.stop="" style="width: 280px;max-width: 280px;">
 				<view class="cu-item padding-lr-xl">
@@ -328,7 +328,7 @@
 					current: e.currentTarget.dataset.url
 				});
 			},
-			ViewImage1(arr,idx) {
+			ViewImage1(arr, idx) {
 				uni.previewImage({
 					urls: arr,
 					current: arr[idx]

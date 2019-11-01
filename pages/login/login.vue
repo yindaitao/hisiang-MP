@@ -137,7 +137,6 @@
 						Code: code
 					},
 					success: result => {
-						
 						if (result.data.RecordCount > 0) {
 							if (result.data.data.UserInfo === null) {
 								this.Openid = result.data.data.Openid;

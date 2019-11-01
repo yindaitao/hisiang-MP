@@ -4,12 +4,11 @@
 		<view id="_tabBar" ref="_tabBar" class="cu-bar search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
-				<input @focus="InputFocus" @blur="InputBlur" @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词"
+				<input @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词"
 				 confirm-type="search" :value="searchValue" />
 			</view>
 			<view class="action">
 				<button class="cu-btn icon" @click="doSearch">
-					<!-- showModalSearch -->
 					<text class="icon-search"></text>
 				</button>
 			</view>
@@ -76,42 +75,6 @@
 				</scroll-view>
 			</swiper-item>
 		</swiper>
-		<view class="cu-modal drawer-modal justify-end" :class="modalNameSearch=='DrawerModalR'?'show':''" @tap="hideModalSearch">
-			<view class="cu-dialog basis-xl" @tap.stop="" :style="[{top:CustomBar+'px',height:'calc(100vh - ' + CustomBar + 'px)'}]">
-				<view class="cu-bar bg-gray">
-					<view class="action">
-						<view class="text-blue" @tap="hideModalSearch">取消</view>
-						<view class="text-bold margin-left-sm" @tap="resetConditions">重置</view>
-					</view>
-					<view class="action text-green" @tap="doSearchApprovalList">确定</view>
-				</view>
-				<view class="box">
-					<view class="cu-bar search">
-						<view class="action" style="min-width: 60px;max-width: 60px;">
-							<picker @change="PickerChange" :value="index" :range="picker">
-								<view class="picker">
-									{{picker[index]}}
-								</view>
-							</picker>
-							<text class="icon-triangledownfill"></text>
-						</view>
-						<view class="search-form round bg-gray">
-							<text class="icon-search"></text>
-							<input @focus="InputFocus" @blur="InputBlur" @input="inputValues" :adjust-position="false" type="text"
-							 placeholder="请输入关键字" confirm-type="search" :value="KeyValues"></input>
-						</view>
-					</view>
-				</view>
-				<view class="grid col-2 padding-sm">
-					<view v-for="(item,index) in checkbox" class="padding-xs" :key="index">
-						<button class="cu-btn orange lg block" :class="item.checked?'bg-orange':'line-orange'" @tap="ChooseCheckbox"
-						 :data-value="item.value"> {{item.name}}
-							<view class="cu-tag sm round" :class="item.checked?'bg-white text-orange':'bg-orange'" v-if="item.hot">HOT</view>
-						</button>
-					</view>
-				</view>
-			</view>
-		</view>
 		<fabTag :content="pageNum"></fabTag>
 	</view>
 </template>
@@ -208,7 +171,8 @@
 				modalNameSearch: null,
 				scrollBarHeight: 0,
 				isClickChange: false,
-				refreshRowCOunt: 0
+				refreshRowCOunt: 0,
+				searchValue:""
 			};
 		},
 		onShow(e) {
@@ -229,24 +193,11 @@
 			}
 		},
 		methods: {
-			PickerChange(e) {
-				this.index = e.detail.value;
+			searchInput(e) {
+				this.searchValue = e.detail.value;
 			},
-			ChooseCheckbox(e) {
-				var items = this.checkbox,
-					values = e.currentTarget.dataset.value;
-				for (var i = 0, lenI = items.length; i < lenI; ++i) {
-					if (items[i].value == values) {
-						items[i].checked = !items[i].checked;
-						break;
-					}
-				}
-			},
-			showModalSearch(e) {
-				this.modalNameSearch = e.currentTarget.dataset.target;
-			},
-			hideModalSearch(e) {
-				this.modalNameSearch = null;
+			doSearch(){
+				
 			},
 			resetConditions() {
 				this.KeyValues = "";
