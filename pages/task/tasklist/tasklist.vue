@@ -106,6 +106,7 @@
 		methods: {
 			goDetail(item) {
 				item.flag = "tasklist"; 
+				item.from = "tasklist";
 				switch (item.BaseType) {
 					case "ApprovalNote":
 						uni.navigateTo({

@@ -1,6 +1,6 @@
 <template>
 	<view class="ul-uni-tab-bar">
-		<custom>加班记录</custom>
+		<custom>出差记录</custom>
 		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
@@ -37,9 +37,9 @@
 				<!-- :style="{'height':scrollBarHeight+'px'}" -->
 				<view class="cu-list menu">
 					<view v-if="dataList.length === 0" style="position: relative;text-align: center;">
-						暂无加班记录
+						暂无出差记录
 					</view>
-					<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-if="dataList.length > 0" v-for="(list,index) in dataList" :key="index"
+					<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-if="dataList.length>0" v-for="(list,index) in dataList" :key="index"
 					 @touchstart="ListTouchStart(index,$event)" @touchmove="ListTouchMove(index,$event)" @touchend="ListTouchEnd(index,$event)" :data-target="'move-box-' + index"
 					 @tap="goDetail(list)" style="position: relative;">
 						<view class="cu-tag bg-blue" style="position:absolute;top: 10px;right: 10px;" v-if="list.Approve==='No'&&list.ApproveStatus!=='Rejected'">草稿</view>
@@ -49,7 +49,7 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.Creator}}提交的加班申请
+								{{list.Creator}}提交的{{list.GooutType==='Goout'?'外出':'出差'}}申请
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
@@ -134,13 +134,13 @@
 		onShow() {
 			/* if (!this.isFirstLoad) {
 				this.pageIndex = parseInt(this.pageIndex) - 1;
-				this.newShowgetExtraWorkList();
+				this.newShowgetGooutList();
 			} */
 			if(this.$mbservices.getIsRefresh())
 			{
 				this.pageIndex = 0; // parseInt(this.pageIndex) - 1;
 				this.$mbservices.setIsRefresh(false);
-				this.newShowgetExtraWorkList();
+				this.newShowgetGooutList();
 			}
 			this.isFirstLoad = false;
 			this.isLoadMore = false;
@@ -159,14 +159,14 @@
 			//#endif
 			//this.dataList = [];
 			/*加载数据*/
-			this.getExtraWorkList();
+			this.getGooutList();
 		},
 		onReachBottom() {
 			this.searchParams = [];
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowgetExtraWorkList();
+			this.newShowgetGooutList();
 			/* setTimeout(() => {
 				uni.stopPullDownRefresh();
 			}, 1000) */
@@ -177,30 +177,30 @@
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowgetExtraWorkList();
+			this.newShowgetGooutList();
 		},
 		methods: {
 			goDetail(item) {
 				item.from = "";
-				item.from = "ExtraWorklist";
+				item.from = "Gooutlist";
 				if(item.Approve==='No'&&item.ApproveStatus!=='Rejected'){
 					uni.navigateTo({
-						url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?flag=modify&data=" + JSON.stringify(item)
+						url: "/pages/GooutBusinessTravel/GooutBusinessTravelform/GooutBusinessTravelform?flag=modify&data=" + JSON.stringify(item)
 					});
 				}else if(item.ApproveStatus==='Rejected'){
 					uni.navigateTo({
-						url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?flag=modify&data=" + JSON.stringify(item)
+						url: "/pages/GooutBusinessTravel/GooutBusinessTravelform/GooutBusinessTravelform?flag=modify&data=" + JSON.stringify(item)
 					});
 				}else if(item.ApproveStatus === "Approved" || item.ApproveStatus === "Pending"){
 					uni.navigateTo({
-						url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?flag=Original&data=" + JSON.stringify(item)
+						url: "/pages/GooutBusinessTravel/GooutBusinessTravelform/GooutBusinessTravelform?flag=Original&data=" + JSON.stringify(item)
 					});
 				}
 			},
 			editItem(item) {
 				console.log(item);
 				uni.navigateTo({
-					url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?flag=modify&data=" + JSON.stringify(item)
+					url: "/pages/Goout/Gooutform/Gooutform?flag=modify&data=" + JSON.stringify(item)
 				});
 			},
 			deleteItem(item) {
@@ -245,14 +245,14 @@
 				//this.dataList = [];
 				this.makeParams();
 				this.pageIndex = 0;
-				this.getExtraWorkList(this.searchParams);
+				this.getGooutList(this.searchParams);
 			},
 			loadMore() {
 				if (this.searchValue != undefined && this.searchValue.length > 0) {
 					this.makeParams();
 				}
 				this.isLoadMore = true;
-				this.newShowgetExtraWorkList(this.searchParams);
+				this.newShowgetGooutList(this.searchParams);
 			},
 			makeParams() {
 				if (this.$mbservices.isEmpty(this.searchValue)) {
@@ -285,7 +285,7 @@
 					}
 				];
 			},
-			newShowgetExtraWorkList: async function(params) {
+			newShowgetGooutList: async function(params) {
 				this.pageIndex = parseInt(this.pageIndex) + 1;
 				var ajaxJSON = {
 					pageIndex: this.pageIndex,
@@ -307,6 +307,11 @@
 							Operation: "EQUAL",
 							ConditionValue: "N",
 							Relationship: "AND"
+						},{
+							FieldName: "GooutType",
+							Operation: "EQUAL",
+							ConditionValue: "B",
+							Relationship: "AND"
 						}]
 					}
 				};
@@ -317,7 +322,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getExtraWorkList,
+					this.$webapi.getGooutList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
@@ -370,7 +375,7 @@
 					}
 				);
 			},
-			getExtraWorkList(params) {
+			getGooutList(params) {
 				uni.showLoading({
 					title: "拼命加载中..."
 				});
@@ -395,6 +400,11 @@
 							Operation: "EQUAL",
 							ConditionValue: "N",
 							Relationship: "AND"
+						},{
+							FieldName: "GooutType",
+							Operation: "EQUAL",
+							ConditionValue: "B",
+							Relationship: "AND"
 						}]
 					}
 				};
@@ -405,7 +415,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getExtraWorkList,
+					this.$webapi.getGooutList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
@@ -431,8 +441,6 @@
 								if (item.ApproveStatus === "Rejected") {
 									item.AApproveStatus = "已拒绝";
 								}
-								item.Amount = parseFloat(item.Amount).toFixed(2);
-								//_this.dataList.push(item);
 								_cacheList.push(item);
 							});
 							_this.dataList=_cacheList;
@@ -487,8 +495,8 @@
 			},
 			addWorkOrder() {
 				uni.navigateTo({
-					url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?data="+ JSON.stringify({
-						from:"ExtraWorklist"
+					url: "/pages/Goout/Gooutform/Gooutform?data="+JSON.stringify({
+						from:"Gooutlist"
 					})
 				});
 			},

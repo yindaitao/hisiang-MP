@@ -1,13 +1,6 @@
 <template>
 	<view>
 		<custom>加班</custom>
-		<view class="cu-bar bg-white solid-bottom" style="position: fixed;display: flex;z-index: 2;z-index: 999;width: 100%;">
-			<view class="action" v-if="edit === false">
-				<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
-					<text class="icon-upload"></text>提交
-				</button>
-			</view>
-		</view>
 		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
@@ -26,7 +19,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="ul-swiper-box margin-top" style="margin-top: 50px;">
+		<view class="ul-swiper-box">
 			<form>
 				<view class="cu-form-group">
 					<view class="title">加班类型</view>
@@ -70,6 +63,18 @@
 							</view>
 		    </form>
 		  </view>
+		  <view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 999;width: 100%;">
+		  	<view class="action" v-if="edit === false" style="width: 50%;">
+		  		<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
+		  			<text class="icon-upload"></text>提交
+		  		</button>
+		  	</view>
+		  	<view class="action" style="width: 50%;" v-if="from === 'firstPage'">
+		  		<button class="cu-btn round bg-blue shadow" @tap="toList">
+		  			加班记录
+		  		</button>
+		  	</view>
+		  </view>
 		</view>
 </template>
 
@@ -91,10 +96,10 @@ export default {
 					ExtraWorkType:["按实际加班时长计算","按固定加班时长计算"],
 					ExtraWorkTypeList:[
 						{
-							Code:"Fixed",
+							Code:"Actucl",
 							Name:"按实际加班时长计算",
 						},{
-							Code:"Actucl",
+							Code:"Fixed",
 							Name:"按固定加班时长计算",
 						},],
 			  modalName: null,
@@ -132,6 +137,7 @@ export default {
 			  editItem: {},
 			  isDoSteps: false,
 			  edit:false,
+			  from:"",
 			};
   },
   computed: {
@@ -143,6 +149,12 @@ export default {
     }
   },
   methods: {
+	 toList(){
+	 	uni.navigateTo({
+	 		url: "/pages/ExtraWork/ExtraWorklist/ExtraWorklist",
+	 		title: "加班记录"
+	 	});
+	 },
 		getInvCompany:async function(){
 			//invCompanys
 			var ajaxJSON={
@@ -561,8 +573,14 @@ export default {
              item.AApproveStatus = "已拒绝";
            }
          			_$this.itemData.Remarks=item.Remarks;
+					_$this.itemData.ExtraWorkTypeCode = "";
+					_$this.itemData.ExtraWorkTypeName = "";
          			_$this.itemData.ExtraWorkTypeCode = item.ExtraWorkType;
-         			_$this.itemData.ExtraWorkTypeName = item.ExtraWorkTypeName;
+					_$this.ExtraWorkTypeList.forEach((__item,__index) => {
+						if(__item.Code === _$this.itemData.ExtraWorkTypeCode){
+							_$this.itemData.ExtraWorkTypeName = __item.Name;
+						}
+					})
          			_$this.ExtraWorkType.forEach((__item,__index)=>{
          								  if(__item===_$this.itemData.ExtraWorkTypeName)
          								  {
@@ -572,9 +590,11 @@ export default {
          			});
 					_$this.itemData.BeginDate = item.BeginDate;
 					_$this.itemData.EndDate = item.EndDate;
+					_$this.itemData.Cause = item.Cause;
+					_$this.itemData.Hours = item.Hours;
          			_$this.itemData.InvCompanyId = item.InvCompanyId;
          			_$this.itemData.InvCompanyName = item.InvCompanyName;
-           _this.formList = [];
+           // _this.formList = [];
            //   var _pathArr =
            //     _item.Imgs != "undefined" &&
            //     _item.Imgs != null &&
@@ -616,7 +636,7 @@ export default {
 		}
   },
   onLoad(e) {
-		
+		this.from = JSON.parse(e.data).from;
 		
     /* 修改传递参数 */
     if (e.flag === "modify") {

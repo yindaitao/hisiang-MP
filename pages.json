@@ -291,6 +291,19 @@
 		            "style": {}
 		        }
 		    ]
+		},
+		{
+		    "root": "pages/GooutBusinessTravel",
+		    "pages": [
+		        {
+		            "path": "GooutBusinessTravellist/GooutBusinessTravellist",
+		            "style": {}
+		        },
+		        {
+		            "path": "GooutBusinessTravelform/GooutBusinessTravelform",
+		            "style": {}
+		        }
+		    ]
 		}
     ],
     "tabBar": {

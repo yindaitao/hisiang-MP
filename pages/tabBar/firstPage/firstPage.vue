@@ -122,20 +122,34 @@
 						break;
 					case "Leave1":
 						uni.navigateTo({
-							url: "/pages/Leave/Leavelist/Leavelist",
+							url: "/pages/Leave/Leaveform/Leaveform?data=" + JSON.stringify({
+								from: "firstPage"
+							}),
 							title: "请假"
 						});
 						break;
 					case "ExtraWork1":
 						uni.navigateTo({
-							url: "/pages/ExtraWork/ExtraWorklist/ExtraWorklist",
+							url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?data=" + JSON.stringify({
+								from: "firstPage"
+							}),
 							title: "加班"
 						});
 						break;
 					case "Goout1":
 						uni.navigateTo({
-							url: "/pages/Goout/Gooutlist/Gooutlist",
+							url: "/pages/Goout/Gooutform/Gooutform?data=" + JSON.stringify({
+								from: "firstPage"
+							}),
 							title: "外出"
+						});
+						break;
+					case "GooutBusinessTravel":
+						uni.navigateTo({
+							url: "/pages/GooutBusinessTravel/GooutBusinessTravelform/GooutBusinessTravelform?data=" + JSON.stringify({
+								from: "firstPage"
+							}),
+							title: "出差"
 						});
 						break;
 					case "deplist":

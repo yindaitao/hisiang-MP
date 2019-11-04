@@ -1,6 +1,6 @@
 <template>
 	<view class="ul-uni-tab-bar">
-		<custom>请假列表</custom>
+		<custom>请假记录</custom>
 		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
@@ -36,7 +36,10 @@
 			<scroll-view scroll-y @scrolltolower="loadMore" style="width: 100%;margin-bottom: 10px;" :style="{'height':scrollBarHeight+'px'}">
 				<!-- :style="{'height':scrollBarHeight+'px'}" -->
 				<view class="cu-list menu">
-					<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-for="(list,index) in dataList" :key="index"
+					<view v-if="dataList.length === 0" style="position: relative;text-align: center;">
+						暂无请假记录
+					</view>
+					<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-if="dataList.length > 0" v-for="(list,index) in dataList" :key="index"
 					 @touchstart="ListTouchStart(index,$event)" @touchmove="ListTouchMove(index,$event)" @touchend="ListTouchEnd(index,$event)" :data-target="'move-box-' + index"
 					 @tap="goDetail(list)" style="position: relative;">
 						<view class="cu-tag bg-blue" style="position:absolute;top: 10px;right: 10px;" v-if="list.Approve==='No'&&list.ApproveStatus!=='Rejected'">草稿</view>
@@ -178,6 +181,8 @@
 		},
 		methods: {
 			goDetail(item) {
+				item.from = "";
+				item.from = "Leavelist";
 				if(item.Approve==='No'&&item.ApproveStatus!=='Rejected'){
 					uni.navigateTo({
 						url: "/pages/Leave/Leaveform/Leaveform?flag=modify&data=" + JSON.stringify(item)
@@ -336,8 +341,6 @@
 							if (item.ApproveStatus === "Rejected") {
 								item.AApproveStatus = "已拒绝";
 							}
-							item.Amount = parseFloat(item.Amount).toFixed(2);
-							//_this.dataList.push(item);
 							_cacheList.push(item);
 						});
 						if (_this.isLoadMore) {
@@ -350,6 +353,7 @@
 						} else {
 							_this.dataList = _cacheList;
 						}
+						
 
 					},
 					function(ret) {
@@ -411,7 +415,6 @@
 							});
 							return false;
 						}
-						console.log('aaaaaaaaaaaaaaaaa');
 						console.log(ret.data.data);
 						setTimeout(() => {
 							var _cacheList=[];
@@ -426,7 +429,6 @@
 								if (item.ApproveStatus === "Rejected") {
 									item.AApproveStatus = "已拒绝";
 								}
-								item.Amount = parseFloat(item.Amount).toFixed(2);
 								//_this.dataList.push(item);
 								_cacheList.push(item);
 							});
@@ -482,7 +484,9 @@
 			},
 			addWorkOrder() {
 				uni.navigateTo({
-					url: "/pages/Leave/Leaveform/Leaveform"
+					url: "/pages/Leave/Leaveform/Leaveform?data=" + JSON.stringify({
+						from:"Leavelist"
+					})
 				});
 			},
 

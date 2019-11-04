@@ -1,13 +1,6 @@
 <template>
 	<view>
 		<custom>外出</custom>
-		<view class="cu-bar bg-white solid-bottom" style="position: fixed;display: flex;z-index: 2;z-index: 999;width: 100%;">
-			<view class="action" v-if="edit === false">
-				<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
-					<text class="icon-upload"></text>提交
-				</button>
-			</view>
-		</view>
 		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
@@ -26,14 +19,8 @@
 				</view>
 			</view>
 		</view>
-		<view class="ul-swiper-box margin-top" style="margin-top: 50px;">
+		<view class="ul-swiper-box">
 			<form>
-				<view class="cu-form-group">
-					<view class="title">外出类型</view>
-					<picker :disabled="edit?true:false" @change="bindPickerChange2" :value="indexGooutType" :range="GooutType">
-						<view class="picker">{{GooutType[indexGooutType]}}</view>
-					</picker>
-				</view>
 				<view class="cu-form-group">
 					<view class="title">开始日期</view>
 					<picker :disabled="edit?true:false" mode="date" :value="itemData.BeginDate" :start="startDate" :end="endDate"
@@ -76,6 +63,18 @@
 					</view>
       </form>
     </view>
+	<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 999;width: 100%;">
+		<view class="action" v-if="edit === false" style="width: 50%;">
+			<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
+				<text class="icon-upload"></text>提交
+			</button>
+		</view>
+		<view class="action" style="width: 50%;" v-if="from === 'firstPage'">
+			<button class="cu-btn round bg-blue shadow" @tap="toList">
+				外出记录
+			</button>
+		</view>
+	</view>
   </view>
 </template>
 
@@ -94,15 +93,6 @@ export default {
   data() {
     return {
 		    time: Date.parse(new Date()),
-			indexGooutType: 0,
-			GooutType:["外出","出差"],
-			GooutTypeList:[{
-				Code:"Goout",
-				Name:"外出",
-			},{
-				Code:"BusinessTravel",
-				Name:"出差",
-			}],
 			GooutHoursTextType:["天","小时","周","月"],
 			indexGooutHoursText:0,
 			GooutHoursTextList:[{
@@ -138,7 +128,6 @@ export default {
 		  BeginDate:this.getDate({format: true}),
 		  EndDate: this.getDate({format: true}),
 		  GooutTypeCode:"Goout",
-		  GooutTypeName:"外出",
 		  Hours: "",
 		  GooutHoursText:"Hour",
 		  GooutHoursTextName: "小时",
@@ -158,6 +147,7 @@ export default {
       editItem: {},
       isDoSteps: false,
 	  edit:false,
+	  from:"",
     };
   },
   computed: {
@@ -199,14 +189,11 @@ export default {
 		showModal1(e) {
 			this.modalName = e.currentTarget.dataset.target;
 		},
-		bindPickerChange2: function(e) {
-			this.indexGooutType = e.target.value;
-			for(var i in this.GooutTypeList){
-				if(this.GooutType[this.indexGooutType] === this.GooutTypeList[i].Name){
-					this.itemData.GooutTypeCode = this.GooutTypeList[i].Code;
-					this.itemData.GooutTypeName = this.GooutType[this.indexGooutType];
-				}
-			}
+		toList(){
+			uni.navigateTo({
+				url: "/pages/Goout/Gooutlist/Gooutlist",
+				title: "外出记录"
+			});
 		},
     showModal(e) {
 		
@@ -252,14 +239,14 @@ export default {
       } else {
         ajaxJSON = {
 		  ObjectType: "Goout",
-		  DocNum: _this.itemData.DocEntry,
+		  DocNum: _this.itemData.DocEntry.toString(),
 		  BeginDate: _this.itemData.BeginDate,
 		  EndDate: _this.itemData.EndDate,
 		  GooutType: _this.itemData.GooutTypeCode,
 		  Hours: _this.itemData.Hours,
 		  CreateDate: this.formatDate(this.time),
 		  GooutHoursText: _this.itemData.GooutHoursText,
-          CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
+          CreatorId: uni.getStorageSync("JSUserInfo").UserId,
 		  Creator: uni.getStorageSync("JSUserInfo").UserName,
 		  Cause: _this.itemData.Cause, 
           Remarks: _this.itemData.Remarks,
@@ -516,7 +503,13 @@ export default {
               Operation: "EQUAL",
               ConditionValue: this.editItem.DocEntry,
               Relationship: "AND"
-            }
+            },
+			{
+			  FieldName: "DocEntry",
+			  Operation: "EQUAL",
+			  ConditionValue: this.editItem.DocEntry,
+			  Relationship: "AND"
+			}
           ]
         }
       };
@@ -552,16 +545,6 @@ export default {
             }
 			_$this.itemData.Remarks=item.Remarks;
 			_$this.itemData.GooutTypeCode = item.GooutType;
-			_$this.GooutTypeList.forEach((__item,__index) => {
-				_$this.itemData.GooutTypeName = __item.Name;
-			})
-			_$this.GooutType.forEach((__item,__index)=>{
-								  if(__item===_$this.itemData.GooutTypeName)
-								  {
-									  _$this.itemData.indexGooutType=__index;
-									  _$this.indexGooutType=__index;
-								  }
-			});
 			_$this.itemData.Hours = item.Hours;
 			_$this.itemData.GooutHoursText = item.GooutHoursText;
 			_$this.GooutHoursTextList.forEach((__item,__index)=>{
@@ -620,9 +603,7 @@ export default {
 	},
   },
   onLoad(e) {
-		/* 初始值 */
-		
-		
+	this.from = JSON.parse(e.data).from;
     /* 修改传递参数 */
     if (e.flag === "modify") {
       this.editflag = true;

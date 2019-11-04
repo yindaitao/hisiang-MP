@@ -1,6 +1,6 @@
 <template>
 	<view class="ul-uni-tab-bar">
-		<custom>外出列表</custom>
+		<custom>外出记录</custom>
 		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
@@ -36,7 +36,10 @@
 			<scroll-view scroll-y @scrolltolower="loadMore" style="width: 100%;margin-bottom: 10px;" :style="{'height':scrollBarHeight+'px'}">
 				<!-- :style="{'height':scrollBarHeight+'px'}" -->
 				<view class="cu-list menu">
-					<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-for="(list,index) in dataList" :key="index"
+					<view v-if="dataList.length === 0" style="position: relative;text-align: center;">
+						暂无外出记录
+					</view>
+					<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-if="dataList.length > 0" v-for="(list,index) in dataList" :key="index"
 					 @touchstart="ListTouchStart(index,$event)" @touchmove="ListTouchMove(index,$event)" @touchend="ListTouchEnd(index,$event)" :data-target="'move-box-' + index"
 					 @tap="goDetail(list)" style="position: relative;">
 						<view class="cu-tag bg-blue" style="position:absolute;top: 10px;right: 10px;" v-if="list.Approve==='No'&&list.ApproveStatus!=='Rejected'">草稿</view>
@@ -178,6 +181,8 @@
 		},
 		methods: {
 			goDetail(item) {
+				item.from = "";
+				item.from = "Gooutlist";
 				if(item.Approve==='No'&&item.ApproveStatus!=='Rejected'){
 					uni.navigateTo({
 						url: "/pages/Goout/Gooutform/Gooutform?flag=modify&data=" + JSON.stringify(item)
@@ -302,6 +307,11 @@
 							Operation: "EQUAL",
 							ConditionValue: "N",
 							Relationship: "AND"
+						},{
+							FieldName: "GooutType",
+							Operation: "EQUAL",
+							ConditionValue: "G",
+							Relationship: "AND"
 						}]
 					}
 				};
@@ -389,6 +399,11 @@
 							FieldName: "Canceled",
 							Operation: "EQUAL",
 							ConditionValue: "N",
+							Relationship: "AND"
+						},{
+							FieldName: "GooutType",
+							Operation: "EQUAL",
+							ConditionValue: "G",
 							Relationship: "AND"
 						}]
 					}
@@ -480,7 +495,9 @@
 			},
 			addWorkOrder() {
 				uni.navigateTo({
-					url: "/pages/Goout/Gooutform/Gooutform"
+					url: "/pages/Goout/Gooutform/Gooutform?data="+JSON.stringify({
+						from:"Gooutlist"
+					})
 				});
 			},
 
