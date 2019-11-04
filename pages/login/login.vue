@@ -18,6 +18,7 @@
 					<button open-type="getUserInfo" v-bind:disabled="logininfo.loading" @click="defaultHandlerLogin"> {{ logininfo.loading ? "登录中...":"登 录"}}
 					</button>
 				</view>
+				<view class="message">提示：小程序为业务系统，如需使用，请在PC注册账号，登录一次后即可记录登录信息，无需重复登陆</view>
 			</view>
 		</view>
 	</view>
@@ -260,6 +261,11 @@
 </script>
 
 <style>
+	.message{
+		width: 100%;
+		height: 0px;
+		font-size: 0px;
+	}
 	/* 本页基本 */
 	@charset "UTF-8";
 

@@ -358,6 +358,7 @@ export default {
       this.itemData.Cause = e.detail.value;
     },
     bindDateChange: function(itemData, e) {
+		console.log(e);
       itemData.BeginDate = e.target.value;
     },
 	bindDateChange1: function(itemData, e) {
@@ -368,7 +369,6 @@ export default {
       let year = date.getFullYear();
       let month = date.getMonth() + 1;
       let day = date.getDate();
-
       if (type === "start") {
         year = year - 60;
       } else if (type === "end") {

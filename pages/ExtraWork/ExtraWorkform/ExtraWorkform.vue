@@ -236,20 +236,6 @@ export default {
       uni.showLoading({
         title: "正在提交..."
       });
-      // var _indx = 0;
-      // _this.formList.forEach(_item => {
-      //   var path = "";
-      //   _item.imageList.forEach(_item_ => {
-      //     if (_this.editflag) {
-      //       path += _item_.deleteurl + "|";
-      //     } else {
-      //       path += _item_.retInfo[0].filePath + "|";
-      //     }
-      //   });
-      //   if (path.length > 0 && path.lastIndexOf("|") > 0) {
-      //     path = path.substr(0, path.length - 1);
-      //   }
-      //  }); 
       var ajaxJSON = {};
       if (_this.editflag) {
         _this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
