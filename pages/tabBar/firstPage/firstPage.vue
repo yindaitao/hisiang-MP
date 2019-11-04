@@ -132,6 +132,12 @@
 							title: "加班"
 						});
 						break;
+					case "Goout1":
+						uni.navigateTo({
+							url: "/pages/Goout/Gooutlist/Gooutlist",
+							title: "外出"
+						});
+						break;
 					case "deplist":
 						uni.navigateTo({
 							url: "/pages/department/deplist/deplist",

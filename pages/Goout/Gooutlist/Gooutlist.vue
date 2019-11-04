@@ -1,6 +1,6 @@
 <template>
 	<view class="ul-uni-tab-bar">
-		<custom>请假列表</custom>
+		<custom>外出列表</custom>
 		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
@@ -46,7 +46,7 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.Creator}}提交的加班申请
+								{{list.Creator}}提交的{{list.GooutType==='Goout'?'外出':'出差'}}申请
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
@@ -131,13 +131,13 @@
 		onShow() {
 			/* if (!this.isFirstLoad) {
 				this.pageIndex = parseInt(this.pageIndex) - 1;
-				this.newShowgetLeaveList();
+				this.newShowgetGooutList();
 			} */
 			if(this.$mbservices.getIsRefresh())
 			{
 				this.pageIndex = 0; // parseInt(this.pageIndex) - 1;
 				this.$mbservices.setIsRefresh(false);
-				this.newShowgetLeaveList();
+				this.newShowgetGooutList();
 			}
 			this.isFirstLoad = false;
 			this.isLoadMore = false;
@@ -156,14 +156,14 @@
 			//#endif
 			//this.dataList = [];
 			/*加载数据*/
-			this.getLeaveList();
+			this.getGooutList();
 		},
 		onReachBottom() {
 			this.searchParams = [];
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowgetLeaveList();
+			this.newShowgetGooutList();
 			/* setTimeout(() => {
 				uni.stopPullDownRefresh();
 			}, 1000) */
@@ -174,28 +174,28 @@
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowgetLeaveList();
+			this.newShowgetGooutList();
 		},
 		methods: {
 			goDetail(item) {
 				if(item.Approve==='No'&&item.ApproveStatus!=='Rejected'){
 					uni.navigateTo({
-						url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?flag=modify&data=" + JSON.stringify(item)
+						url: "/pages/Goout/Gooutform/Gooutform?flag=modify&data=" + JSON.stringify(item)
 					});
 				}else if(item.ApproveStatus==='Rejected'){
 					uni.navigateTo({
-						url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?flag=modify&data=" + JSON.stringify(item)
+						url: "/pages/Goout/Gooutform/Gooutform?flag=modify&data=" + JSON.stringify(item)
 					});
 				}else if(item.ApproveStatus === "Approved" || item.ApproveStatus === "Pending"){
 					uni.navigateTo({
-						url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?flag=Original&data=" + JSON.stringify(item)
+						url: "/pages/Goout/Gooutform/Gooutform?flag=Original&data=" + JSON.stringify(item)
 					});
 				}
 			},
 			editItem(item) {
 				console.log(item);
 				uni.navigateTo({
-					url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?flag=modify&data=" + JSON.stringify(item)
+					url: "/pages/Goout/Gooutform/Gooutform?flag=modify&data=" + JSON.stringify(item)
 				});
 			},
 			deleteItem(item) {
@@ -240,14 +240,14 @@
 				//this.dataList = [];
 				this.makeParams();
 				this.pageIndex = 0;
-				this.getLeaveList(this.searchParams);
+				this.getGooutList(this.searchParams);
 			},
 			loadMore() {
 				if (this.searchValue != undefined && this.searchValue.length > 0) {
 					this.makeParams();
 				}
 				this.isLoadMore = true;
-				this.newShowgetLeaveList(this.searchParams);
+				this.newShowgetGooutList(this.searchParams);
 			},
 			makeParams() {
 				if (this.$mbservices.isEmpty(this.searchValue)) {
@@ -280,7 +280,7 @@
 					}
 				];
 			},
-			newShowgetLeaveList: async function(params) {
+			newShowgetGooutList: async function(params) {
 				this.pageIndex = parseInt(this.pageIndex) + 1;
 				var ajaxJSON = {
 					pageIndex: this.pageIndex,
@@ -312,7 +312,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getLeaveList,
+					this.$webapi.getGooutList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
@@ -365,7 +365,7 @@
 					}
 				);
 			},
-			getLeaveList(params) {
+			getGooutList(params) {
 				uni.showLoading({
 					title: "拼命加载中..."
 				});
@@ -400,7 +400,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getLeaveList,
+					this.$webapi.getGooutList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
@@ -426,8 +426,6 @@
 								if (item.ApproveStatus === "Rejected") {
 									item.AApproveStatus = "已拒绝";
 								}
-								item.Amount = parseFloat(item.Amount).toFixed(2);
-								//_this.dataList.push(item);
 								_cacheList.push(item);
 							});
 							_this.dataList=_cacheList;
@@ -482,7 +480,7 @@
 			},
 			addWorkOrder() {
 				uni.navigateTo({
-					url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform"
+					url: "/pages/Goout/Gooutform/Gooutform"
 				});
 			},
 

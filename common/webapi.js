@@ -51,6 +51,14 @@ module.exports = {
 	getExtraWorkList: websiteUrl + '/api/ExtraWork/GetRecords',
 	// 加班最大ID
 	maxNumExtraWork: websiteUrl + '/api/ExtraWork/GetMaxDocEntry',
+	// 添加加班
+	saveExtraWork: websiteUrl + '/api/ExtraWork/Save',
+	/* 获取外出列表 */
+	getGooutList: websiteUrl + '/api/Goout/GetRecords',
+	// 外出最大ID
+	maxNumGoout: websiteUrl + '/api/Goout/GetMaxDocEntry',
+	// 添加外出
+	saveGoout: websiteUrl + '/api/Goout/Save',
 	/* 报销最大ID */
 	maxNumReimRequest: websiteUrl + '/api/ReimbursementRequest/GetMaxDocEntry',
 	/* 得到费用报销类型 */

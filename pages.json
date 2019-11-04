@@ -278,6 +278,19 @@
 		            "style": {}
 		        }
 		    ]
+		},
+		{
+		    "root": "pages/Goout",
+		    "pages": [
+		        {
+		            "path": "Gooutlist/Gooutlist",
+		            "style": {}
+		        },
+		        {
+		            "path": "Gooutform/Gooutform",
+		            "style": {}
+		        }
+		    ]
 		}
     ],
     "tabBar": {
