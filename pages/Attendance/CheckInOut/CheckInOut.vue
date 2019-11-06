@@ -22,7 +22,7 @@
 				</button>
 			</view>
 			<view class="cu-timeline" style="background-color: rgba(0,0,0,0);" v-for="(item,index) in WorkRecords" :key="index">
-				<view class="cu-time">第{{index+1}}次打卡</view>
+				<view class="cu-time">第{{WorkRecords.length-index}}次打卡</view>
 				<view class="cu-item">
 					<view class="content">
 						<view class="cu-capsule radius" style="background-color: rgba(0,0,0,0);">
@@ -160,7 +160,9 @@
 					return arr;
 				}
 				if (path.toString().lastIndexOf(',') <= -1 && !this.$mbservices.isEmpty(path)) {
-					return arr.push(this.$webapi.webroot + '/' + path);
+					console.log("有一张图片");
+					arr.push(this.$webapi.webroot + '/' + path);
+					return arr;
 				}
 				if (path.toString().lastIndexOf(',') > -1) {
 					let cArr = path.toString().split(',');
@@ -175,6 +177,7 @@
 			getCheckTime(value) {
 				let str = '';
 				str = this.$mbservices.formatDateTime(value, 'hh:mm:ss');
+				
 				return str;
 			},
 			getMornAfter(value) {
@@ -254,8 +257,13 @@
 							ConditionValue: this.$mbservices.formatDateTime(new Date(), 'yyyy/MM/dd') + ' 23:59:59',
 							Relationship: "AND"
 						}],
-					}
-
+						"Sorts": [
+						    {
+						      "FieldName": "CheckDatetime",
+						      "type": "Descending"
+						    }
+						  ],
+					},
 				};
 				this.$mbservices.Request(this.$webapi.getWorkRecords, 'POST', param, res => {
 					console.log('请求数据发挥的');

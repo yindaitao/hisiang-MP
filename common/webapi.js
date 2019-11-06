@@ -47,6 +47,8 @@ module.exports = {
 	maxNumLeave: websiteUrl + '/api/Leave/GetMaxDocEntry',
 	/* 获取请假类型*/
 	getHolidayType: websiteUrl + '/api/HolidayType/GetRecords',
+	/* 获取请假带薪假*/
+	getHolidayRestDays: websiteUrl + '/api/HolidayType/GetRestDays',
 	/* 获取加班列表 */
 	getExtraWorkList: websiteUrl + '/api/ExtraWork/GetRecords',
 	// 加班最大ID

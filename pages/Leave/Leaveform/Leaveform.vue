@@ -27,6 +27,10 @@
 						<view class="picker">{{HolidayType[indexHolidayType]}}</view>
 					</picker>
 				</view>
+				<view style="padding: 1rpx 30rpx;" v-if="itemData.HolidayTypeName === '年假' || itemData.HolidayTypeName === '带薪病假'
+				 || itemData.HolidayTypeName === '亲情假'">
+					提示：还有{{RestDays}}天带薪假
+				</view>
 				<view class="cu-form-group">
 					<view class="title">开始日期</view>
 					<picker :disabled="edit?true:false" mode="date" :value="itemData.BeginDate" :start="startDate" :end="endDate"
@@ -158,6 +162,7 @@ export default {
       isDoSteps: false,
 	  edit:false,
 	  from:"",
+	  RestDays: "",
     };
   },
   computed: {
@@ -223,6 +228,13 @@ export default {
 				if(this.HolidayType[this.indexHolidayType] === this.HolidayTypeList[i].Name){
 					this.itemData.HolidayTypeCode = this.HolidayTypeList[i].Code;
 					this.itemData.HolidayTypeName = this.HolidayType[this.indexHolidayType];
+					if(this.itemData.HolidayTypeName === '年假'){
+						this.getHolidayRestDays("01");
+					}else if (this.itemData.HolidayTypeName === '带薪病假'){
+						this.getHolidayRestDays("03");
+					}else if (this.itemData.HolidayTypeName === '亲情假'){
+						this.getHolidayRestDays("05");
+					}
 				}
 			}
 		},
@@ -532,6 +544,15 @@ export default {
       });
       return index;
     },
+	getHolidayRestDays(type){
+		var that = this;
+		this.$mbservices.Request(this.$webapi.getHolidayRestDays,"POST",type,
+		  function(res) {
+			  if(res.data.data>0){
+				  that.RestDays = res.data.data;
+			  }
+		  })
+	},
     getDetailData: function() {
       this.pageIndex = parseInt(this.pageIndex) + 1;
       var ajaxJSON = {
