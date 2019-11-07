@@ -182,18 +182,18 @@
 		methods: {
 			goDetail(item) {
 				item.from = "";
-				item.from = "Gooutlist";
+				item.from = "Triplist";
 				if(item.Approve==='No'&&item.ApproveStatus!=='Rejected'){
 					uni.navigateTo({
-						url: "/pages/GooutBusinessTravel/GooutBusinessTravelform/GooutBusinessTravelform?flag=modify&data=" + JSON.stringify(item)
+						url: "/pages/Trip/Tripform/Tripform?flag=modify&data=" + JSON.stringify(item)
 					});
 				}else if(item.ApproveStatus==='Rejected'){
 					uni.navigateTo({
-						url: "/pages/GooutBusinessTravel/GooutBusinessTravelform/GooutBusinessTravelform?flag=modify&data=" + JSON.stringify(item)
+						url: "/pages/Trip/Tripform/Tripform?flag=modify&data=" + JSON.stringify(item)
 					});
 				}else if(item.ApproveStatus === "Approved" || item.ApproveStatus === "Pending"){
 					uni.navigateTo({
-						url: "/pages/GooutBusinessTravel/GooutBusinessTravelform/GooutBusinessTravelform?flag=Original&data=" + JSON.stringify(item)
+						url: "/pages/Trip/Tripform/Tripform?flag=Original&data=" + JSON.stringify(item)
 					});
 				}
 			},

@@ -19,21 +19,50 @@
 				</view>
 			</view>
 		</view>
+		<view class="cu-modal" :class="modalNameTraffic=='RadioModalTraffic'?'show':''" @tap="hideModalTraffic" v-if="edit === false">
+			<view class="cu-dialog" @tap.stop="">
+				<radio-group class="block" @change="RadioTrafficChange">
+					<view class="cu-list menu text-left">
+						<view class="cu-item" v-for="(item,index) in TrafficTypeList" :key="index">
+							<label class="flex justify-between align-center flex-sub">
+								<view class="flex-sub">{{item.Name}}</view>
+								<radio class="round" :class="radio3==item.Code?'checked':''" :checked="radio3==item.Code?true:false" :value="item.Code"></radio>
+							</label>
+						</view>
+					</view>
+				</radio-group>
+			</view>
+		</view>
 		<view class="ul-swiper-box">
 			<form>
 				<view class="cu-form-group">
-					<view class="title">开始日期</view>
+					<view class="title">出发日期</view>
 					<picker :disabled="edit?true:false" mode="date" :value="itemData.BeginDate" :start="startDate" :end="endDate"
 					 @change="bindDateChange(itemData,$event)">
 						<view class="picker">{{itemData.BeginDate}}</view>
 					</picker>
 				</view>
 				<view class="cu-form-group">
-					<view class="title">结束日期</view>
+					<view class="title">出发地点</view>
+					<input :disabled="edit?true:false" placeholder="出发地点" name="input" style="text-align: right;" @input="inputNumStartPlace($event)" :value="itemData.StartPlace">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">到达日期</view>
 					<picker :disabled="edit?true:false" mode="date" :value="itemData.EndDate" :start="startDate" :end="endDate"
 					 @change="bindDateChange1(itemData,$event)">
 						<view class="picker">{{itemData.EndDate}}</view>
 					</picker>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">到达地点</view>
+					<input :disabled="edit?true:false" placeholder="到达地点" name="input" style="text-align: right;" @input="inputNumArrivePlace($event)" :value="itemData.ArrivePlace">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">交通工具</view>
+					<text class="cu-tag round bg-blue light" data-target="RadioModalTraffic" @tap="showModalTraffic($event)">{{itemData.TrafficTypeName}}</text>
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">出差时长</view>
@@ -95,23 +124,48 @@ export default {
 		    time: Date.parse(new Date()),
 			GooutHoursTextType:["天","小时","周","月"],
 			indexGooutHoursText:0,
-			GooutHoursTextList:[{
-				Code:"Hour",
-				Name:"小时",
-			},
+			GooutHoursTextList:[
 			{
 				Code:"Day",
 				Name:"天",
-			},
-			{
-				Code:"Week",
-				Name:"周",
-			},
-			{
-				Code:"Month",
-				Name:"月",
+			}],
+			TrafficTypeList:[{
+				Code:"Gaotie",
+				Name:"高铁"
+			},{
+				Code:"Aircraft",
+				Name:"飞机"
+			},{
+				Code:"Huoche",
+				Name:"火车"
+			},{
+				Code:"Bus",
+				Name:"客车"
+			},{
+				Code:"Ship",
+				Name:"轮船"
+			},{
+				Code:"Taxi",
+				Name:"出租车"
+			},{
+				Code:"PublicBus",
+				Name:"公交车"
+			},{
+				Code:"Zuche",
+				Name:"自驾租赁"
+			},{
+				Code:"Myself",
+				Name:"自驾私车"
+			},{
+				Code:"Common",
+				Name:"自驾公车"
+			},{
+				Code:"Other",
+				Name:"其他工具"
 			}],
       modalName: null,
+	  modalNameTraffic:null,
+	  radio3:'radio3',
       enddate: "",
       themeColor: "",
 
@@ -127,7 +181,10 @@ export default {
 		  DocEntry:"",
 		  BeginDate:this.getDate({format: true}),
 		  EndDate: this.getDate({format: true}),
-		  GooutTypeCode:"BusinessTravel",
+		  StartPlace:"",
+		  ArrivePlace:"",
+		  TrafficType:"",
+		  TrafficTypeName:"请选择交通工具",
 		  Hours: "",
 		  GooutHoursText:"Hour",
 		  GooutHoursTextName: "小时",
@@ -191,7 +248,7 @@ export default {
 		},
 		toList(){
 			uni.navigateTo({
-				url: "/pages/GooutBusinessTravel/GooutBusinessTravellist/GooutBusinessTravellist",
+				url: "/pages/Trip/Triplist/Triplist",
 				title: "出差记录"
 			});
 		},
@@ -208,6 +265,30 @@ export default {
     hideModal(e) {
       this.modalName = null;
     },
+	RadioTrafficChange(e) {
+		this.radio3 = e.detail.value;
+		this.itemData.TrafficType=e.detail.value;
+		this.TrafficTypeList.forEach(item=>{
+			if(item.Code===e.detail.value)
+			{
+				this.itemData.TrafficTypeName=item.Name;
+			}
+		})
+		this.modalNameTraffic = null;
+		this.radio3 = "";
+	},
+	showModalTraffic(e) {
+		this.modalNameTraffic = e.currentTarget.dataset.target;
+	},
+	hideModalTraffic(e) {
+	  this.modalNameTraffic = null;
+	},
+	inputNumArrivePlace(event){
+		this.itemData.ArrivePlace=event.detail.value;
+	},
+	inputNumStartPlace(event){
+		this.itemData.StartPlace=event.detail.value;
+	},
     onlySave() {
       this.modalName = null;
       this.isDoSteps = false;

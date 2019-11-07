@@ -293,14 +293,14 @@
 		    ]
 		},
 		{
-		    "root": "pages/GooutBusinessTravel",
+		    "root": "pages/Trip",
 		    "pages": [
 		        {
-		            "path": "GooutBusinessTravellist/GooutBusinessTravellist",
+		            "path": "Triplist/Triplist",
 		            "style": {}
 		        },
 		        {
-		            "path": "GooutBusinessTravelform/GooutBusinessTravelform",
+		            "path": "Tripform/Tripform",
 		            "style": {}
 		        }
 		    ]

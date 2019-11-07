@@ -146,7 +146,7 @@
 						break;
 					case "GooutBusinessTravel":
 						uni.navigateTo({
-							url: "/pages/GooutBusinessTravel/GooutBusinessTravelform/GooutBusinessTravelform?data=" + JSON.stringify({
+							url: "/pages/Trip/Tripform/Tripform?data=" + JSON.stringify({
 								from: "firstPage"
 							}),
 							title: "出差"
