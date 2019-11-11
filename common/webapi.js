@@ -61,6 +61,12 @@ module.exports = {
 	maxNumGoout: websiteUrl + '/api/Goout/GetMaxDocEntry',
 	// 添加外出
 	saveGoout: websiteUrl + '/api/Goout/Save',
+	/* 获取出差列表 */
+	getTripList: websiteUrl + '/api/Trip/GetRecords',
+	// 出差最大ID
+	maxNumTrip: websiteUrl + '/api/Trip/GetMaxDocEntry',
+	// 添加出差
+	saveTrip: websiteUrl + '/api/Trip/Save',
 	/* 报销最大ID */
 	maxNumReimRequest: websiteUrl + '/api/ReimbursementRequest/GetMaxDocEntry',
 	/* 得到费用报销类型 */

@@ -44,7 +44,8 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">出发地点</view>
-					<input :disabled="edit?true:false" placeholder="出发地点" name="input" style="text-align: right;" @input="inputNumStartPlace($event)" :value="itemData.StartPlace">
+					<input :disabled="edit?true:false" placeholder="出发地点" name="input" style="text-align: right;" @input="inputNumStartPlace($event)"
+					 :value="itemData.StartPlace">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
@@ -56,7 +57,8 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">到达地点</view>
-					<input :disabled="edit?true:false" placeholder="到达地点" name="input" style="text-align: right;" @input="inputNumArrivePlace($event)" :value="itemData.ArrivePlace">
+					<input :disabled="edit?true:false" placeholder="到达地点" name="input" style="text-align: right;" @input="inputNumArrivePlace($event)"
+					 :value="itemData.ArrivePlace">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
@@ -66,32 +68,50 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">出差时长</view>
-					<input :disabled="edit?true:false" placeholder="请输入出差时长" name="input" type="digit" style="text-align: right;"
-					 @input="inputHours(itemData,$event)" :value="itemData.Hours">
+					<input :disabled="edit?true:false" placeholder="请输入出差时长(单位:天)" name="input" type="digit" style="text-align: right;"
+					 @input="inputHours(itemData,$event)" :value="itemData.TripHours">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
-				<view class="cu-form-group">
-					<view class="title">出差时长单位</view>
-					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexGooutHoursText" :range="GooutHoursTextType">
-						<view class="picker">{{GooutHoursTextType[indexGooutHoursText]}}</view>
-					</picker>
+				<view class="cu-bar bg-gray solid-bottom margin-top">
+					<view class="action">
+						<text class="icon-title text-orange"></text>
+						出差同行人
+					</view>
 				</view>
-				<view class="cu-form-group">
+				<block v-for="(item,index) in formList" :key="index">
+					<view class="cu-form-group">
+						<view class="title">同行人</view>
+						<picker :disabled="edit?true:false" @change="bindPickerChange4(item,$event)" :range-key="'UserName'" :value="item.indexType"
+						 :range="TripCompanions">
+							<view class="picker">{{TripCompanions[item.indexType].UserName}}</view>
+						</picker>
+						<button v-if="formList.length>1" v-show="edit?false:true" class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
+							<text class="icon-roundclosefill" style="font-size: 1.5em;color:red;"></text>
+						</button>
+					</view>
+				</block>
+				<uni-view class="cu-bar bg-gray solid-bottom" style="width: 100%;" v-if="edit === false">
+					<button class="cu-btn round bg-blue shadow" style="margin: 0 auto;" @tap="addOption">
+						<text class="icon-add"></text>增加&nbsp;&nbsp;同行人
+					</button>
+				</uni-view>
+				<view class="cu-form-group" style="margin-top: 3px;">
 					<view class="title">出差事由</view>
 				</view>
 				<view class="cu-form-group">
 					<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
 					 placeholder-class="placeholder" data-placeholder="在此输入出差事由" :value="itemData.Cause" />
 					</view>
-				<view class="cu-form-group">
-					<view class="title">备注</view>
-				</view>
-				<view class="cu-form-group">
-					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
-					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
+					<view class="cu-form-group">
+						<view class="title">备注</view>
+					</view>
+					<view class="cu-form-group">
+						<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
+						 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
 					</view>
       </form>
     </view>
+	<view style="width: :100%;height: 50px;"></view>
 	<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 999;width: 100%;">
 		<view class="action" v-if="edit === false" style="width: 50%;">
 			<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
@@ -122,13 +142,6 @@ export default {
   data() {
     return {
 		    time: Date.parse(new Date()),
-			GooutHoursTextType:["天","小时","周","月"],
-			indexGooutHoursText:0,
-			GooutHoursTextList:[
-			{
-				Code:"Day",
-				Name:"天",
-			}],
 			TrafficTypeList:[{
 				Code:"Gaotie",
 				Name:"高铁"
@@ -168,15 +181,8 @@ export default {
 	  radio3:'radio3',
       enddate: "",
       themeColor: "",
-
-      /*图片*/
-      imageList: [],
-      sourceTypeIndex: 2,
-      sourceType: ["拍照", "相册", "拍照或相册"],
-      sizeTypeIndex: 2,
-      sizeType: ["压缩", "原图", "压缩或原图"],
-      countIndex: 8,
-      count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+	  TripCompanions:[],
+	  indexType:0,
 	  itemData:{
 		  DocEntry:"",
 		  BeginDate:this.getDate({format: true}),
@@ -185,21 +191,19 @@ export default {
 		  ArrivePlace:"",
 		  TrafficType:"",
 		  TrafficTypeName:"请选择交通工具",
-		  Hours: "",
-		  GooutHoursText:"Hour",
-		  GooutHoursTextName: "小时",
+		  TripHours: "",
 		  Cause:"",
 		  Remarks:"",
 	},
       formList: [
         {
           id: 1,
-          imageList: [],
-          bigjine: ""
+          UserId:"1",
+		  UserName:"管理员",
+		  indexType:0,
         }
       ],
       editEntitysList: [],
-      totalJine: "0.00",
       editflag: false,
       editItem: {},
       isDoSteps: false,
@@ -232,17 +236,32 @@ export default {
 	                  s = s < 10 ? ('0' + s) : s;
 	                  return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
 	              },
+				  getUserList:async function(){
+				  	var ajaxJSON={
+				  		pageIndex: 1,
+				  		rowsPerPage: "10000",
+				  		type: "Initialize",
+				  		Parameter: {
+				  		  LoadChildren: "NoLoad",
+				  		  Conditions: [
+				  		    {
+				  		      FieldName: "Activated",
+				  		      Operation: "EQUAL",
+				  		      ConditionValue: "Y",
+				  		      Relationship: "AND"
+				  		    }
+				  		  ]
+				  		}
+				  	};
+				  	this.$mbservices.Request(this.$webapi.getUserList,"POST",ajaxJSON,res=>{
+				  		if(res.data.RecordCount>0)
+				  		{
+				  			this.TripCompanions=res.data.data;
+				  		}
+				  		
+				  	},err=>{})
+				  },
 		selectOption(e){},
-		bindPickerChange1: function(e) {
-			this.indexGooutHoursText=e.target.value;
-			this.itemData.indexGooutHoursText=e.target.value;
-			for(var i in this.GooutHoursTextList){
-				if(this.GooutHoursTextType[this.indexGooutHoursText] === this.GooutHoursTextList[i].Name){
-					this.itemData.GooutHoursText = this.GooutHoursTextList[i].Code;
-					this.itemData.GooutHoursTextName = this.GooutHoursTextType[this.indexGooutHoursText];
-				}
-			}
-		},
 		showModal1(e) {
 			this.modalName = e.currentTarget.dataset.target;
 		},
@@ -253,13 +272,47 @@ export default {
 			});
 		},
     showModal(e) {
+		if(this.$mbservices.isEmpty(this.itemData.StartPlace))
+		{
+			uni.showModal({
+				title:"提示",
+				content:"请输入出发地点",
+				showCancel:false,
+				
+			});
+			return false;
+		}
+		if(this.$mbservices.isEmpty(this.itemData.ArrivePlace))
+		{
+			uni.showModal({
+				title:"提示",
+				content:"请输入到达地点",
+				showCancel:false,
+				
+			});
+			return false;
+		}
+		if(this.$mbservices.isEmpty(this.itemData.TrafficType))
+		{
+			uni.showModal({
+				title:"提示",
+				content:"请选择交通工具",
+				showCancel:false,
+				
+			});
+			return false;
+		}
+		if(this.$mbservices.isEmpty(this.itemData.TripHours))
+		{
+			uni.showModal({
+				title:"提示",
+				content:"请输入出差时长",
+				showCancel:false,
+				
+			});
+			return false;
+		}
 		
-      var isNull_ = false;
-      var content = "";
-      if (isNull_) {
-        uni.showToast({ title: content, icon: "none" });
-        return false;
-      }
       this.modalName = e.currentTarget.dataset.target;
     },
     hideModal(e) {
@@ -289,6 +342,13 @@ export default {
 	inputNumStartPlace(event){
 		this.itemData.StartPlace=event.detail.value;
 	},
+	bindPickerChange4(item,e){
+		var _this = this;
+		_this.indexType = e.target.value;
+		item.indexType = e.target.value;
+		item.UserId = _this.TripCompanions[item.indexType].UserName;
+		item.UserName = _this.TripCompanions[item.indexType].UserId;
+	},
     onlySave() {
       this.modalName = null;
       this.isDoSteps = false;
@@ -299,34 +359,96 @@ export default {
       this.isDoSteps = true;
       this.submitForm();
     },
+	addOption(e) {
+	  this.formList.push({
+	    id: this.formList.length + 1,
+		UserId:"",
+		UserName:"",
+		indexType:0,
+	  });
+	},
+	deleteOption(e) {
+	  if (this.formList.length === 1) {
+	    return false;
+	  }
+	  var cache = new Array();
+	  this.formList.forEach(item => {
+	    if (item.id != e.id) {
+	      cache.push(item);
+	    }
+	  });
+	  this.formList = [];
+	  var index = 1;
+	  cache.forEach(item => {
+	    item.id = index;
+	    this.formList.push(item);
+	    index++;
+	  });
+	},
     submitForm() {
       var _this = this;
       uni.showLoading({
         title: "正在提交..."
       });
+	  var _lines = new Array();
+	  var _indx = 0;
+	  _this.formList.forEach(_item => {
+	    _indx = parseInt(_indx) + 1;
+	  		var lineItem = {
+				DocEntry: _this.itemData.DocEntry,
+	  			  LineNum: _indx,
+	  			  ObjectType: "Trip",
+				  UserId: _item.UserId,
+				  UserName: _item.UserName,
+	  			  Canceled: "N",
+	  			  Closed: "N",
+	  			  LineStatus: "O",
+	  			  UIStatus: "New",
+	  			};
+				_lines.push(lineItem);
+		})		
       var ajaxJSON = {};
       if (_this.editflag) {
+		  _this.editEntitysList[0].TripCompanions.forEach(
+		    _calcuItem => {
+		      var _ishave = false;
+		      _lines.forEach(__option => {
+		        if (_calcuItem.DocEntry === __option.DocEntry) {
+		          _calcuItem.UIStatus = "Modify";
+				  _calcuItem.UserId = __option.UserId;
+				  _calcuItem.UserName = __option.UserName;
+		          _ishave = true;
+		        }
+		      });
+		      if (!_ishave) {
+		        _calcuItem.UIStatus = "Delete";
+		      }
+		    }
+		  );
         _this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
         (_this.editEntitysList[0].ApproveStatus = "Pending"),
 				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
 				_this.editEntitysList[0].Cause = _this.itemData.Cause;
 				_this.editEntitysList[0].BeginDate = _this.itemData.BeginDate;
 				_this.editEntitysList[0].EndDate = _this.itemData.EndDate;
-				_this.editEntitysList[0].GooutType = _this.itemData.GooutTypeCode;
-				_this.editEntitysList[0].Hours = _this.itemData.Hours;
-				_this.editEntitysList[0].GooutHoursText = _this.itemData.GooutHoursText;
+				_this.editEntitysList[0].StartPlace = _this.itemData.StartPlace;
+				_this.editEntitysList[0].ArrivePlace = _this.itemData.ArrivePlace;
+				_this.editEntitysList[0].ArrivePlace = _this.itemData.ArrivePlace;
+				_this.editEntitysList[0].TrafficType = _this.itemData.TrafficType;
                 _this.editEntitysList[0].UIStatus = "Modify";
         ajaxJSON = _this.editEntitysList[0];
       } else {
         ajaxJSON = {
-		  ObjectType: "Goout",
+		  ObjectType: "Trip",
 		  DocNum: _this.itemData.DocEntry.toString(),
 		  BeginDate: _this.itemData.BeginDate,
 		  EndDate: _this.itemData.EndDate,
-		  GooutType: _this.itemData.GooutTypeCode,
-		  Hours: _this.itemData.Hours,
+		  StartPlace: _this.itemData.StartPlace,
+		  ArrivePlace: _this.itemData.ArrivePlace,
+		  TrafficType: _this.itemData.TrafficType,
+		  TripHours: _this.itemData.TripHours,
 		  CreateDate: this.formatDate(this.time),
-		  GooutHoursText: _this.itemData.GooutHoursText,
+		  TripCompanions: _lines,
           CreatorId: uni.getStorageSync("JSUserInfo").UserId,
 		  Creator: uni.getStorageSync("JSUserInfo").UserName,
 		  Cause: _this.itemData.Cause, 
@@ -344,8 +466,8 @@ export default {
         };
 	  console.log(ajaxJSON);
       var requestUrl = _this.editflag
-        ? _this.$webapi.saveGoout
-        : _this.$webapi.saveGoout;
+        ? _this.$webapi.saveTrip
+        : _this.$webapi.saveTrip;
 				var _$this=_this;
       _this.$mbservices.Request(
         requestUrl,
@@ -379,10 +501,11 @@ export default {
             title: "失败:" + err.data
           });
         }
-      )}
+      )
+	}
 	},
 	inputHours(itemData, event) {
-	  itemData.Hours = event.detail.value;
+	  itemData.TripHours = event.detail.value;
 	},
     onKeyInput: function(event) {
       this.formList[parseInt(event.target.id) - 1].jine = event.detail.value;
@@ -561,6 +684,15 @@ export default {
         }
       });
     },
+	getUserIndex(keyValue) {
+	  var index = 0;
+	  this.TripCompanions.forEach((item, _indx) => {
+	    if (item.UserName === keyValue) {
+	      index = _indx;
+	    }
+	  });
+	  return index;
+	},
     getDetailData: function() {
       this.pageIndex = parseInt(this.pageIndex) + 1;
       var ajaxJSON = {
@@ -584,7 +716,7 @@ export default {
       });
       var _this = this;
       this.$mbservices.Request(
-        this.$webapi.getGooutList,
+        this.$webapi.getTripList,
         "POST",
         ajaxJSON,
         function(ret) {
@@ -610,42 +742,30 @@ export default {
               item.AApproveStatus = "已拒绝";
             }
 			_$this.itemData.Remarks=item.Remarks;
-			_$this.itemData.GooutTypeCode = item.GooutType;
-			_$this.itemData.Hours = item.Hours;
-			_$this.itemData.GooutHoursText = item.GooutHoursText;
-			_$this.GooutHoursTextList.forEach((__item,__index)=>{
-								  if(__item.Code===_$this.itemData.GooutHoursText)
-								  {
-									  _$this.itemData.indexGooutType=__index;
-									  _$this.indexGooutType=__index;
-									  _$this.itemData.GooutHoursTextName = __item.Name;
-								  }
-			});
+			_$this.itemData.TripHours = item.TripHours;
 			_$this.itemData.BeginDate = item.BeginDate;
 			_$this.itemData.EndDate = item.EndDate;
+			_$this.itemData.StartPlace = item.StartPlace;
+			_$this.itemData.ArrivePlace = item.ArrivePlace;
+			_$this.itemData.TrafficType = item.TrafficType;
+			_$this.TrafficTypeList.forEach(inner => {
+				if (inner.Code === item.TrafficType) {
+					_$this.itemData.TrafficTypeName = inner.Name;
+				}
+			})
 			_$this.itemData.Cause = item.Cause;
-			_$this.itemData.CompanyId = item.CompanyId;
-			_$this.itemData.CompanyName = item.CompanyName;
-            // _this.formList = [];
-            //   var _pathArr =
-            //     _item.Imgs != "undefined" &&
-            //     _item.Imgs != null &&
-            //     _item.Imgs != ""
-            //       ? _item.Imgs.split("|")
-            //       : [];
-            //   _item.pathArr = new Array();
-            //   _pathArr.forEach(_item_ => {
-            //     _item.pathArr.push({
-            //       retInfo: {},
-            //       url: _this.$webapi.webroot + "/" + _item_,
-            //       deleteurl: _item_
-            //     });
-            //   });
-            //   _this.formList.push({
-            //     id: parseInt(_indx) + 1,
-            //     imageList: _item.pathArr,
-            //   });
-            // });
+            _this.formList = [];
+			item.TripCompanions.forEach((_item, _indx) => {
+			  _this.formList.push({
+			    id: parseInt(_indx) + 1,
+			    DocEntry: _item.DocEntry,
+				UserId:_item.UserId,
+				UserName: _item.UserName,
+				indexType: _this.getUserIndex(
+				  _item.UserName
+				),
+			  });
+            });
           });
           setTimeout(() => {
             uni.hideLoading();
@@ -689,6 +809,7 @@ export default {
 	    title: "拼命加载中..."
 	  });
 	  var _this = this;
+	  _this.getUserList();
 	  setTimeout(function(){
 	  		  _this.getDetailData();
 	  }, 1000);
@@ -696,18 +817,12 @@ export default {
     if(!this.editflag)
 		{
 			//最大编号
-			this.$mbservices.Request(this.$webapi.maxNumGoout,'GET',{},res=>{
+			this.$mbservices.Request(this.$webapi.maxNumTrip,'GET',{},res=>{
 				this.itemData.DocEntry=res.data;
 			},null);
+			this.getUserList();
 		}
   },
-  onUnload() {
-    (this.imageList = []), (this.sourceTypeIndex = 2);
-    this.sourceType = ["拍照", "相册", "拍照或相册"];
-    this.sizeTypeIndex = 2;
-    this.sizeType = ["压缩", "原图", "压缩或原图"];
-    this.countIndex = 8;
-  }
 };
 </script>
 

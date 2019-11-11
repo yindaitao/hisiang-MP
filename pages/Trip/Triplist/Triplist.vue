@@ -57,11 +57,11 @@
 							</view>
 							<view class="text-gray text-sm">
 								<text class="icon-timefill margin-right-xs"></text>
-								开始时间:{{list.BeginDate}}
+								出发时间:{{list.BeginDate}}
 							</view>
 							<view class="text-gray text-sm">
 								<text class="icon-timefill margin-right-xs"></text>
-								结束时间:{{list.EndDate}}
+								到达时间:{{list.EndDate}}
 							</view>
 						</view>
 						<view class="action" v-if="list.Approve!=='No'||list.ApproveStatus==='Rejected'">
@@ -134,13 +134,13 @@
 		onShow() {
 			/* if (!this.isFirstLoad) {
 				this.pageIndex = parseInt(this.pageIndex) - 1;
-				this.newShowgetGooutList();
+				this.newShowgetTripList();
 			} */
 			if(this.$mbservices.getIsRefresh())
 			{
 				this.pageIndex = 0; // parseInt(this.pageIndex) - 1;
 				this.$mbservices.setIsRefresh(false);
-				this.newShowgetGooutList();
+				this.newShowgetTripList();
 			}
 			this.isFirstLoad = false;
 			this.isLoadMore = false;
@@ -159,14 +159,14 @@
 			//#endif
 			//this.dataList = [];
 			/*加载数据*/
-			this.getGooutList();
+			this.getTripList();
 		},
 		onReachBottom() {
 			this.searchParams = [];
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowgetGooutList();
+			this.newShowgetTripList();
 			/* setTimeout(() => {
 				uni.stopPullDownRefresh();
 			}, 1000) */
@@ -177,7 +177,7 @@
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowgetGooutList();
+			this.newShowgetTripList();
 		},
 		methods: {
 			goDetail(item) {
@@ -245,14 +245,14 @@
 				//this.dataList = [];
 				this.makeParams();
 				this.pageIndex = 0;
-				this.getGooutList(this.searchParams);
+				this.getTripList(this.searchParams);
 			},
 			loadMore() {
 				if (this.searchValue != undefined && this.searchValue.length > 0) {
 					this.makeParams();
 				}
 				this.isLoadMore = true;
-				this.newShowgetGooutList(this.searchParams);
+				this.newShowgetTripList(this.searchParams);
 			},
 			makeParams() {
 				if (this.$mbservices.isEmpty(this.searchValue)) {
@@ -285,7 +285,7 @@
 					}
 				];
 			},
-			newShowgetGooutList: async function(params) {
+			newShowgetTripList: async function(params) {
 				this.pageIndex = parseInt(this.pageIndex) + 1;
 				var ajaxJSON = {
 					pageIndex: this.pageIndex,
@@ -322,7 +322,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getGooutList,
+					this.$webapi.getTripList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
@@ -375,7 +375,7 @@
 					}
 				);
 			},
-			getGooutList(params) {
+			getTripList(params) {
 				uni.showLoading({
 					title: "拼命加载中..."
 				});
@@ -400,11 +400,6 @@
 							Operation: "EQUAL",
 							ConditionValue: "N",
 							Relationship: "AND"
-						},{
-							FieldName: "GooutType",
-							Operation: "EQUAL",
-							ConditionValue: "B",
-							Relationship: "AND"
 						}]
 					}
 				};
@@ -415,7 +410,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getGooutList,
+					this.$webapi.getTripList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
