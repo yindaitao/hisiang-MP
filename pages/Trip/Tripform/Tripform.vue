@@ -81,11 +81,10 @@
 				<block v-for="(item,index) in formList" :key="index">
 					<view class="cu-form-group">
 						<view class="title">同行人</view>
-						<text>请选择</text>
-						<!-- <picker :disabled="edit?true:false" @change="bindPickerChange4(item,$event)" :range-key="'UserName'" :value="item.indexType"
+						<picker :disabled="edit?true:false" @change="bindPickerChange4(item,$event)" :range-key="'UserName'" :value="item.indexType"
 						 :range="TripCompanions">
 							<view class="picker">{{TripCompanions[item.indexType].UserName}}</view>
-						</picker> -->
+						</picker>
 						<button v-if="formList.length>1" v-show="edit?false:true" class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
 							<text class="icon-roundclosefill" style="font-size: 1.5em;color:red;"></text>
 						</button>
