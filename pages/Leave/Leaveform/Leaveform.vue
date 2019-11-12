@@ -33,17 +33,15 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">开始日期</view>
-					<picker :disabled="edit?true:false" mode="date" :value="itemData.BeginDate" :start="startDate" :end="endDate"
-					 @change="bindDateChange(itemData,$event)">
-						<view class="picker">{{itemData.BeginDate}}</view>
-					</picker>
+					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1"
+					 :current="true" @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
+					 <view @tap="toggleTab('dateTime')">{{$mbservices.isEmpty(resultInfo.result)?'请选择':resultInfo.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">结束日期</view>
-					<picker :disabled="edit?true:false" mode="date" :value="itemData.EndDate" :start="startDate" :end="endDate"
-					 @change="bindDateChange1(itemData,$event)">
-						<view class="picker">{{itemData.EndDate}}</view>
-					</picker>
+					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1"
+					 :current="true" @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
+					 <view @tap="toggleTab1('dateTime')">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">请假时长</view>
@@ -90,11 +88,13 @@
 
 <script>
 import abc from "../../components/uni-datetimepicker.vue";
+import wPicker from "@/components/w-picker/w-picker.vue";
 var sourceType = [["camera"], ["album"], ["camera", "album"]];
 var sizeType = [["compressed"], ["original"], ["compressed", "original"]];
 export default {
   components: {
-    abc
+    abc,
+	wPicker
   },
   watch: {
     showValue(val) {
@@ -135,6 +135,8 @@ export default {
       sizeType: ["压缩", "原图", "压缩或原图"],
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+	  startYear:new Date().getFullYear(),
+	  defaultVal:[0,0,0,0,0,0,0],
 	  itemData:{
 		  DocEntry:"",
 		  BeginDate:this.getDate({format: true}),
@@ -163,6 +165,8 @@ export default {
 	  edit:false,
 	  from:"",
 	  RestDays: "",
+	  resultInfo:"",
+	  resultInfo1:"",
     };
   },
   computed: {
@@ -171,7 +175,22 @@ export default {
     },
     endDate() {
       return this.getDate("end");
-    }
+    },
+	endYear(){
+		const date = new Date();
+		let year = date.getFullYear()+2;
+		return year;
+	},
+	defaultVal1(){
+		const date = new Date();
+		let year = date.getFullYear();
+		let m = date.getMonth()+1;
+		let d = date.getDay();
+		let h = date.getHours();
+		let minute = date.getMinutes();
+		let s = date.getSeconds();
+		return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+	}
   },
   methods: {
 	  toList(){
@@ -370,11 +389,28 @@ export default {
       this.itemData.Cause = e.detail.value;
     },
     bindDateChange: function(itemData, e) {
-		console.log(e);
       itemData.BeginDate = e.target.value;
     },
 	bindDateChange1: function(itemData, e) {
 	  itemData.EndDate = e.target.value;
+	},
+	toggleTab(mode){
+		this.mode=mode;
+		this.$refs[mode].show();
+	},
+	toggleTab1(mode){
+		this.mode=mode;
+		this.$refs[mode].show();
+	},
+	onConfirm(val){
+		console.log("onConfirm")
+		console.log(val)
+		this.resultInfo=val;
+	},
+	onConfirm1(val){
+		console.log("onConfirm1")
+		console.log(val)
+		this.resultInfo1=val;
 	},
     getDate(type) {
       const date = new Date();
