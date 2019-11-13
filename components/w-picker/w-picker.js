@@ -171,6 +171,21 @@ const initPicker={
 					}
 					return {years,months,days,hours,minutes,seconds,defaultVal}
 					break;
+					case "dateTime1":
+						if(flag){
+							defaultVal=returnArr;
+						}else{
+							defaultVal=[
+								years.indexOf(value[0])==-1?0:years.indexOf(value[0]),
+								months.indexOf(value[1])==-1?0:months.indexOf(value[1]),
+								days.indexOf(value[2])==-1?0:days.indexOf(value[2]),
+								hours.indexOf(value[3])==-1?0:hours.indexOf(value[3]),
+								minutes.indexOf(value[4])==-1?0:minutes.indexOf(value[4]),
+								seconds.indexOf(value[5])==-1?0:seconds.indexOf(value[5])
+							];
+						}
+						return {years,months,days,hours,minutes,seconds,defaultVal}
+						break;
 				case "time":
 					if(flag){
 						defaultVal=[returnArr[3],returnArr[4],returnArr[5]];

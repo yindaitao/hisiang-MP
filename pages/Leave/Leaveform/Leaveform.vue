@@ -32,28 +32,28 @@
 					提示：还有{{RestDays}}天带薪假
 				</view>
 				<view class="cu-form-group">
-					<view class="title">开始日期</view>
-					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1"
-					 :current="true" @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
-					 <view @tap="toggleTab('dateTime')">{{$mbservices.isEmpty(resultInfo.result)?'请选择':resultInfo.result}}</view>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">结束日期</view>
-					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1"
-					 :current="true" @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
-					 <view @tap="toggleTab1('dateTime')">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">请假时长</view>
-					<input :disabled="edit?true:false" placeholder="请输入请假时长" name="input" type="digit" style="text-align: right;"
-					 @input="inputLeaveHours(itemData,$event)" :value="itemData.LeaveHours">
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
-				<view class="cu-form-group">
 					<view class="title">请假时长单位</view>
 					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexLeaveHoursText" :range="LeaveHoursTextType">
 						<view class="picker">{{LeaveHoursTextType[indexLeaveHoursText]}}</view>
 					</picker>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">开始日期</view>
+					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1"
+					 :current="true" @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
+					 <view @tap="toggleTab('dateTime1')">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">结束日期</view>
+					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2"
+					 :current="true" @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
+					 <view @tap="toggleTab1('dateTime2')">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">请假时长</view>
+					<input disabled="true" placeholder="请假时长" name="input" type="digit" style="text-align: right;"
+					 @input="inputLeaveHours(itemData,$event)" :value="itemData.LeaveHours">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">请假事由</view>
@@ -165,8 +165,8 @@ export default {
 	  edit:false,
 	  from:"",
 	  RestDays: "",
-	  resultInfo:"",
 	  resultInfo1:"",
+	  resultInfo2:"",
     };
   },
   computed: {
@@ -190,7 +190,17 @@ export default {
 		let minute = date.getMinutes();
 		let s = date.getSeconds();
 		return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
-	}
+	},
+	defaultVal2(){
+		const date = new Date();
+		let year = date.getFullYear();
+		let m = date.getMonth()+1;
+		let d = date.getDay();
+		let h = date.getHours();
+		let minute = date.getMinutes();
+		let s = date.getSeconds();
+		return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+	},
   },
   methods: {
 	  toList(){
@@ -237,6 +247,7 @@ export default {
 					this.itemData.LeaveHoursTextName = this.LeaveHoursTextType[this.indexLeaveHoursText];
 				}
 			}
+			this.computTime();
 		},
 		showModal1(e) {
 			this.modalName = e.currentTarget.dataset.target;
@@ -258,7 +269,16 @@ export default {
 			}
 		},
     showModal(e) {
-		
+		if(this.$mbservices.isEmpty(this.itemData.LeaveHours))
+		{
+			uni.showModal({
+				title:"提示",
+				content:"请选择正确的开始时间和结束时间",
+				showCancel:false,
+				
+			});
+			return false;
+		}
       var isNull_ = false;
       var content = "";
       if (isNull_) {
@@ -403,14 +423,41 @@ export default {
 		this.$refs[mode].show();
 	},
 	onConfirm(val){
-		console.log("onConfirm")
-		console.log(val)
-		this.resultInfo=val;
+		this.resultInfo1=val;
+		if(this.$mbservices.isEmpty(this.resultInfo2)){
+			return;
+		}else{
+			this.computTime();
+		}
 	},
 	onConfirm1(val){
-		console.log("onConfirm1")
-		console.log(val)
-		this.resultInfo1=val;
+		this.resultInfo2=val;
+		this.computTime();
+	},
+	computTime(){
+		var endTime = this.resultInfo2.result;
+		endTime = endTime.replace(/-/g, '/');
+		var time1 = new Date(endTime);
+		time1 = time1.getTime();
+		var startTime = this.resultInfo1.result;
+		startTime = startTime.replace(/-/g, '/');
+		var time2 = new Date(startTime);
+		time2 = time2.getTime();
+		var leavehours = time1 - time2;
+		if(leavehours < 0){
+			uni.showModal({
+				title:"提示",
+				content:"开始时间不能大于结束时间,请重新选择",
+				showCancel:false
+			})
+			return;
+		}else if(this.itemData.LeaveHoursText === 'Hour'){
+			this.itemData.LeaveHours = parseFloat(leavehours / (3600 * 1000)).toFixed(2);
+		}else if(this.itemData.LeaveHoursText === 'Day'){
+			this.itemData.LeaveHours = Math.floor(leavehours / (24 * 3600 * 1000)).toFixed(1);
+		}else if(this.itemData.LeaveHoursText === 'Month'){
+			
+		}
 	},
     getDate(type) {
       const date = new Date();
