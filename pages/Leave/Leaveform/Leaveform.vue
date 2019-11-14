@@ -410,12 +410,6 @@ export default {
     textareaInput(e) {
       this.itemData.Cause = e.detail.value;
     },
-    bindDateChange: function(itemData, e) {
-      itemData.BeginDate = e.target.value;
-    },
-	bindDateChange1: function(itemData, e) {
-	  itemData.EndDate = e.target.value;
-	},
 	toggleTab(mode){
 		this.mode=mode;
 		this.$refs[mode].show();
@@ -437,6 +431,8 @@ export default {
 		this.computTime();
 	},
 	computTime(){
+		this.itemData.BeginDate = this.resultInfo1.result;
+		this.itemData.EndDate = this.resultInfo2.result;
 		var endTime = this.resultInfo2.result;
 		endTime = endTime.replace(/-/g, '/');
 		var time1 = new Date(endTime);
@@ -619,15 +615,6 @@ export default {
           }
         }
       });
-    },
-    getArrayIndex(keyValue) {
-      var index = 0;
-      this.resourceArray.forEach((item, _indx) => {
-        if (item.ReimbursementTypeName === keyValue) {
-          index = _indx;
-        }
-      });
-      return index;
     },
 	getHolidayRestDays(type){
 		var that = this;

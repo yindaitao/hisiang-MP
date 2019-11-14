@@ -80,6 +80,7 @@
 
 <script>
 import abc from "../../components/uni-datetimepicker.vue";
+import wPicker from "@/components/w-picker/w-picker.vue";
 var sourceType = [["camera"], ["album"], ["camera", "album"]];
 var sizeType = [["compressed"], ["original"], ["compressed", "original"]];
 export default {
@@ -138,6 +139,8 @@ export default {
 			  isDoSteps: false,
 			  edit:false,
 			  from:"",
+			  resultInfo1:"",
+			  resultInfo2:"",
 			};
   },
   computed: {
@@ -146,7 +149,32 @@ export default {
     },
     endDate() {
       return this.getDate("end");
-    }
+    },
+	endYear(){
+		const date = new Date();
+		let year = date.getFullYear()+2;
+		return year;
+	},
+	defaultVal1(){
+		const date = new Date();
+		let year = date.getFullYear();
+		let m = date.getMonth()+1;
+		let d = date.getDay();
+		let h = date.getHours();
+		let minute = date.getMinutes();
+		let s = date.getSeconds();
+		return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+	},
+	defaultVal2(){
+		const date = new Date();
+		let year = date.getFullYear();
+		let m = date.getMonth()+1;
+		let d = date.getDay();
+		let h = date.getHours();
+		let minute = date.getMinutes();
+		let s = date.getSeconds();
+		return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+	},
   },
   methods: {
 	 toList(){
@@ -199,6 +227,16 @@ export default {
 			this.modalName = e.currentTarget.dataset.target;
 		},
     showModal(e) {
+		if(this.$mbservices.isEmpty(this.itemData.Hours))
+		{
+			uni.showModal({
+				title:"提示",
+				content:"请选择正确的开始时间和结束时间",
+				showCancel:false,
+				
+			});
+			return false;
+		}
       var isNull_ = false;
       var content = "";
       this.formList.forEach(_item => {
@@ -343,11 +381,49 @@ export default {
 				}
 			}
 		},
-	bindDateChange: function(item, e) {
-      item.BeginDate = e.target.value;
-    },
-	bindDateChange1: function(itemData, e) {
-	  itemData.EndDate = e.target.value;
+	
+	toggleTab(mode){
+		this.mode=mode;
+		this.$refs[mode].show();
+	},
+	toggleTab1(mode){
+		this.mode=mode;
+		this.$refs[mode].show();
+	},
+	onConfirm(val){
+		this.resultInfo1=val;
+		if(this.$mbservices.isEmpty(this.resultInfo2)){
+			return;
+		}else{
+			this.computTime();
+		}
+	},
+	onConfirm1(val){
+		this.resultInfo2=val;
+		this.computTime();
+	},
+	computTime(){
+		this.itemData.BeginDate = this.resultInfo1.result;
+		this.itemData.EndDate = this.resultInfo2.result;
+		var endTime = this.resultInfo2.result;
+		endTime = endTime.replace(/-/g, '/');
+		var time1 = new Date(endTime);
+		time1 = time1.getTime();
+		var startTime = this.resultInfo1.result;
+		startTime = startTime.replace(/-/g, '/');
+		var time2 = new Date(startTime);
+		time2 = time2.getTime();
+		var hours = time1 - time2;
+		if(hours < 0){
+			uni.showModal({
+				title:"提示",
+				content:"开始时间不能大于结束时间,请重新选择",
+				showCancel:false
+			})
+			return;
+		}else {
+			this.itemData.Hours = parseFloat(hours / (3600 * 1000)).toFixed(2);
+		}
 	},
     getDate(type) {
       const date = new Date();
