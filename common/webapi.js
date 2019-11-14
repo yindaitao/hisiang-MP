@@ -1,5 +1,5 @@
 var websiteUrl = "https://oa.magicbox.net.cn"; // "https://so.magicdata.co";
-/* http://localhost:53367 */
+/* http://localhost:51682 */
 /* http://oa.magicbox.net.cn */
 /* http://192.168.0.109:8080 */
 /* https://oa.magicbox.net.cn*/
@@ -159,4 +159,6 @@ module.exports = {
 	getWorkRecords: websiteUrl + '/api/WorkRecord/GetRecordsList',
 	// 获取发票类型
 	getVatRecords: websiteUrl + '/api/Vat/GetRecords',
+	// 获取系统初始化表格的数据
+	 getInitialize:websiteUrl + '/api/Initialize/GetRecords',
 }

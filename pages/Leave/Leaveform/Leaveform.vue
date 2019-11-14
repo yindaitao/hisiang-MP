@@ -247,7 +247,9 @@ export default {
 					this.itemData.LeaveHoursTextName = this.LeaveHoursTextType[this.indexLeaveHoursText];
 				}
 			}
-			this.computTime();
+			if(!this.$mbservices.isEmpty(this.resultInfo1) && !this.$mbservices.isEmpty(this.resultInfo2)){
+				this.computTime();
+			}
 		},
 		showModal1(e) {
 			this.modalName = e.currentTarget.dataset.target;
