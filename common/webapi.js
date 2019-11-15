@@ -160,5 +160,5 @@ module.exports = {
 	// 获取发票类型
 	getVatRecords: websiteUrl + '/api/Vat/GetRecords',
 	// 获取系统初始化表格的数据
-	 getInitialize:websiteUrl + '/api/Initialize/GetRecords',
+	 getInitialize:websiteUrl + '/api/Initialize/GetInitialize',
 }

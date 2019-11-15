@@ -41,13 +41,15 @@
 					<view class="title">开始日期</view>
 					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1"
 					 :current="true" @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
-					 <view @tap="toggleTab('dateTime1')">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
+					 <view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="!$mbservices.isEmpty(itemData.BeginDate)">{{itemData.BeginDate}}</view>
+					 <view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="$mbservices.isEmpty(itemData.BeginDate)">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">结束日期</view>
 					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2"
 					 :current="true" @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
-					 <view @tap="toggleTab1('dateTime2')">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
+					 <view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="!$mbservices.isEmpty(itemData.EndDate)">{{itemData.EndDate}}</view>
+					 <view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="$mbservices.isEmpty(itemData.EndDate)">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">请假时长</view>
@@ -136,11 +138,11 @@ export default {
       countIndex: 8,
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
 	  startYear:new Date().getFullYear(),
-	  defaultVal:[0,0,0,0,0,0,0],
+	  time: Date.parse(new Date()),
 	  itemData:{
 		  DocEntry:"",
-		  BeginDate:this.getDate({format: true}),
-		  EndDate: this.getDate({format: true}),
+		  BeginDate:this.formatDate(Date.parse(new Date())),
+		  EndDate: this.formatDate(Date.parse(new Date())),
 		  HolidayType: [],
 		  HolidayTypeCode:"",
 		  HolidayTypeName:"",
@@ -165,17 +167,11 @@ export default {
 	  edit:false,
 	  from:"",
 	  RestDays: "",
-	  resultInfo1:"",
-	  resultInfo2:"",
+	  resultInfo1:{},
+	  resultInfo2:{},
     };
   },
   computed: {
-    startDate() {
-      return this.getDate("start");
-    },
-    endDate() {
-      return this.getDate("end");
-    },
 	endYear(){
 		const date = new Date();
 		let year = date.getFullYear()+2;
@@ -203,6 +199,22 @@ export default {
 	},
   },
   methods: {
+	  //获取当前时间
+	              formatDate: function (value) {
+	                  let date = new Date(value);
+	                  let y = date.getFullYear();
+	                  let MM = date.getMonth() + 1;
+	                  MM = MM < 10 ? ('0' + MM) : MM;
+	                  let d = date.getDate();
+	                  d = d < 10 ? ('0' + d) : d;
+	                  let h = date.getHours();
+	                  h = h < 10 ? ('0' + h) : h;
+	                  let m = date.getMinutes();
+	                  m = m < 10 ? ('0' + m) : m;
+	                  let s = date.getSeconds();
+	                  s = s < 10 ? ('0' + s) : s;
+	                  return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
+	              },
 	  toList(){
 	  	uni.navigateTo({
 	  		url: "/pages/Leave/Leavelist/Leavelist",
@@ -411,9 +423,11 @@ export default {
       this.itemData.Cause = e.detail.value;
     },
 	toggleTab(mode){
+		this.itemData.BeginDate = "";
 		this.$refs[mode].show();
 	},
 	toggleTab1(mode){
+		this.itemData.EndDate = "";
 		this.$refs[mode].show();
 	},
 	onConfirm(val){
@@ -452,24 +466,22 @@ export default {
 		}else if(this.itemData.LeaveHoursText === 'Day'){
 			this.itemData.LeaveHours = Math.floor(leavehours / (24 * 3600 * 1000)).toFixed(1);
 		}else if(this.itemData.LeaveHoursText === 'Month'){
-			
+			if(this.resultInfo2.checkArr[0] > this.resultInfo1.checkArr[0]){
+				console.log("跨年");
+				var y = this.resultInfo2.checkArr[0] - this.resultInfo1.checkArr[0];
+				var m = this.resultInfo2.checkArr[1] - this.resultInfo1.checkArr[1];
+				var d = ((this.resultInfo2.checkArr[2] - this.resultInfo1.checkArr[2])/30).toFixed(1);
+				this.itemData.LeaveHours = y*12+m+parseFloat(d);
+			}else if(this.resultInfo2.checkArr[0] = this.resultInfo1.checkArr[0]){
+				console.log("不跨年");
+				var n = this.resultInfo2.checkArr[1] - this.resultInfo1.checkArr[1];
+				var e = ((this.resultInfo2.checkArr[2] - this.resultInfo1.checkArr[2])/30).toFixed(1);
+				this.itemData.LeaveHours = n + parseFloat(e);
+			}
+		}else if(this.itemData.LeaveHoursText === 'Week'){
+			this.itemData.LeaveHours = Math.floor(hours / (24 * 3600 * 1000*7)).toFixed(1);
 		}
 	},
-    getDate(type) {
-      const date = new Date();
-      let year = date.getFullYear();
-      let month = date.getMonth() + 1;
-      let day = date.getDate();
-      if (type === "start") {
-        year = year - 60;
-      } else if (type === "end") {
-        year = year + 2;
-      }
-      month = month > 9 ? month : "0" + month;
-      day = day > 9 ? day : "0" + day;
-
-      return `${year}-${month}-${day}`;
-    },
     onSelected(data) {
     },
     sourceTypeChange: function(e) {

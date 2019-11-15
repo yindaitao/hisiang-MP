@@ -29,20 +29,22 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">开始日期</view>
-					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1"
-					 :current="true" @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
-					 <view @tap="toggleTab('dateTime1')">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
+					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1" :current="true"
+					 @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
+					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="!$mbservices.isEmpty(itemData.BeginDate)">{{itemData.BeginDate}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="$mbservices.isEmpty(itemData.BeginDate)">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">结束日期</view>
-					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2"
-					 :current="true" @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
-					 <view @tap="toggleTab1('dateTime2')">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
+					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2" :current="true"
+					 @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
+					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="!$mbservices.isEmpty(itemData.EndDate)">{{itemData.EndDate}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="$mbservices.isEmpty(itemData.EndDate)">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">加班时长</view>
-					<input disabled="true" placeholder="加班时长" name="input" type="digit" style="text-align: right;"
-					 @input="inputHours(itemData,$event)" :value="itemData.Hours">
+					<input disabled="true" placeholder="加班时长" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
+					 :value="itemData.Hours">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
@@ -116,9 +118,9 @@ export default {
 			  count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
 			  itemData:{
 				  DocEntry:"",
-				  BeginDate:this.getDate({format: true}),
-				  EndDate: this.getDate({format: true}),
-				  ExtraWorkTypeCode:"Fixed",
+				  BeginDate:this.formatDate(Date.parse(new Date())),
+				  EndDate: this.formatDate(Date.parse(new Date())),
+				  ExtraWorkTypeCode:"Actucl",
 				  ExtraWorkTypeName:"按实际加班时长计算",
 				  Hours:"",
 				  Cause:"",
@@ -139,17 +141,11 @@ export default {
 			  edit:false,
 			  from:"",
 			  startYear:new Date().getFullYear(),
-			  resultInfo1:"",
-			  resultInfo2:"",
+			  resultInfo1:{},
+			  resultInfo2:{},
 			};
   },
   computed: {
-    startDate() {
-      return this.getDate("start");
-    },
-    endDate() {
-      return this.getDate("end");
-    },
 	endYear(){
 		const date = new Date();
 		let year = date.getFullYear()+2;
@@ -177,6 +173,22 @@ export default {
 	},
   },
   methods: {
+		//获取当前时间
+		           formatDate: function (value) {
+		               let date = new Date(value);
+		               let y = date.getFullYear();
+		               let MM = date.getMonth() + 1;
+		               MM = MM < 10 ? ('0' + MM) : MM;
+		               let d = date.getDate();
+		               d = d < 10 ? ('0' + d) : d;
+		               let h = date.getHours();
+		               h = h < 10 ? ('0' + h) : h;
+		               let m = date.getMinutes();
+		               m = m < 10 ? ('0' + m) : m;
+		               let s = date.getSeconds();
+		               s = s < 10 ? ('0' + s) : s;
+		               return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
+		           },
 	 toList(){
 	 	uni.navigateTo({
 	 		url: "/pages/ExtraWork/ExtraWorklist/ExtraWorklist",
@@ -383,9 +395,11 @@ export default {
 		},
 	
 	toggleTab(mode){
+		this.itemData.BeginDate = "";
 		this.$refs[mode].show();
 	},
 	toggleTab1(mode){
+		this.itemData.EndDate = "";
 		this.$refs[mode].show();
 	},
 	onConfirm(val){
@@ -423,23 +437,6 @@ export default {
 			this.itemData.Hours = parseFloat(hours / (3600 * 1000)).toFixed(2);
 		}
 	},
-    getDate(type) {
-      const date = new Date();
-
-      let year = date.getFullYear();
-      let month = date.getMonth() + 1;
-      let day = date.getDate();
-
-      if (type === "start") {
-        year = year - 60;
-      } else if (type === "end") {
-        year = year + 2;
-      }
-      month = month > 9 ? month : "0" + month;
-      day = day > 9 ? day : "0" + day;
-
-      return `${year}-${month}-${day}`;
-    },
     onSelected(data) {
     },
     sourceTypeChange: function(e) {

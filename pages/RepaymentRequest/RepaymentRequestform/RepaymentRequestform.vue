@@ -507,7 +507,7 @@ export default {
           Amount: parseFloat(_this.totalJine).toFixed(2),
           Attachment: "",
           Imgs: "",
-          DocDate: this.formatDate(this.time), 
+          DocDate: this.formatDate(Date.parse(new Date())), 
           OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
 		  CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,

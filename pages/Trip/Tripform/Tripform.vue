@@ -68,7 +68,7 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">出差时长</view>
-					<input :disabled="edit?true:false" placeholder="请输入出差时长(单位:天)" name="input" type="digit" style="text-align: right;"
+					<input disabled="true" placeholder="出差时长(单位:天)" name="input" type="digit" style="text-align: right;"
 					 @input="inputHours(itemData,$event)" :value="itemData.TripHours">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
@@ -306,18 +306,38 @@ export default {
 		{
 			uni.showModal({
 				title:"提示",
-				content:"请输入出差时长",
+				content:"请选择正确的开始时间和结束时间",
 				showCancel:false,
 				
 			});
 			return false;
 		}
-		
       this.modalName = e.currentTarget.dataset.target;
     },
     hideModal(e) {
       this.modalName = null;
     },
+	computTime(){
+		var endTime = this.itemData.EndDate;
+		endTime = endTime.replace(/-/g, '/');
+		var time1 = new Date(endTime);
+		time1 = time1.getTime();
+		var startTime = this.itemData.BeginDate;
+		startTime = startTime.replace(/-/g, '/');
+		var time2 = new Date(startTime);
+		time2 = time2.getTime();
+		var TripHours = time1 - time2;
+		if(TripHours < 0){
+			uni.showModal({
+				title:"提示",
+				content:"开始时间不能大于结束时间,请重新选择",
+				showCancel:false
+			})
+			return;
+		}else {
+			this.itemData.TripHours = parseFloat(TripHours / (3600 * 1000)/24).toFixed(1);
+		}
+	},
 	RadioTrafficChange(e) {
 		this.radio3 = e.detail.value;
 		this.itemData.TrafficType=e.detail.value;
@@ -520,9 +540,15 @@ export default {
     },
     bindDateChange: function(itemData, e) {
       itemData.BeginDate = e.target.value;
+	  if(this.$mbservices.isEmpty(itemData.EndDate)){
+	  	return;
+	  }else{
+	  	this.computTime();
+	  }
     },
 	bindDateChange1: function(itemData, e) {
 	  itemData.EndDate = e.target.value;
+	  this.computTime();
 	},
     getDate(type) {
       const date = new Date();

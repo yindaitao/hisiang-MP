@@ -22,30 +22,30 @@
 		<view class="ul-swiper-box">
 			<form>
 				<view class="cu-form-group">
-					<view class="title">开始日期</view>
-					<picker :disabled="edit?true:false" mode="date" :value="itemData.BeginDate" :start="startDate" :end="endDate"
-					 @change="bindDateChange(itemData,$event)">
-						<view class="picker">{{itemData.BeginDate}}</view>
-					</picker>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">结束日期</view>
-					<picker :disabled="edit?true:false" mode="date" :value="itemData.EndDate" :start="startDate" :end="endDate"
-					 @change="bindDateChange1(itemData,$event)">
-						<view class="picker">{{itemData.EndDate}}</view>
-					</picker>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">外出时长</view>
-					<input :disabled="edit?true:false" placeholder="请输入外出时长" name="input" type="digit" style="text-align: right;"
-					 @input="inputHours(itemData,$event)" :value="itemData.Hours">
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
-				<view class="cu-form-group">
 					<view class="title">外出时长单位</view>
 					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexGooutHoursText" :range="GooutHoursTextType">
 						<view class="picker">{{GooutHoursTextType[indexGooutHoursText]}}</view>
 					</picker>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">开始日期</view>
+					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1" :current="true"
+					 @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
+					 <view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="!$mbservices.isEmpty(itemData.BeginDate)">{{itemData.BeginDate}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="$mbservices.isEmpty(itemData.BeginDate)">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">结束日期</view>
+					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2" :current="true"
+					 @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
+					 <view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="!$mbservices.isEmpty(itemData.EndDate)">{{itemData.EndDate}}</view>
+					 <view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="$mbservices.isEmpty(itemData.EndDate)">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">外出时长</view>
+					<input disabled="true" placeholder="外出时长" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
+					 :value="itemData.Hours">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">外出事由</view>
@@ -80,11 +80,13 @@
 
 <script>
 import abc from "../../components/uni-datetimepicker.vue";
+import wPicker from "../../../components/w-picker/w-picker.vue";
 var sourceType = [["camera"], ["album"], ["camera", "album"]];
 var sizeType = [["compressed"], ["original"], ["compressed", "original"]];
 export default {
   components: {
-    abc
+    abc,
+	wPicker
   },
   watch: {
     showValue(val) {
@@ -93,7 +95,7 @@ export default {
   data() {
     return {
 		    time: Date.parse(new Date()),
-			GooutHoursTextType:["天","小时","周","月"],
+			GooutHoursTextType:["小时","天","周","月"],
 			indexGooutHoursText:0,
 			GooutHoursTextList:[{
 				Code:"Hour",
@@ -125,8 +127,8 @@ export default {
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
 	  itemData:{
 		  DocEntry:"",
-		  BeginDate:this.getDate({format: true}),
-		  EndDate: this.getDate({format: true}),
+		  BeginDate:this.formatDate(Date.parse(new Date())),
+		  EndDate: this.formatDate(Date.parse(new Date())),
 		  GooutTypeCode:"Goout",
 		  Hours: "",
 		  GooutHoursText:"Hour",
@@ -148,15 +150,37 @@ export default {
       isDoSteps: false,
 	  edit:false,
 	  from:"",
+	  startYear:new Date().getFullYear(),
+	  resultInfo1:{},
+	  resultInfo2:{},
     };
   },
   computed: {
-    startDate() {
-      return this.getDate("start");
-    },
-    endDate() {
-      return this.getDate("end");
-    }
+	  endYear(){
+	  	const date = new Date();
+	  	let year = date.getFullYear()+2;
+	  	return year;
+	  },
+	  defaultVal1(){
+	  	const date = new Date();
+	  	let year = date.getFullYear();
+	  	let m = date.getMonth()+1;
+	  	let d = date.getDay();
+	  	let h = date.getHours();
+	  	let minute = date.getMinutes();
+	  	let s = date.getSeconds();
+	  	return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+	  },
+	  defaultVal2(){
+	  	const date = new Date();
+	  	let year = date.getFullYear();
+	  	let m = date.getMonth()+1;
+	  	let d = date.getDay();
+	  	let h = date.getHours();
+	  	let minute = date.getMinutes();
+	  	let s = date.getSeconds();
+	  	return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+	  },
   },
   methods: {
 	  //获取当前时间
@@ -185,6 +209,9 @@ export default {
 					this.itemData.GooutHoursTextName = this.GooutHoursTextType[this.indexGooutHoursText];
 				}
 			}
+			if(!this.$mbservices.isEmpty(this.resultInfo1) && !this.$mbservices.isEmpty(this.resultInfo2)){
+				this.computTime();
+			}
 		},
 		showModal1(e) {
 			this.modalName = e.currentTarget.dataset.target;
@@ -196,13 +223,16 @@ export default {
 			});
 		},
     showModal(e) {
-		
-      var isNull_ = false;
-      var content = "";
-      if (isNull_) {
-        uni.showToast({ title: content, icon: "none" });
-        return false;
-      }
+		if(this.$mbservices.isEmpty(this.itemData.Hours))
+		{
+			uni.showModal({
+				title:"提示",
+				content:"请选择正确的开始时间和结束时间",
+				showCancel:false,
+				
+			});
+		return false;
+		}
       this.modalName = e.currentTarget.dataset.target;
     },
     hideModal(e) {
@@ -244,7 +274,7 @@ export default {
 		  EndDate: _this.itemData.EndDate,
 		  GooutType: _this.itemData.GooutTypeCode,
 		  Hours: _this.itemData.Hours,
-		  CreateDate: this.formatDate(this.time),
+		  CreateDate: this.formatDate(Date.parse(new Date())),
 		  GooutHoursText: _this.itemData.GooutHoursText,
           CreatorId: uni.getStorageSync("JSUserInfo").UserId,
 		  Creator: uni.getStorageSync("JSUserInfo").UserName,
@@ -298,7 +328,8 @@ export default {
             title: "失败:" + err.data
           });
         }
-      )}
+      )
+	}
 	},
 	inputHours(itemData, event) {
 	  itemData.Hours = event.detail.value;
@@ -314,28 +345,51 @@ export default {
     textareaInput(e) {
       this.itemData.Cause = e.detail.value;
     },
-    bindDateChange: function(itemData, e) {
-      itemData.BeginDate = e.target.value;
-    },
-	bindDateChange1: function(itemData, e) {
-	  itemData.EndDate = e.target.value;
+	toggleTab(mode){
+		this.itemData.BeginDate = "";
+		this.$refs[mode].show();
 	},
-    getDate(type) {
-      const date = new Date();
-      let year = date.getFullYear();
-      let month = date.getMonth() + 1;
-      let day = date.getDate();
-
-      if (type === "start") {
-        year = year - 60;
-      } else if (type === "end") {
-        year = year + 2;
-      }
-      month = month > 9 ? month : "0" + month;
-      day = day > 9 ? day : "0" + day;
-
-      return `${year}-${month}-${day}`;
-    },
+	toggleTab1(mode){
+		this.itemData.EndDate = "";
+		this.$refs[mode].show();
+	},
+	onConfirm(val){
+		this.resultInfo1=val;
+		if(this.$mbservices.isEmpty(this.resultInfo2)){
+			return;
+		}else{
+			this.computTime();
+		}
+	},
+	onConfirm1(val){
+		this.resultInfo2=val;
+		this.computTime();
+	},
+	computTime(){
+		this.itemData.BeginDate = this.resultInfo1.result;
+		this.itemData.EndDate = this.resultInfo2.result;
+		var endTime = this.resultInfo2.result;
+		endTime = endTime.replace(/-/g, '/');
+		var time1 = new Date(endTime);
+		time1 = time1.getTime();
+		var startTime = this.resultInfo1.result;
+		startTime = startTime.replace(/-/g, '/');
+		var time2 = new Date(startTime);
+		time2 = time2.getTime();
+		var hours = time1 - time2;
+		if(hours < 0){
+			uni.showModal({
+				title:"提示",
+				content:"开始时间不能大于结束时间,请重新选择",
+				showCancel:false
+			})
+			return;
+		}else if(this.itemData.GooutHoursText === 'Hour'){
+			this.itemData.Hours = parseFloat(hours / (3600 * 1000)).toFixed(2);
+		}else if(this.itemData.GooutHoursText === 'Day'){
+			this.itemData.Hours = Math.floor(hours / (24 * 3600 * 1000)).toFixed(1);
+		}
+	},
     onSelected(data) {
     },
     sourceTypeChange: function(e) {
