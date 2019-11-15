@@ -29,21 +29,19 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">开始日期</view>
-					<picker :disabled="edit?true:false" mode="date" :value="itemData.BeginDate" :start="startDate" :end="endDate"
-					 @change="bindDateChange(itemData,$event)">
-						<view class="picker">{{itemData.BeginDate}}</view>
-					</picker>
+					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1"
+					 :current="true" @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
+					 <view @tap="toggleTab('dateTime1')">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">结束日期</view>
-					<picker :disabled="edit?true:false" mode="date" :value="itemData.EndDate" :start="startDate" :end="endDate"
-					 @change="bindDateChange1(itemData,$event)">
-						<view class="picker">{{itemData.EndDate}}</view>
-					</picker>
+					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2"
+					 :current="true" @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
+					 <view @tap="toggleTab1('dateTime2')">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">加班时长</view>
-					<input :disabled="edit?true:false" placeholder="请输入加班时长" name="input" type="digit" style="text-align: right;"
+					<input disabled="true" placeholder="加班时长" name="input" type="digit" style="text-align: right;"
 					 @input="inputHours(itemData,$event)" :value="itemData.Hours">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
@@ -80,12 +78,13 @@
 
 <script>
 import abc from "../../components/uni-datetimepicker.vue";
-import wPicker from "@/components/w-picker/w-picker.vue";
+import wPicker from "../../../components/w-picker/w-picker.vue";
 var sourceType = [["camera"], ["album"], ["camera", "album"]];
 var sizeType = [["compressed"], ["original"], ["compressed", "original"]];
 export default {
   components: {
-    abc
+    abc,
+	wPicker
   },
   watch: {
     showValue(val) {
@@ -94,15 +93,15 @@ export default {
   data() {
     return {
 			indexExtraWorkType: 0,
-					ExtraWorkType:["按实际加班时长计算","按固定加班时长计算"],
-					ExtraWorkTypeList:[
-						{
-							Code:"Actucl",
-							Name:"按实际加班时长计算",
-						},{
-							Code:"Fixed",
-							Name:"按固定加班时长计算",
-						},],
+			ExtraWorkType:["按实际加班时长计算","按固定加班时长计算"],
+			ExtraWorkTypeList:[
+				{
+					Code:"Actucl",
+					Name:"按实际加班时长计算",
+				},{
+					Code:"Fixed",
+					Name:"按固定加班时长计算",
+				},],
 			  modalName: null,
 			  enddate: "",
 			  themeColor: "",
@@ -139,6 +138,7 @@ export default {
 			  isDoSteps: false,
 			  edit:false,
 			  from:"",
+			  startYear:new Date().getFullYear(),
 			  resultInfo1:"",
 			  resultInfo2:"",
 			};
@@ -383,11 +383,9 @@ export default {
 		},
 	
 	toggleTab(mode){
-		this.mode=mode;
 		this.$refs[mode].show();
 	},
 	toggleTab1(mode){
-		this.mode=mode;
 		this.$refs[mode].show();
 	},
 	onConfirm(val){

@@ -411,11 +411,9 @@ export default {
       this.itemData.Cause = e.detail.value;
     },
 	toggleTab(mode){
-		this.mode=mode;
 		this.$refs[mode].show();
 	},
 	toggleTab1(mode){
-		this.mode=mode;
 		this.$refs[mode].show();
 	},
 	onConfirm(val){
