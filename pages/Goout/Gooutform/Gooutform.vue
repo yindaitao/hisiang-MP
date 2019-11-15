@@ -54,13 +54,13 @@
 					<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
 					 placeholder-class="placeholder" data-placeholder="在此输入外出事由" :value="itemData.Cause" />
 					</view>
-				<view class="cu-form-group">
+				<!-- <view class="cu-form-group">
 					<view class="title">备注</view>
 				</view>
 				<view class="cu-form-group">
 					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
 					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
-					</view>
+					</view> -->
       </form>
     </view>
 	<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 999;width: 100%;">

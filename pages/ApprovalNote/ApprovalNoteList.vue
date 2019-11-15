@@ -12,11 +12,6 @@
 					<text class="icon-search"></text>
 				</button>
 			</view>
-			<view class="action">
-				<button class="cu-btn icon bg-gray" @tap="doRefresh" data-target="DrawerModalR">
-					<text class="icon-refresh"></text>
-				</button>
-			</view>
 		</view>
 		<scroll-view id="_tabBar" ref="_tabBar" scroll-x class="cu-bar bg-white nav text-center">
 			<view class="cu-item" :class="index==TabCur?'text-blue cur':''" v-for="(item,index) in tabBars" :key="index" @tap="tapTab(index,$event)"
@@ -197,7 +192,32 @@
 				this.searchValue = e.detail.value;
 			},
 			doSearch(){
-				
+				var ajaxJSON={
+					pageIndex: 1,
+					rowsPerPage: "10000",
+					type: "Initialize",
+					Parameter: {
+					  LoadChildren: "NoLoad",
+					  Conditions: [
+					    {
+					      FieldName: "Activated",
+					      Operation: "EQUAL",
+					      ConditionValue: this.searchValue,
+					      Relationship: "Or"
+					    }
+					  ]
+					}
+				};
+				this.$mbservices.Request(this.$webapi.getHolidayType,"POST",ajaxJSON,res=>{
+					if(res.data.RecordCount>0)
+					{
+						res.data.data.forEach(item =>{
+							this.HolidayType.push(item.Name)
+							this.HolidayTypeList.push(item)
+						})
+					}
+					
+				},err=>{})
 			},
 			resetConditions() {
 				this.KeyValues = "";
@@ -465,34 +485,34 @@
 				this.getApprovalList();
 				this.modalNameSearch = null;
 			},
-			doRefresh() {
-				this.newsitems[this.TabCur].data = [];
-				this.newsitems[this.TabCur].SearchConditions = [];
-				this.newsitems[this.TabCur].pageIndex = 0;
-				this.newsitems[this.TabCur].status = "loading";
-				this.newsitems[this.TabCur].loadingText === "loading";
-				if (this.TabCur === 0) {
-					this.getApprovalList({
-						FieldName: "ApproveStatus",
-						Operation: "EQUAL",
-						ConditionValue: "P"
-					});
-				}
-				if (this.TabCur === 1) {
-					this.getApprovalList({
-						FieldName: "ApproveStatus",
-						Operation: "EQUAL",
-						ConditionValue: "A"
-					});
-				}
-				if (this.TabCur === 2) {
-					this.getApprovalList({
-						FieldName: "ApproveStatus",
-						Operation: "EQUAL",
-						ConditionValue: "R"
-					});
-				}
-			},
+			// doRefresh() {
+			// 	this.newsitems[this.TabCur].data = [];
+			// 	this.newsitems[this.TabCur].SearchConditions = [];
+			// 	this.newsitems[this.TabCur].pageIndex = 0;
+			// 	this.newsitems[this.TabCur].status = "loading";
+			// 	this.newsitems[this.TabCur].loadingText === "loading";
+			// 	if (this.TabCur === 0) {
+			// 		this.getApprovalList({
+			// 			FieldName: "ApproveStatus",
+			// 			Operation: "EQUAL",
+			// 			ConditionValue: "P"
+			// 		});
+			// 	}
+			// 	if (this.TabCur === 1) {
+			// 		this.getApprovalList({
+			// 			FieldName: "ApproveStatus",
+			// 			Operation: "EQUAL",
+			// 			ConditionValue: "A"
+			// 		});
+			// 	}
+			// 	if (this.TabCur === 2) {
+			// 		this.getApprovalList({
+			// 			FieldName: "ApproveStatus",
+			// 			Operation: "EQUAL",
+			// 			ConditionValue: "R"
+			// 		});
+			// 	}
+			// },
 			goDetail(item) {
 				console.log(item.BBusinessType);
 				//业务类型

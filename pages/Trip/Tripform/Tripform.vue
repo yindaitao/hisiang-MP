@@ -101,14 +101,7 @@
 				<view class="cu-form-group">
 					<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
 					 placeholder-class="placeholder" data-placeholder="在此输入出差事由" :value="itemData.Cause" />
-					</view>
-					<view class="cu-form-group">
-						<view class="title">备注</view>
-					</view>
-					<view class="cu-form-group">
-						<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
-						 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
-					</view>
+				</view>
       </form>
     </view>
 	<view style="width: :100%;height: 50px;"></view>
@@ -191,7 +184,7 @@ export default {
 		  ArrivePlace:"",
 		  TrafficType:"",
 		  TrafficTypeName:"请选择交通工具",
-		  TripHours: "",
+		  TripHours: 1,
 		  Cause:"",
 		  Remarks:"",
 	},
@@ -335,7 +328,7 @@ export default {
 			})
 			return;
 		}else {
-			this.itemData.TripHours = parseFloat(TripHours / (3600 * 1000)/24).toFixed(1);
+			this.itemData.TripHours = (parseFloat(TripHours / (3600 * 1000)/24)+1).toFixed(1);
 		}
 	},
 	RadioTrafficChange(e) {

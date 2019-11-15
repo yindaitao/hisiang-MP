@@ -64,13 +64,13 @@
 					<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
 					 placeholder-class="placeholder" data-placeholder="在此输入请假事由" :value="itemData.Cause" />
 					</view>
-				<view class="cu-form-group">
+				<!-- <view class="cu-form-group">
 					<view class="title">备注</view>
 				</view>
 				<view class="cu-form-group">
 					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
 					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
-					</view>
+					</view> -->
       </form>
     </view>
 	<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 999;width: 100%;">
@@ -245,6 +245,16 @@ export default {
 						this.HolidayType.push(item.Name)
 						this.HolidayTypeList.push(item)
 					})
+				}
+				
+			},err=>{})
+		},
+		getInitialize:async function(){
+			var ajaxJSON={};
+			this.$mbservices.Request(this.$webapi.getInitialize,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					console.log(res.data.data);
 				}
 				
 			},err=>{})
@@ -758,6 +768,7 @@ export default {
   },
   onLoad(e) {
 		this.from = JSON.parse(e.data).from;
+		this.getInitialize();
     /* 修改传递参数 */
     if (e.flag === "modify") {
       this.editflag = true;
