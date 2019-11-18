@@ -4,8 +4,7 @@
 		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
-				<input @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词"
-				 confirm-type="search" :value="searchValue" />
+				<input @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词" confirm-type="done" :value="searchValue" />
 			</view>
 			<view class="action">
 				<button class="cu-btn icon" @click="doSearch">
@@ -37,8 +36,8 @@
 				<!-- :style="{'height':scrollBarHeight+'px'}" -->
 				<view class="cu-list menu">
 					<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-for="(list,index) in dataList" :key="index"
-					 @touchstart="ListTouchStart(index,$event)" @touchmove="ListTouchMove(index,$event)" @touchend="ListTouchEnd(index,$event)" :data-target="'move-box-' + index"
-					 @tap="goDetail(list)" style="position: relative;">
+					 @touchstart="ListTouchStart(index,$event)" @touchmove="ListTouchMove(index,$event)" @touchend="ListTouchEnd(index,$event)"
+					 :data-target="'move-box-' + index" @tap="goDetail(list)" style="position: relative;">
 						<view class="cu-tag bg-blue" style="position:absolute;top: 10px;right: 10px;" v-if="list.Approve==='No'&&list.ApproveStatus!=='Rejected'">草稿</view>
 						<view v-if="isMultiSelect" style="height: 100%;text-align:center;vertical-align: middle;margin-top: 30px;">
 							<radio @click.stop="radioClick(list)" :checked="list.radchecked"></radio>
@@ -135,8 +134,7 @@
 				this.pageIndex = parseInt(this.pageIndex) - 1;
 				this.newShowGetReimList();
 			} */
-			if(this.$mbservices.getIsRefresh())
-			{
+			if (this.$mbservices.getIsRefresh()) {
 				this.pageIndex = 0; // parseInt(this.pageIndex) - 1;
 				this.$mbservices.setIsRefresh(false);
 				this.newShowGetReimList();
@@ -180,15 +178,15 @@
 		},
 		methods: {
 			goDetail(item) {
-				if(item.Approve==='No'&&item.ApproveStatus!=='Rejected'){
+				if (item.Approve === 'No' && item.ApproveStatus !== 'Rejected') {
 					uni.navigateTo({
 						url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=modify&data=" + JSON.stringify(item)
 					});
-				}else if(item.ApproveStatus==='Rejected'){
+				} else if (item.ApproveStatus === 'Rejected') {
 					uni.navigateTo({
 						url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=modify&data=" + JSON.stringify(item)
 					});
-				}else if(item.ApproveStatus === "Approved" || item.ApproveStatus === "Pending"){
+				} else if (item.ApproveStatus === "Approved" || item.ApproveStatus === "Pending") {
 					uni.navigateTo({
 						url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=Original&data=" + JSON.stringify(item)
 					});
@@ -253,7 +251,7 @@
 			},
 			makeParams() {
 				if (this.$mbservices.isEmpty(this.searchValue)) {
-					this.searchParams=[];
+					this.searchParams = [];
 					return false;
 				}
 				this.searchParams = [{
@@ -264,12 +262,6 @@
 					},
 					{
 						FieldName: "DocNum",
-						Operation: "CONTAIN",
-						ConditionValue: this.searchValue,
-						Relationship: "OR"
-					},
-					{
-						FieldName: "Remarks",
 						Operation: "CONTAIN",
 						ConditionValue: this.searchValue,
 						Relationship: "OR"
@@ -299,7 +291,7 @@
 							Operation: "EQUAL",
 							ConditionValue: parseInt(uni.getStorageSync("JSUserInfo").UserId),
 							Relationship: "AND"
-						},{
+						}, {
 							FieldName: "Canceled",
 							Operation: "EQUAL",
 							ConditionValue: "N",
@@ -387,7 +379,7 @@
 							Operation: "EQUAL",
 							ConditionValue: parseInt(uni.getStorageSync("JSUserInfo").UserId),
 							Relationship: "AND"
-						},{
+						}, {
 							FieldName: "Canceled",
 							Operation: "EQUAL",
 							ConditionValue: "N",
@@ -416,7 +408,7 @@
 						console.log('aaaaaaaaaaaaaaaaa');
 						console.log(ret.data.data);
 						setTimeout(() => {
-							var _cacheList=[];
+							var _cacheList = [];
 							ret.data.data.forEach(item => {
 								item.radchecked = false;
 								if (item.ApproveStatus === "Pending") {
@@ -432,7 +424,7 @@
 								//_this.dataList.push(item);
 								_cacheList.push(item);
 							});
-							_this.dataList=_cacheList;
+							_this.dataList = _cacheList;
 							uni.hideLoading();
 						}, 1000);
 					},
@@ -490,15 +482,17 @@
 
 			// ListTouch触摸开始
 			ListTouchStart(indx, e) {
-				if (this.dataList[indx].Approve === "Yes"&&(this.dataList[indx].ApproveStatus==='Pending'||this.dataList[indx].ApproveStatus==='Approved')) {
+				if (this.dataList[indx].Approve === "Yes" && (this.dataList[indx].ApproveStatus === 'Pending' || this.dataList[
+						indx].ApproveStatus === 'Approved')) {
 					return false;
 				}
 				this.listTouchStart = e.touches[0].pageX;
 			},
 
 			// ListTouch计算方向
-			ListTouchMove(indx,e) {
-				if (this.dataList[indx].Approve === "Yes"&&(this.dataList[indx].ApproveStatus==='Pending'||this.dataList[indx].ApproveStatus==='Approved')) {
+			ListTouchMove(indx, e) {
+				if (this.dataList[indx].Approve === "Yes" && (this.dataList[indx].ApproveStatus === 'Pending' || this.dataList[
+						indx].ApproveStatus === 'Approved')) {
 					return false;
 				}
 				this.listTouchDirection =
@@ -506,8 +500,9 @@
 			},
 
 			// ListTouch计算滚动
-			ListTouchEnd(indx,e) {
-				if (this.dataList[indx].Approve === "Yes"&&(this.dataList[indx].ApproveStatus==='Pending'||this.dataList[indx].ApproveStatus==='Approved')) {
+			ListTouchEnd(indx, e) {
+				if (this.dataList[indx].Approve === "Yes" && (this.dataList[indx].ApproveStatus === 'Pending' || this.dataList[
+						indx].ApproveStatus === 'Approved')) {
 					return false;
 				}
 				if (this.listTouchDirection == "left") {

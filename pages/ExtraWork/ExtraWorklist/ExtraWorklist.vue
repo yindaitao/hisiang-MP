@@ -5,7 +5,7 @@
 			<view class="search-form round">
 				<text class="icon-search"></text>
 				<input @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词"
-				 confirm-type="search" :value="searchValue" />
+				 confirm-type="done" :value="searchValue" />
 			</view>
 			<view class="action">
 				<button class="cu-btn icon" @click="doSearch">
@@ -273,12 +273,6 @@
 					},
 					{
 						FieldName: "Remarks",
-						Operation: "CONTAIN",
-						ConditionValue: this.searchValue,
-						Relationship: "OR"
-					},
-					{
-						FieldName: "Amount",
 						Operation: "CONTAIN",
 						ConditionValue: this.searchValue,
 						Relationship: "OR"

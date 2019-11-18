@@ -177,7 +177,7 @@
 			getCheckTime(value) {
 				let str = '';
 				str = this.$mbservices.formatDateTime(value, 'hh:mm:ss');
-				
+
 				return str;
 			},
 			getMornAfter(value) {
@@ -257,12 +257,10 @@
 							ConditionValue: this.$mbservices.formatDateTime(new Date(), 'yyyy/MM/dd') + ' 23:59:59',
 							Relationship: "AND"
 						}],
-						"Sorts": [
-						    {
-						      "FieldName": "CheckDatetime",
-						      "type": "Descending"
-						    }
-						  ],
+						"Sorts": [{
+							"FieldName": "CheckDatetime",
+							"type": "Descending"
+						}],
 					},
 				};
 				this.$mbservices.Request(this.$webapi.getWorkRecords, 'POST', param, res => {
@@ -356,40 +354,40 @@
 					}
 				})
 			},
-			getAddressBylatLong() {
-				let Params = {
-					Latitude: this.latitude,
-					Longitude: this.longitude
-				};
-				console.log("aaaaaaaaaaaaaaaaaaaaaaaaaa");
-				console.log(Params);
-				uni.request({
-					url: this.$webapi.getAddressByLatLong,
-					method: "POST",
-					header: {
-						"content-type": "application/x-www-form-urlencoded;charset=utf-8",
-						Authorization: "Basic bWFnaWM6MTIzNA=="
-					},
-					data: {
-						Latitude: this.latitude,
-						Longitude: this.longitude
-					},
-					success: res => {
-						console.log('返回的是什么？');
-						console.log(res.data.RecordCount);
-						if (res.data.RecordCount > 0) {
-							var re = JSON.parse(res.data.data);
-							console.log(re);
-							this.currentArea = {
-								code: re.result.ad_info.adcode,
-								name: re.result.ad_info.district,
-								address: re.result.address
-							}
-						}
-					},
-					fail: err => {}
-				});
-			},
+			// getAddressBylatLong() {
+			// 	let Params = {
+			// 		Latitude: this.latitude,
+			// 		Longitude: this.longitude
+			// 	};
+			// 	console.log("aaaaaaaaaaaaaaaaaaaaaaaaaa");
+			// 	console.log(Params);
+			// 	uni.request({
+			// 		url: this.$webapi.getAddressByLatLong,
+			// 		method: "POST",
+			// 		header: {
+			// 			"content-type": "application/x-www-form-urlencoded;charset=utf-8",
+			// 			Authorization: "Basic bWFnaWM6MTIzNA=="
+			// 		},
+			// 		data: {
+			// 			Latitude: this.latitude,
+			// 			Longitude: this.longitude
+			// 		},
+			// 		success: res => {
+			// 			console.log('返回的是什么？');
+			// 			console.log(res.data.RecordCount);
+			// 			if (res.data.RecordCount > 0) {
+			// 				var re = JSON.parse(res.data.data);
+			// 				console.log(re);
+			// 				this.currentArea = {
+			// 					code: re.result.ad_info.adcode,
+			// 					name: re.result.ad_info.district,
+			// 					address: re.result.address
+			// 				}
+			// 			}
+			// 		},
+			// 		fail: err => {}
+			// 	});
+			// },
 			getAuthorizeInfo(a = "scope.userLocation") { //1. uniapp弹窗弹出获取授权（地理，个人微信信息等授权信息）弹窗
 				var _this = this;
 				uni.authorize({
@@ -403,22 +401,60 @@
 				})
 			},
 			getLocationInfo() { //2. 获取地理位置
+				//#ifdef APP-PLUS
 				var _this = this;
 				uni.getLocation({
-					type: 'wgs84',
+					type: 'gcj02',
 					success: (res) => {
 						let latitude, longitude;
 						latitude = res.latitude.toString();
 						longitude = res.longitude.toString();
 						_this.latitude = latitude;
 						_this.longitude = longitude;
-
 						_this.covers[0].latitude = _this.latitude;
 						_this.covers[0].longitude = _this.longitude;
 						_this.$forceUpdate();
-						_this.getAddressBylatLong();
+						// _this.getAddressBylatLong();
 					}
 				});
+				//#endif
+				//#ifdef MP-WEIXIN
+				var _this = this;
+				var QQMapWX = require('../../../common/qqmap-wx-jssdk.js');
+				var qqmapsdk;
+				qqmapsdk = new QQMapWX({
+					key: '4U2BZ-CGNRP-IUCDG-LAAL4-WEIVQ-YSFIN' // 必填
+				});
+				//获取当前位置
+				wx.getLocation({
+					type: 'gcj02',
+					success: function(res) {
+						//根据坐标获取当前位置名称，显示在顶部，腾讯地图逆地址解析
+						var latitude, longitude;
+						latitude = res.latitude.toString();
+						longitude = res.longitude.toString();
+						_this.latitude = latitude;
+						_this.longitude = longitude;
+						_this.covers[0].latitude = _this.latitude;
+						_this.covers[0].longitude = _this.longitude;
+						qqmapsdk.reverseGeocoder({
+							location: {
+								latitude: res.latitude,
+								longitude: res.longitude
+							},
+							success: function(addressRes) {
+								console.log(addressRes);
+								var address = addressRes.result.formatted_addresses.recommend;
+								_this.currentArea = {
+									code: addressRes.result.ad_info.adcode,
+									name: addressRes.result.ad_info.district,
+									address: addressRes.result.formatted_addresses.recommend
+								}
+							}
+						})
+					},
+				})
+				//#endif
 			},
 			isGetLocation(a = "scope.userLocation") { // 3. 检查当前是否已经授权访问scope属性，参考下截图
 				var _this = this;
@@ -427,7 +463,7 @@
 						if (!res.authSetting[a]) { //3.1 每次进入程序判断当前是否获得授权，如果没有就去获得授权，如果获得授权，就直接获取当前地理位置
 							_this.getAuthorizeInfo()
 						} else {
-							_this.getLocationInfo()
+							_this.getLocationInfo();
 						}
 					}
 				});

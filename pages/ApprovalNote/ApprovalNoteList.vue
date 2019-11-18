@@ -4,8 +4,7 @@
 		<view id="_tabBar" ref="_tabBar" class="cu-bar search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
-				<input @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词"
-				 confirm-type="search" :value="searchValue" />
+				<input @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词" confirm-type="done" :value="searchValue" />
 			</view>
 			<view class="action">
 				<button class="cu-btn icon" @click="doSearch">
@@ -167,7 +166,7 @@
 				scrollBarHeight: 0,
 				isClickChange: false,
 				refreshRowCOunt: 0,
-				searchValue:""
+				searchValue: ""
 			};
 		},
 		onShow(e) {
@@ -191,33 +190,63 @@
 			searchInput(e) {
 				this.searchValue = e.detail.value;
 			},
-			doSearch(){
-				var ajaxJSON={
-					pageIndex: 1,
-					rowsPerPage: "10000",
-					type: "Initialize",
-					Parameter: {
-					  LoadChildren: "NoLoad",
-					  Conditions: [
-					    {
-					      FieldName: "Activated",
-					      Operation: "EQUAL",
-					      ConditionValue: this.searchValue,
-					      Relationship: "Or"
-					    }
-					  ]
-					}
-				};
-				this.$mbservices.Request(this.$webapi.getHolidayType,"POST",ajaxJSON,res=>{
-					if(res.data.RecordCount>0)
-					{
-						res.data.data.forEach(item =>{
-							this.HolidayType.push(item.Name)
-							this.HolidayTypeList.push(item)
-						})
-					}
-					
-				},err=>{})
+			doSearch() {
+				var params = [];
+				if (this.TabCur === 0) {
+					params.push({
+						FieldName: "ApproveStatus",
+						Operation: "EQUAL",
+						ConditionValue: "P",
+						Relationship: "AND"
+					});
+				}
+				if (this.TabCur === 1) {
+					params.push({
+						FieldName: "ApproveStatus",
+						Operation: "EQUAL",
+						ConditionValue: "A",
+						Relationship: "AND"
+					});
+				}
+				if (this.TabCur === 2) {
+					params.push({
+						FieldName: "ApproveStatus",
+						Operation: "EQUAL",
+						ConditionValue: "R",
+						Relationship: "AND"
+					});
+				}
+				params.push({
+					FieldName: "BusinessTypeName",
+					Operation: "CONTAIN",
+					ConditionValue: this.searchValue,
+					Relationship: "OR"
+				}, {
+					FieldName: "OriginatorName",
+					Operation: "CONTAIN",
+					ConditionValue: this.searchValue,
+					Relationship: "OR"
+				}, {
+					FieldName: "BusinessOrderNo",
+					Operation: "CONTAIN",
+					ConditionValue: this.searchValue,
+					Relationship: "OR",
+				})
+				if(parseInt(this.searchValue)){
+					params.push({
+						FieldName: "DocEntry",
+						Operation: "CONTAIN",
+						ConditionValue: this.searchValue,
+						Relationship: "OR",
+					})
+				}
+				this.newsitems[this.TabCur].status = "loading";
+				this.newsitems[this.TabCur].loadingText = "loading";
+				this.newsitems[this.TabCur].pageIndex = 0;
+				this.newsitems[this.TabCur].SearchConditions = params;
+				this.newsitems[this.TabCur].data = [];
+				this.getApprovalList();
+				this.modalNameSearch = null;
 			},
 			resetConditions() {
 				this.KeyValues = "";
@@ -485,34 +514,6 @@
 				this.getApprovalList();
 				this.modalNameSearch = null;
 			},
-			// doRefresh() {
-			// 	this.newsitems[this.TabCur].data = [];
-			// 	this.newsitems[this.TabCur].SearchConditions = [];
-			// 	this.newsitems[this.TabCur].pageIndex = 0;
-			// 	this.newsitems[this.TabCur].status = "loading";
-			// 	this.newsitems[this.TabCur].loadingText === "loading";
-			// 	if (this.TabCur === 0) {
-			// 		this.getApprovalList({
-			// 			FieldName: "ApproveStatus",
-			// 			Operation: "EQUAL",
-			// 			ConditionValue: "P"
-			// 		});
-			// 	}
-			// 	if (this.TabCur === 1) {
-			// 		this.getApprovalList({
-			// 			FieldName: "ApproveStatus",
-			// 			Operation: "EQUAL",
-			// 			ConditionValue: "A"
-			// 		});
-			// 	}
-			// 	if (this.TabCur === 2) {
-			// 		this.getApprovalList({
-			// 			FieldName: "ApproveStatus",
-			// 			Operation: "EQUAL",
-			// 			ConditionValue: "R"
-			// 		});
-			// 	}
-			// },
 			goDetail(item) {
 				console.log(item.BBusinessType);
 				//业务类型
@@ -692,11 +693,13 @@
 							this.newsitems[this.TabCur].SearchConditions : cons
 					}
 				};
+				console.log(ajaxJSON);
 				this.$mbservices.Request(
 					this.$webapi.getApprovalNotesList,
 					"POST",
 					ajaxJSON,
 					res => {
+						console.log(res.data.data);
 						if (res.data.RecordCount > 0) {
 							if (
 								this.newsitems[this.TabCur].data.length >=

@@ -276,12 +276,6 @@
 						Operation: "CONTAIN",
 						ConditionValue: this.searchValue,
 						Relationship: "OR"
-					},
-					{
-						FieldName: "Amount",
-						Operation: "CONTAIN",
-						ConditionValue: this.searchValue,
-						Relationship: "OR"
 					}
 				];
 			},

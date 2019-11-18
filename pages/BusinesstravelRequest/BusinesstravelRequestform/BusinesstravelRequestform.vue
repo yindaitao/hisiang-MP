@@ -353,7 +353,7 @@ export default {
 				Code:"OtherBankPay",
 				Name:"其他银行汇款",
 			}],
-			ReimbursementNameList:["请选择","私人费用","部门费用","内部往来费用"],
+			ReimbursementNameList:["私人费用","部门费用","内部往来费用"],
 			indexReimbursementType:0,
 			ReimbursementTypeList:[{
 				Code:"Person",
@@ -402,9 +402,9 @@ export default {
 			Days:"",
 			AllowanceAmount:"",
 			AccountName:"",
-			ReimbursementType:"",
-			ReimbursementTypeCode1:"",
-			ReimbursementTypeName1:"请选择",
+			ReimbursementType:"Person",
+			ReimbursementTypeCode1:"Person",
+			ReimbursementTypeName1:"私人费用",
 			indexReimbursementType:0,
 			ShareType: "",},
       formList: [
@@ -658,6 +658,7 @@ export default {
 		var lineItem = {};
 		if(_item.DetailType === 'Traffic'){
 			lineItem = {
+			  DocEntry: _this.itemData.DocEntry,
 			  LineNum: _indx,
 			  ObjectType: "BusinessTravelRequest",
 			  Remarks: _item.Remarks1,
@@ -670,7 +671,7 @@ export default {
 			  Amount: parseFloat(_item.jine).toFixed(2),
 			  Count: _item.Count1,
 			  Imgs: path,
-			  DocDate: _this.formatDate(),
+			  DocDate: _this.formatDate(_this.time),
 			  ReimbursementTypeCode: "JTF",
 			  ReimbursementTypeName: "交通费",
 			  VatCode: _item.VatTypeCode,
@@ -682,6 +683,7 @@ export default {
 			};
 		}else{
 			lineItem = {
+			  DocEntry: _this.itemData.DocEntry,
 			  LineNum: _indx,
 			  ObjectType: "BusinessTravelRequest",
 			  Remarks: _item.Remarks1,
@@ -694,7 +696,7 @@ export default {
 			  Amount: parseFloat(_item.jine).toFixed(2),
 			  Count: _item.Count1,
 			  Imgs: path,
-			  DocDate: _this.formatDate(),
+			  DocDate: _this.formatDate(_this.time),
 			  ReimbursementTypeCode:
 			    _this.resourceArray[_item.itemOptionIndex].ReimbursementTypeCode,
 			  ReimbursementTypeName: _this.arrayType[_item.itemOptionIndex],
@@ -763,7 +765,7 @@ export default {
       } else {
 		  _this.totalJine = parseFloat(parseFloat(_this.totalJine) + parseFloat(_this.itemData.AllowanceAmount));
         ajaxJSON = {
-          DocNum: this.itemData.DocEntry,
+          DocNum: _this.itemData.DocEntry,
           ObjType: "BusinessTravelRequest",
           CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
 		  Creator: uni.getStorageSync("JSUserInfo").UserName,
@@ -778,7 +780,7 @@ export default {
           Amount: parseFloat(_this.totalJine).toFixed(2),
           Attachments: "",
           Imgs: "",
-          DocDate: _this.formatDate(),
+          DocDate: _this.formatDate(_this.time),
           OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 		  OrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 		  CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
@@ -877,7 +879,7 @@ export default {
 		ArrivePlace:"",
         name: "",
         jine: "",
-        itemDate: "请选择",
+        itemDate: this.getDate({format: true}),
         itemOptionIndex: 0,
         itemOptionText: this.arrayType[0],
         itemReason: "",
@@ -931,9 +933,6 @@ export default {
 				this.itemData.PayTypeName = this.PayType[this.indexPayType];
 			}
 		}
-		
-		// if (this.PayType[this.indexPayType] != "BankToUser") {this.itemData.AcceptingUnit=this.PayType[this.indexPayType];}
-	 //    else {this.itemData.AcceptingUnit="";}
 	},
 		bindPickerChange2: function(e) {
 			this.indexCostType = e.target.value;
@@ -1203,6 +1202,15 @@ export default {
       });
       return index;
     },
+	getReimIndex(keyValue) {
+	  var index = 0;
+	  this.ReimbursementNameList.forEach((item, _indx) => {
+	    if (item === keyValue) {
+	      index = _indx;
+	    }
+	  });
+	  return index;
+	},
 	getVatIndex(keyValue) {
 	  var index = 0;
 	  this.VatTypeList.forEach((item, _indx) => {
@@ -1300,6 +1308,14 @@ export default {
 									  _$this.indexCostType=__index;
 								  }
 			});
+			_$this.itemData.ReimbursementTypeCode1 = item.ReimbursementType;
+			_$this.ReimbursementTypeList.forEach(__item => {
+				if(__item.Code === _$this.itemData.ReimbursementTypeCode1){
+					_$this.itemData.ReimbursementTypeName1 = __item.Name;
+					_$this.itemData.indexReimbursementType = _$this.getReimIndex(_$this.itemData.ReimbursementTypeName1);
+					_$this.indexReimbursementType = _$this.getReimIndex(_$this.itemData.ReimbursementTypeName1);
+				}
+			})
             _this.formList = [];
             _this.totalJine = parseFloat(item.Amount).toFixed(2);
             item.BusinessTravelRequestLines.forEach((_item, _indx) => {
