@@ -263,8 +263,8 @@
 <style>
 	.message{
 		width: 100%;
-		height: 0px;
-		font-size: 0px;
+		height:20px;
+		font-size: 12px;
 	}
 	/* 本页基本 */
 	@charset "UTF-8";
