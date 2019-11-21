@@ -161,4 +161,6 @@ module.exports = {
 	getVatRecords: websiteUrl + '/api/Vat/GetRecords',
 	// 获取系统初始化表格的数据
 	 getInitialize:websiteUrl + '/api/Initialize/GetInitialize',
+	 // 获取公休时间表的数据
+	  getHolidaySchedule:websiteUrl + '/api/HolidaySchedule/GetRecords',
 }

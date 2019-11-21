@@ -147,10 +147,7 @@
 					let year = date.getFullYear();
 					let m = date.getMonth() + 1;
 					let d = date.getDay();
-					let h = date.getHours();
-					let minute = date.getMinutes();
-					let s = date.getSeconds();
-					return '[' + year + ',' + m + ',' + d + ',' + h + ',' + minute + ',' + s + ']';
+					return '[' + year + ',' + m + ',' + d + ',00,00,00]';
 				}
 			},
 			step: {

@@ -48,19 +48,17 @@
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
+					<view class="title">加班时长单位</view>
+					<input disabled="true" placeholder="加班时长" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
+					 :value="itemData.ExtraWorkHoursTextName">
+				</view>
+				<view class="cu-form-group">
 					<view class="title">加班事由</view>
 				</view>
 				<view class="cu-form-group">
 					<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
 					 placeholder-class="placeholder" data-placeholder="在此输入加班事由" :value="itemData.Cause" />
-				</view>
-						<!-- <view class="cu-form-group">
-							<view class="title">备注</view>
-						</view>
-						<view class="cu-form-group">
-							<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
-							 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
-						</view> -->
+					</view>
 		    </form>
 		  </view>
 		  <view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 999;width: 100%;">
@@ -123,6 +121,8 @@ export default {
 				  ExtraWorkTypeCode:"Actucl",
 				  ExtraWorkTypeName:"按实际加班时长计算",
 				  Hours:"",
+				  ExtraWorkHoursText:"Hour",
+				  ExtraWorkHoursTextName: "小时",
 				  Cause:"",
 				  Remarks:"",
 			},
@@ -143,6 +143,7 @@ export default {
 			  startYear:new Date().getFullYear(),
 			  resultInfo1:{},
 			  resultInfo2:{},
+			  HolidayScheduleList:[],
 			};
   },
   computed: {
@@ -156,20 +157,14 @@ export default {
 		let year = date.getFullYear();
 		let m = date.getMonth()+1;
 		let d = date.getDay();
-		let h = date.getHours();
-		let minute = date.getMinutes();
-		let s = date.getSeconds();
-		return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+		return '['+year+','+m+','+d+',00,00,00]';
 	},
 	defaultVal2(){
 		const date = new Date();
 		let year = date.getFullYear();
 		let m = date.getMonth()+1;
 		let d = date.getDay();
-		let h = date.getHours();
-		let minute = date.getMinutes();
-		let s = date.getSeconds();
-		return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+		return '['+year+','+m+','+d+',00,00,00]';
 	},
   },
   methods: {
@@ -221,6 +216,31 @@ export default {
 				
 			},err=>{})
 		},
+		getHolidaySchedule:async function(){
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
+			this.$mbservices.Request(this.$webapi.getHolidaySchedule,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					this.HolidayScheduleList=res.data.data;
+				}
+				
+			},err=>{})
+		},
 		selectOption(e){},
 		RadioChange(e) {
 			this.radio = e.detail.value;
@@ -268,9 +288,6 @@ export default {
     hideModal(e) {
       this.modalName = null;
     },
-	inputHours(itemData, event) {
-	  itemData.Hours = event.detail.value;
-	},
     onlySave() {
       this.modalName = null;
       this.isDoSteps = false;
@@ -296,6 +313,7 @@ export default {
 				_this.editEntitysList[0].BeginDate = _this.itemData.BeginDate;
 				_this.editEntitysList[0].EndDate = _this.itemData.EndDate;
 				_this.editEntitysList[0].ExtraWorkType = _this.itemData.ExtraWorkTypeCode;
+				_this.editEntitysList[0].ExtraWorkHoursText = _this.itemData.ExtraWorkHoursText;
         _this.editEntitysList[0].UIStatus = "Modify";
         ajaxJSON = _this.editEntitysList[0];
       } else {
@@ -306,6 +324,7 @@ export default {
 		  EndDate: _this.itemData.EndDate,
 		  ExtraWorkType: _this.itemData.ExtraWorkTypeCode,
 		  Hours: _this.itemData.Hours,
+		  ExtraWorkHoursText:_this.itemData.ExtraWorkHoursText,
 		  CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
 		  Creator: uni.getStorageSync("JSUserInfo").UserName,
 		  Cause: _this.itemData.Cause, 
@@ -383,17 +402,6 @@ export default {
         parseInt(e.target.value)
       ];
     },
-		bindPickerChange2: function(e) {
-			this.indexExtraWorkType = e.target.value;
-			console.log(this.indexExtraWorkType);
-			for(var i in this.ExtraWorkTypeList){
-				if(this.ExtraWorkType[this.indexExtraWorkType] === this.ExtraWorkTypeList[i].Name){
-					this.itemData.ExtraWorkTypeCode = this.ExtraWorkTypeList[i].Code;
-					this.itemData.ExtraWorkTypeName = this.ExtraWorkType[this.indexExtraWorkType];
-				}
-			}
-		},
-	
 	toggleTab(mode){
 		this.itemData.BeginDate = "";
 		this.$refs[mode].show();
@@ -417,25 +425,77 @@ export default {
 	computTime(){
 		this.itemData.BeginDate = this.resultInfo1.result;
 		this.itemData.EndDate = this.resultInfo2.result;
-		var endTime = this.resultInfo2.result;
-		endTime = endTime.replace(/-/g, '/');
-		var time1 = new Date(endTime);
+		var startDate = this.resultInfo1.result;
+		startDate = startDate.replace(/-/g, '/');
+		var time1 = new Date(startDate);
 		time1 = time1.getTime();
-		var startTime = this.resultInfo1.result;
-		startTime = startTime.replace(/-/g, '/');
-		var time2 = new Date(startTime);
+		var endDate = this.resultInfo2.result;
+		endDate = endDate.replace(/-/g, '/');
+		var time2 = new Date(endDate);
 		time2 = time2.getTime();
-		var hours = time1 - time2;
-		if(hours < 0){
-			uni.showModal({
-				title:"提示",
-				content:"开始时间不能大于结束时间,请重新选择",
-				showCancel:false
-			})
+		if(time1>time2){
+			this.itemData.BeginDate = "";
+			this.itemData.EndDate = "";
 			return;
-		}else {
-			this.itemData.Hours = parseFloat(hours / (3600 * 1000)).toFixed(2);
 		}
+		var year2 = this.resultInfo2.checkArr[0];
+		var month2 = this.resultInfo2.checkArr[1];
+		var day2 = this.resultInfo2.checkArr[2];
+		var hour2 = this.resultInfo2.checkArr[3];
+		var minute2 = this.resultInfo2.checkArr[4];
+		var seconds2 = this.resultInfo2.checkArr[5];
+		var year1 = this.resultInfo1.checkArr[0];
+		var month1 = this.resultInfo1.checkArr[1];
+		var day1 = this.resultInfo1.checkArr[2];
+		var hour1 = this.resultInfo1.checkArr[3];
+		var minute1 = this.resultInfo1.checkArr[4];
+		var seconds1 = this.resultInfo1.checkArr[5];
+		if(year2===year1&&month1===month2&&day1===day2){
+				this.itemData.ExtraWorkHoursTextName = "小时";
+				var date = year2+'-'+month2+'-'+day2;
+				for(var i in this.HolidayScheduleList){
+					console.log(date);
+					if(this.HolidayScheduleList[i].Date === date){
+						console.log("##############");
+						this.itemData.Hours = (hour2-hour1+(minute2-minute1)/60).toFixed(2);
+						if(this.itemData.Hours > 8){
+							this.itemData.Hours = 8;
+						}
+					return;
+					}else{
+						// 开始时间小于18点
+						if(hour1<18){
+							// 结束时间小于18点
+							if(hour2<18){
+								uni.showModal({
+									title:"提示",
+									content:"当前时间为上班时间，不算加班",
+									showCancel:false
+								})
+							}else if(hour2>=18){
+								this.itemData.Hours = (hour2-18+minute2/60).toFixed(2);
+							}
+						}else if(hour1>=18){
+							this.itemData.Hours = (hour2-hour1+(minute2-minute2)/60).toFixed(2);
+						}
+						return;
+					}
+				}
+			}else{
+				this.itemData.ExtraWorkHoursText = "Hour";
+				this.itemData.ExtraWorkHoursTextName = "小时";
+				var hour = ((time2 -time1)/1000/24/3600*8).toFixed(2);
+				console.log(hour)
+				if(hour2<18){
+					var endTime = year2+'/'+month2+'/'+day2+' '+'18:00:00';
+					var time3 = new Date(endTime);
+					this.itemData.Hours = hour + 8-((time3-time2)/1000/3600).toFixed(2);
+				}else if(hour2>=18){
+					this.itemData.Hours = hour+8;
+					console.log(this.itemData.Hours);
+				}
+				
+			}
 	},
     onSelected(data) {
     },
@@ -649,6 +709,12 @@ export default {
 					_$this.itemData.EndDate = item.EndDate;
 					_$this.itemData.Cause = item.Cause;
 					_$this.itemData.Hours = item.Hours;
+					_$this.itemData.ExtraWorkHoursText = item.ExtraWorkHoursText;
+					if(item.ExtraWorkHoursText === 'Hour'){
+						_$this.itemData.ExtraWorkHoursText = "小时";
+					}else if(item.ExtraWorkHoursText === 'Day'){
+						_$this.itemData.ExtraWorkHoursText = "天";
+					}
          			_$this.itemData.InvCompanyId = item.InvCompanyId;
          			_$this.itemData.InvCompanyName = item.InvCompanyName;
            // _this.formList = [];
@@ -688,9 +754,6 @@ export default {
         }
       );
     },
-		textareaInput33(e) {
-		  this.itemData.Remarks = e.detail.value;
-		}
   },
   onLoad(e) {
 		this.from = JSON.parse(e.data).from;
@@ -712,6 +775,7 @@ export default {
 	  this.itemData.DocEntry=this.editItem.DocEntry;
 	  /* 所属公司 */
 	  this.getInvCompany();
+	  this.getHolidaySchedule();
 	  var _this = this;
 	  setTimeout(function(){
 		  _this.getDetailData();
@@ -726,6 +790,7 @@ export default {
 		}
 		/* 所属公司 */
 		this.getInvCompany();
+		this.getHolidaySchedule();
   },
   onUnload() {
     this.totalJine = "0.00";
