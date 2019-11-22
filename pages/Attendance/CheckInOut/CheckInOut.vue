@@ -179,7 +179,7 @@
 			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
 			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
 			this.$forceUpdate()
-			// #ifndef MP-WEIXIN
+			// #ifdef MP-WEIXIN
 			wx.startWifi({
 				success: (res) => {},
 				fail: (err) => {},
