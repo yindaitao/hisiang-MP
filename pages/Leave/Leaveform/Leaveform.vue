@@ -477,18 +477,17 @@ export default {
 		var seconds1 = this.resultInfo1.checkArr[5];
 		var leavehours = time1 - time2;
 		var leaveH = Math.floor(leavehours / (24 * 3600 * 1000)).toFixed(0);
+		var leaveDate = "";
 		if(month2!==month1){
 			this.itemData.LeaveHoursText === 'Month';
 			this.indexLeaveHoursText = 3;
-			this.itemData.LeaveHoursTextName === this.LeaveHoursTextType[this.indexLeaveHoursText] === "天";
+			this.itemData.LeaveHoursTextName === this.LeaveHoursTextType[this.indexLeaveHoursText] === "月";
 		}else if(year2===year1 && month2===month1){
 			for(var j=1;j<leaveH;j++){
-				var leaveDate = "";
 				leaveDate = year1+'-'+month1+"-"+day1;
 				console.log("((((((())))(((((())))))))))))");
 				console.log(leaveDate);
-				var ajaxJSON = {};
-				this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST",ajaxJSON,res=>{
+				this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST","",res=>{
 					console.log("*******)))");
 					if(res.data.RecordCount>0)
 					{
@@ -501,6 +500,8 @@ export default {
 									type = "外出";
 								}else if(!this.$mbservices.isEmpty(item.Trip)){
 									type = "出差";
+								}else if(!this.$mbservices.isEmpty(item.Leave)){
+									type = "请假";
 								}
 								uni.showModal({
 									title:"提示",
@@ -570,7 +571,7 @@ export default {
 			})
 			return;
 		}else if(this.itemData.LeaveHoursText === 'Hour'){
-			this.itemData.LeaveHours = parseFloat(leavehours / (3600 * 1000)).toFixed(2);
+			this.itemData.LeaveHours = parseFloat(leavehours / (24*3600 * 1000)*8).toFixed(2);
 		}else if(this.itemData.LeaveHoursText === 'Day'){
 			this.itemData.LeaveHours = Math.floor(leavehours / (24 * 3600 * 1000)).toFixed(1);
 		}else if(this.itemData.LeaveHoursText === 'Month'){
