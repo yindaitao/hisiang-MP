@@ -252,6 +252,43 @@
 				});
 			}
 			// #endif
+			// #ifdef MP-WEIXIN
+   let param = {
+    PageIndex: 1,
+    RowsPerPage: "1000",
+    type: "Initialize",
+    Parameter: {
+     LoadChildren: "Load",
+     Conditions: [{
+      FieldName: "Activated",
+      Operation: "EQUAL",
+      ConditionValue: 'Y',
+      Relationship: "AND"
+     }],
+     ChildCriterias: [{
+      BusinessObjectSearchType: "Search",
+      BusinessObjectTypeName: "ScheduleLine",
+      Conditions: [{
+       FieldName: "UserId",
+       Operation: "EQUAL",
+       ConditionValue: uni.getStorageSync("JSUserInfo").UserId,
+       Relationship: "AND"
+      }]
+     }],
+    }
+
+   };
+   this.$mbservices.Request(this.$webapi.getScheduleList, 'POST', param, res => {
+    console.log('成功返回');
+    console.log(res);
+    if (res.data.RecordCount > 0) {
+     Vue.prototype.ScheduleEntity = res.data.data[0];
+    }
+   }, err => {
+    console.log('失败返回');
+    console.log(err);
+   })
+   //#endif
 		},
 		onHide: function() {
 			console.log('App Hide')

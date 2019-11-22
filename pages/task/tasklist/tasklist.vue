@@ -11,7 +11,7 @@
 			</view> -->
 			<view class="search-form round">
 				<text class="icon-search"></text>
-				<input :adjust-position="false" type="text" placeholder="请输入关键字" confirm-type="search" style="float:left;" />
+				<input @input="inpuSearch" :adjust-position="false" type="text" placeholder="请输入关键字" confirm-type="done" style="float:left;" />
 			</view>
 			<view class="action">
 				<!-- <button class="cu-btn bg-green shadow-blur round">搜索</button> -->
@@ -34,10 +34,12 @@
 								<text class="icon-title text-orange"></text>{{list.DocNum}}</view> -->
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text> {{list.OrganizationName}}{{list.Creator}}的{{list.BaseTypeName}}</view>
+							<view>
+								<text class="icon-title text-orange"></text>
+								单据号:{{list.DocEntry}}
+							</view>
 							<view class="text-gray text-sm">
 								<text class="icon-timefill margin-right-xs"></text> {{list.CreateDate}}</view>
-							<!-- <view class="text-gray text-sm">
-								<text class="icon-homefill margin-right-xs"></text>{{list.InvCompanyName}}</view> -->
 						</view>
 						<view class="action">
 							<view class="cu-tag round bg-olive light">{{list.AApproveStatus}}</view>
@@ -103,7 +105,8 @@
 		},
 		methods: {
 			goDetail(item) {
-				item.flag = "tasklist"; 
+				item.flag = "tasklist";
+				item.from = "tasklist";
 				switch (item.BaseType) {
 					case "ApprovalNote":
 						uni.navigateTo({
@@ -123,8 +126,9 @@
 						break;
 					case "BusinesstravelRequest":
 						uni.navigateTo({
-							url: '/pages/BusinesstravelRequest/BusinesstravelRequestform/BusinesstravelRequestform?flag=tasklist&data=' + JSON.stringify(
-								item)
+							url: '/pages/BusinesstravelRequest/BusinesstravelRequestform/BusinesstravelRequestform?flag=tasklist&data=' +
+								JSON.stringify(
+									item)
 						});
 						break;
 					case "RepaymentRequest":
@@ -155,6 +159,9 @@
 				console.log(this.$refs);
 				this.$refs.mpvuePicker.show()
 			},
+			inpuSearch(e){
+				this.searchValue = e.target.value;
+			},
 			tabSelect(e) {
 				this.TabCur = e.currentTarget.dataset.id;
 				this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60
@@ -165,38 +172,22 @@
 					return false;
 				}
 				this.searchParams = [{
-					FieldName: "BusinessType",
-					Operation: "EQUAL",
-					ConditionValue: this.searchTypeValue,
-					Relationship: "AND"
-				}];
-				if (!this.$mbservices.isEmpty(this.searchValue)) {
-					var arr = [{
-							FieldName: "DocEntry",
-							Operation: "CONTAIN",
-							ConditionValue: this.searchValue,
-							Relationship: "OR"
-						},
-						{
-							FieldName: "Remarks",
-							Operation: "CONTAIN",
-							ConditionValue: this.searchValue,
-							Relationship: "OR"
-						},
-						{
-							FieldName: "Amount",
-							Operation: "CONTAIN",
-							ConditionValue: this.searchValue,
-							Relationship: "OR"
-						}
-					];
-					arr.forEach(item => {
-						this.searchParams.push(item);
-					})
-				}
+						FieldName: "DocEntry",
+						Operation: "CONTAIN",
+						ConditionValue: this.searchValue,
+						Relationship: "OR"
+					},
+					{
+						FieldName: "Remarks",
+						Operation: "CONTAIN",
+						ConditionValue: this.searchValue,
+						Relationship: "OR"
+					}
+				];
+				console.log("this.searchParams");
+				console.log(this.searchParams);
 			},
 			doSearch(e) {
-				//this.dataList = [];
 				this.makeParams();
 				this.pageIndex = 0;
 				this.getTaskList(this.searchParams);

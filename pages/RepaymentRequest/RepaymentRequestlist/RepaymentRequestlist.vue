@@ -5,7 +5,7 @@
 			<view class="search-form round">
 				<text class="icon-search"></text>
 				<input @focus="InputFocus" @blur="InputBlur" @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词"
-				 confirm-type="search" :value="searchValue">
+				 confirm-type="done" :value="searchValue">
 			</view>
 			<view class="action">
 				<button class="cu-btn icon" @click="doSearch">
@@ -33,6 +33,10 @@
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
 								{{list.OrganizationName}}-{{list.Creator}}的还款申请
+							</view>
+							<view>
+								<text class="icon-title text-orange"></text>
+								单号:{{list.DocEntry}}
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
@@ -306,12 +310,6 @@
 				}
 				this.searchParams = [{
 						FieldName: "DocEntry",
-						Operation: "CONTAIN",
-						ConditionValue: this.searchValue,
-						Relationship: "OR"
-					},
-					{
-						FieldName: "Remarks",
 						Operation: "CONTAIN",
 						ConditionValue: this.searchValue,
 						Relationship: "OR"

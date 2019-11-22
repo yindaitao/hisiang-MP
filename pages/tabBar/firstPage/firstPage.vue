@@ -120,6 +120,38 @@
 							title: "消耗申请"
 						});
 						break;
+					case "Leave1":
+						uni.navigateTo({
+							url: "/pages/Leave/Leaveform/Leaveform?data=" + JSON.stringify({
+								from: "firstPage"
+							}),
+							title: "请假"
+						});
+						break;
+					case "ExtraWork1":
+						uni.navigateTo({
+							url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?data=" + JSON.stringify({
+								from: "firstPage"
+							}),
+							title: "加班"
+						});
+						break;
+					case "Goout1":
+						uni.navigateTo({
+							url: "/pages/Goout/Gooutform/Gooutform?data=" + JSON.stringify({
+								from: "firstPage"
+							}),
+							title: "外出"
+						});
+						break;
+					case "GooutBusinessTravel":
+						uni.navigateTo({
+							url: "/pages/Trip/Tripform/Tripform?data=" + JSON.stringify({
+								from: "firstPage"
+							}),
+							title: "出差"
+						});
+						break;
 					case "deplist":
 						uni.navigateTo({
 							url: "/pages/department/deplist/deplist",
@@ -350,6 +382,7 @@
 							return;
 						}
 						_this.iconList = [];
+						console.log(resultM.data);
 						resultM.data.forEach(item => {
 							item.children.forEach(_item => {
 								_item.children.forEach(__item => {

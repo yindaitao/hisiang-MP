@@ -74,5 +74,14 @@
     },
     "mp-toutiao" : {
         "usingComponents" : true
+    },
+    "h5" : {
+        "sdkConfigs" : {
+            "maps" : {
+                "qqmap" : {
+                    "key" : "4U2BZ-CGNRP-IUCDG-LAAL4-WEIVQ-YSFIN"
+                }
+            }
+        }
     }
 }

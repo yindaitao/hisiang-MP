@@ -18,6 +18,7 @@
 					<button open-type="getUserInfo" v-bind:disabled="logininfo.loading" @click="defaultHandlerLogin"> {{ logininfo.loading ? "登录中...":"登 录"}}
 					</button>
 				</view>
+				<view class="message">提示：小程序为业务系统，如需使用，请在PC注册账号，登录一次后即可记录登录信息，无需重复登陆</view>
 			</view>
 		</view>
 	</view>
@@ -137,7 +138,6 @@
 						Code: code
 					},
 					success: result => {
-						
 						if (result.data.RecordCount > 0) {
 							if (result.data.data.UserInfo === null) {
 								this.Openid = result.data.data.Openid;
@@ -261,6 +261,11 @@
 </script>
 
 <style>
+	.message{
+		width: 100%;
+		height:20px;
+		font-size: 12px;
+	}
 	/* 本页基本 */
 	@charset "UTF-8";
 

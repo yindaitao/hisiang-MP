@@ -1,10 +1,11 @@
 <template>
 	<view class="ul-uni-tab-bar">
-		<custom>报销申请列表</custom>
+		<custom>请假记录</custom>
 		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
-				<input @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词" confirm-type="done" :value="searchValue" />
+				<input @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词"
+				 confirm-type="done" :value="searchValue" />
 			</view>
 			<view class="action">
 				<button class="cu-btn icon" @click="doSearch">
@@ -35,9 +36,12 @@
 			<scroll-view scroll-y @scrolltolower="loadMore" style="width: 100%;margin-bottom: 10px;" :style="{'height':scrollBarHeight+'px'}">
 				<!-- :style="{'height':scrollBarHeight+'px'}" -->
 				<view class="cu-list menu">
-					<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-for="(list,index) in dataList" :key="index"
-					 @touchstart="ListTouchStart(index,$event)" @touchmove="ListTouchMove(index,$event)" @touchend="ListTouchEnd(index,$event)"
-					 :data-target="'move-box-' + index" @tap="goDetail(list)" style="position: relative;">
+					<view v-if="dataList.length === 0" style="position: relative;text-align: center;">
+						暂无请假记录
+					</view>
+					<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-if="dataList.length > 0" v-for="(list,index) in dataList" :key="index"
+					 @touchstart="ListTouchStart(index,$event)" @touchmove="ListTouchMove(index,$event)" @touchend="ListTouchEnd(index,$event)" :data-target="'move-box-' + index"
+					 @tap="goDetail(list)" style="position: relative;">
 						<view class="cu-tag bg-blue" style="position:absolute;top: 10px;right: 10px;" v-if="list.Approve==='No'&&list.ApproveStatus!=='Rejected'">草稿</view>
 						<view v-if="isMultiSelect" style="height: 100%;text-align:center;vertical-align: middle;margin-top: 30px;">
 							<radio @click.stop="radioClick(list)" :checked="list.radchecked"></radio>
@@ -45,21 +49,19 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.OrganizationName}}-{{list.Creator}}的{{$mbservices.isEmpty(list.CostTypeName)?"":list.CostTypeName}}报销
+								{{list.Creator}}提交的{{list.HolidayTypeName}}申请
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
-								单号:{{list.DocEntry}}
-								<text v-if="list.PayType ==='BankToUser'"></text>
-							</view>
-							<view>
-								<text class="icon-title text-orange"></text>
-								金额：{{list.Amount}}
-								<text v-if="list.PayType ==='BankToUser'"></text>
+								编号:{{list.DocEntry}}
 							</view>
 							<view class="text-gray text-sm">
 								<text class="icon-timefill margin-right-xs"></text>
-								{{list.DocDate}}
+								开始时间:{{list.BeginDate}}
+							</view>
+							<view class="text-gray text-sm">
+								<text class="icon-timefill margin-right-xs"></text>
+								结束时间:{{list.EndDate}}
 							</view>
 						</view>
 						<view class="action" v-if="list.Approve!=='No'||list.ApproveStatus==='Rejected'">
@@ -132,12 +134,13 @@
 		onShow() {
 			/* if (!this.isFirstLoad) {
 				this.pageIndex = parseInt(this.pageIndex) - 1;
-				this.newShowGetReimList();
+				this.newShowgetLeaveList();
 			} */
-			if (this.$mbservices.getIsRefresh()) {
+			if(this.$mbservices.getIsRefresh())
+			{
 				this.pageIndex = 0; // parseInt(this.pageIndex) - 1;
 				this.$mbservices.setIsRefresh(false);
-				this.newShowGetReimList();
+				this.newShowgetLeaveList();
 			}
 			this.isFirstLoad = false;
 			this.isLoadMore = false;
@@ -156,14 +159,14 @@
 			//#endif
 			//this.dataList = [];
 			/*加载数据*/
-			this.getReimList();
+			this.getLeaveList();
 		},
 		onReachBottom() {
 			this.searchParams = [];
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowGetReimList();
+			this.newShowgetLeaveList();
 			/* setTimeout(() => {
 				uni.stopPullDownRefresh();
 			}, 1000) */
@@ -174,28 +177,30 @@
 			this.searchValue = "";
 			this.pageIndex = 0;
 			//this.dataList = [];
-			this.newShowGetReimList();
+			this.newShowgetLeaveList();
 		},
 		methods: {
 			goDetail(item) {
-				if (item.Approve === 'No' && item.ApproveStatus !== 'Rejected') {
+				item.from = "";
+				item.from = "Leavelist";
+				if(item.Approve==='No'&&item.ApproveStatus!=='Rejected'){
 					uni.navigateTo({
-						url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=modify&data=" + JSON.stringify(item)
+						url: "/pages/Leave/Leaveform/Leaveform?flag=modify&data=" + JSON.stringify(item)
 					});
-				} else if (item.ApproveStatus === 'Rejected') {
+				}else if(item.ApproveStatus==='Rejected'){
 					uni.navigateTo({
-						url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=modify&data=" + JSON.stringify(item)
+						url: "/pages/Leave/Leaveform/Leaveform?flag=modify&data=" + JSON.stringify(item)
 					});
-				} else if (item.ApproveStatus === "Approved" || item.ApproveStatus === "Pending") {
+				}else if(item.ApproveStatus === "Approved" || item.ApproveStatus === "Pending"){
 					uni.navigateTo({
-						url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=Original&data=" + JSON.stringify(item)
+						url: "/pages/Leave/Leaveform/Leaveform?flag=Original&data=" + JSON.stringify(item)
 					});
 				}
 			},
 			editItem(item) {
 				console.log(item);
 				uni.navigateTo({
-					url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=modify&data=" + JSON.stringify(item)
+					url: "/pages/Leave/Leaveform/Leaveform?flag=modify&data=" + JSON.stringify(item)
 				});
 			},
 			deleteItem(item) {
@@ -240,18 +245,18 @@
 				//this.dataList = [];
 				this.makeParams();
 				this.pageIndex = 0;
-				this.getReimList(this.searchParams);
+				this.getLeaveList(this.searchParams);
 			},
 			loadMore() {
 				if (this.searchValue != undefined && this.searchValue.length > 0) {
 					this.makeParams();
 				}
 				this.isLoadMore = true;
-				this.newShowGetReimList(this.searchParams);
+				this.newShowgetLeaveList(this.searchParams);
 			},
 			makeParams() {
 				if (this.$mbservices.isEmpty(this.searchValue)) {
-					this.searchParams = [];
+					this.searchParams=[];
 					return false;
 				}
 				this.searchParams = [{
@@ -267,14 +272,14 @@
 						Relationship: "OR"
 					},
 					{
-						FieldName: "Amount",
+						FieldName: "Remarks",
 						Operation: "CONTAIN",
 						ConditionValue: this.searchValue,
 						Relationship: "OR"
 					}
 				];
 			},
-			newShowGetReimList: async function(params) {
+			newShowgetLeaveList: async function(params) {
 				this.pageIndex = parseInt(this.pageIndex) + 1;
 				var ajaxJSON = {
 					pageIndex: this.pageIndex,
@@ -291,7 +296,7 @@
 							Operation: "EQUAL",
 							ConditionValue: parseInt(uni.getStorageSync("JSUserInfo").UserId),
 							Relationship: "AND"
-						}, {
+						},{
 							FieldName: "Canceled",
 							Operation: "EQUAL",
 							ConditionValue: "N",
@@ -306,7 +311,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getReimList,
+					this.$webapi.getLeaveList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
@@ -330,8 +335,6 @@
 							if (item.ApproveStatus === "Rejected") {
 								item.AApproveStatus = "已拒绝";
 							}
-							item.Amount = parseFloat(item.Amount).toFixed(2);
-							//_this.dataList.push(item);
 							_cacheList.push(item);
 						});
 						if (_this.isLoadMore) {
@@ -344,6 +347,7 @@
 						} else {
 							_this.dataList = _cacheList;
 						}
+						
 
 					},
 					function(ret) {
@@ -359,7 +363,7 @@
 					}
 				);
 			},
-			getReimList(params) {
+			getLeaveList(params) {
 				uni.showLoading({
 					title: "拼命加载中..."
 				});
@@ -379,7 +383,7 @@
 							Operation: "EQUAL",
 							ConditionValue: parseInt(uni.getStorageSync("JSUserInfo").UserId),
 							Relationship: "AND"
-						}, {
+						},{
 							FieldName: "Canceled",
 							Operation: "EQUAL",
 							ConditionValue: "N",
@@ -394,7 +398,7 @@
 				}
 				var _this = this;
 				this.$mbservices.Request(
-					this.$webapi.getReimList,
+					this.$webapi.getLeaveList,
 					"POST",
 					ajaxJSON,
 					function(ret) {
@@ -405,10 +409,9 @@
 							});
 							return false;
 						}
-						console.log('aaaaaaaaaaaaaaaaa');
 						console.log(ret.data.data);
 						setTimeout(() => {
-							var _cacheList = [];
+							var _cacheList=[];
 							ret.data.data.forEach(item => {
 								item.radchecked = false;
 								if (item.ApproveStatus === "Pending") {
@@ -420,11 +423,10 @@
 								if (item.ApproveStatus === "Rejected") {
 									item.AApproveStatus = "已拒绝";
 								}
-								item.Amount = parseFloat(item.Amount).toFixed(2);
 								//_this.dataList.push(item);
 								_cacheList.push(item);
 							});
-							_this.dataList = _cacheList;
+							_this.dataList=_cacheList;
 							uni.hideLoading();
 						}, 1000);
 					},
@@ -476,23 +478,23 @@
 			},
 			addWorkOrder() {
 				uni.navigateTo({
-					url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform"
+					url: "/pages/Leave/Leaveform/Leaveform?data=" + JSON.stringify({
+						from:"Leavelist"
+					})
 				});
 			},
 
 			// ListTouch触摸开始
 			ListTouchStart(indx, e) {
-				if (this.dataList[indx].Approve === "Yes" && (this.dataList[indx].ApproveStatus === 'Pending' || this.dataList[
-						indx].ApproveStatus === 'Approved')) {
+				if (this.dataList[indx].Approve === "Yes"&&(this.dataList[indx].ApproveStatus==='Pending'||this.dataList[indx].ApproveStatus==='Approved')) {
 					return false;
 				}
 				this.listTouchStart = e.touches[0].pageX;
 			},
 
 			// ListTouch计算方向
-			ListTouchMove(indx, e) {
-				if (this.dataList[indx].Approve === "Yes" && (this.dataList[indx].ApproveStatus === 'Pending' || this.dataList[
-						indx].ApproveStatus === 'Approved')) {
+			ListTouchMove(indx,e) {
+				if (this.dataList[indx].Approve === "Yes"&&(this.dataList[indx].ApproveStatus==='Pending'||this.dataList[indx].ApproveStatus==='Approved')) {
 					return false;
 				}
 				this.listTouchDirection =
@@ -500,9 +502,8 @@
 			},
 
 			// ListTouch计算滚动
-			ListTouchEnd(indx, e) {
-				if (this.dataList[indx].Approve === "Yes" && (this.dataList[indx].ApproveStatus === 'Pending' || this.dataList[
-						indx].ApproveStatus === 'Approved')) {
+			ListTouchEnd(indx,e) {
+				if (this.dataList[indx].Approve === "Yes"&&(this.dataList[indx].ApproveStatus==='Pending'||this.dataList[indx].ApproveStatus==='Approved')) {
 					return false;
 				}
 				if (this.listTouchDirection == "left") {

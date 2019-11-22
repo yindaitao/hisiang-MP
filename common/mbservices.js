@@ -274,6 +274,12 @@ module.exports = {
 	 */
 	"formatDateTime": function(date, fmt) { //author: meizz   
 		var d = new Date(date);
+		if (date.toString().lastIndexOf('-') > 0) {
+			if (date.toString().lastIndexOf('.') > 0) {
+				date = date.toString().substr(0, date.toString().length - 4)
+			}
+			d = new Date(date.toString().replace(/\-/g, "/"));
+		}
 		var o = {
 			"M+": d.getMonth() + 1, //月份   
 			"d+": d.getDate(), //日   

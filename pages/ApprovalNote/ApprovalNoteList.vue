@@ -1,17 +1,24 @@
 <template>
 	<view>
 		<callback :baseEntry="from" :backFrom="backFrom">我的审批列表</callback>
+		<view id="_tabBar" ref="_tabBar" class="cu-bar search bg-white">
+			<view class="search-form round">
+				<text class="icon-search"></text>
+				<input @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词" confirm-type="done" :value="searchValue" />
+			</view>
+			<view class="action">
+				<button class="cu-btn icon" @click="doSearch">
+					<text class="icon-search"></text>
+				</button>
+			</view>
+		</view>
 		<scroll-view id="_tabBar" ref="_tabBar" scroll-x class="cu-bar bg-white nav text-center">
-			<button class="cu-btn icon bg-gray" style="position: absolute;left: 2px;" @tap="showModalSearch" data-target="DrawerModalR"><text
-				 class="icon-filter"><span></span></text></button>
 			<view class="cu-item" :class="index==TabCur?'text-blue cur':''" v-for="(item,index) in tabBars" :key="index" @tap="tapTab(index,$event)"
 			 :data-current="index" :data-id="index" :id="'_tabBarItem'+item.id">
 				<text>
 					{{item.name}}
 				</text>
 			</view>
-			<button class="cu-btn icon bg-gray" style="position: absolute;right: 2px;" @tap="doRefresh" data-target="DrawerModalR"><text
-				 class="icon-refresh"><span></span></text></button>
 		</scroll-view>
 		<swiper :current="TabCur" class="swiper-box" duration="300" @change="changeTab" :style="{'height':scrollBarHeight+'px'}">
 			<swiper-item v-for="(tab,index1) in newsitems" :key="index1">
@@ -62,42 +69,6 @@
 				</scroll-view>
 			</swiper-item>
 		</swiper>
-		<view class="cu-modal drawer-modal justify-end" :class="modalNameSearch=='DrawerModalR'?'show':''" @tap="hideModalSearch">
-			<view class="cu-dialog basis-xl" @tap.stop="" :style="[{top:CustomBar+'px',height:'calc(100vh - ' + CustomBar + 'px)'}]">
-				<view class="cu-bar bg-gray">
-					<view class="action">
-						<view class="text-blue" @tap="hideModalSearch">取消</view>
-						<view class="text-bold margin-left-sm" @tap="resetConditions">重置</view>
-					</view>
-					<view class="action text-green" @tap="doSearchApprovalList">确定</view>
-				</view>
-				<view class="box">
-					<view class="cu-bar search">
-						<view class="action" style="min-width: 60px;max-width: 60px;">
-							<picker @change="PickerChange" :value="index" :range="picker">
-								<view class="picker">
-									{{picker[index]}}
-								</view>
-							</picker>
-							<text class="icon-triangledownfill"></text>
-						</view>
-						<view class="search-form round bg-gray">
-							<text class="icon-search"></text>
-							<input @focus="InputFocus" @blur="InputBlur" @input="inputValues" :adjust-position="false" type="text"
-							 placeholder="请输入关键字" confirm-type="search" :value="KeyValues"></input>
-						</view>
-					</view>
-				</view>
-				<view class="grid col-2 padding-sm">
-					<view v-for="(item,index) in checkbox" class="padding-xs" :key="index">
-						<button class="cu-btn orange lg block" :class="item.checked?'bg-orange':'line-orange'" @tap="ChooseCheckbox"
-						 :data-value="item.value"> {{item.name}}
-							<view class="cu-tag sm round" :class="item.checked?'bg-white text-orange':'bg-orange'" v-if="item.hot">HOT</view>
-						</button>
-					</view>
-				</view>
-			</view>
-		</view>
 		<fabTag :content="pageNum"></fabTag>
 	</view>
 </template>
@@ -194,7 +165,8 @@
 				modalNameSearch: null,
 				scrollBarHeight: 0,
 				isClickChange: false,
-				refreshRowCOunt: 0
+				refreshRowCOunt: 0,
+				searchValue: ""
 			};
 		},
 		onShow(e) {
@@ -215,23 +187,65 @@
 			}
 		},
 		methods: {
-			PickerChange(e) {
-				this.index = e.detail.value;
+			searchInput(e) {
+				this.searchValue = e.detail.value;
 			},
-			ChooseCheckbox(e) {
-				var items = this.checkbox,
-					values = e.currentTarget.dataset.value;
-				for (var i = 0, lenI = items.length; i < lenI; ++i) {
-					if (items[i].value == values) {
-						items[i].checked = !items[i].checked;
-						break;
-					}
+			doSearch() {
+				var params = [];
+				if (this.TabCur === 0) {
+					params.push({
+						FieldName: "ApproveStatus",
+						Operation: "EQUAL",
+						ConditionValue: "P",
+						Relationship: "AND"
+					});
 				}
-			},
-			showModalSearch(e) {
-				this.modalNameSearch = e.currentTarget.dataset.target;
-			},
-			hideModalSearch(e) {
+				if (this.TabCur === 1) {
+					params.push({
+						FieldName: "ApproveStatus",
+						Operation: "EQUAL",
+						ConditionValue: "A",
+						Relationship: "AND"
+					});
+				}
+				if (this.TabCur === 2) {
+					params.push({
+						FieldName: "ApproveStatus",
+						Operation: "EQUAL",
+						ConditionValue: "R",
+						Relationship: "AND"
+					});
+				}
+				params.push({
+					FieldName: "BusinessTypeName",
+					Operation: "CONTAIN",
+					ConditionValue: this.searchValue,
+					Relationship: "OR"
+				}, {
+					FieldName: "OriginatorName",
+					Operation: "CONTAIN",
+					ConditionValue: this.searchValue,
+					Relationship: "OR"
+				}, {
+					FieldName: "BusinessOrderNo",
+					Operation: "CONTAIN",
+					ConditionValue: this.searchValue,
+					Relationship: "OR",
+				})
+				if(parseInt(this.searchValue)){
+					params.push({
+						FieldName: "DocEntry",
+						Operation: "CONTAIN",
+						ConditionValue: this.searchValue,
+						Relationship: "OR",
+					})
+				}
+				this.newsitems[this.TabCur].status = "loading";
+				this.newsitems[this.TabCur].loadingText = "loading";
+				this.newsitems[this.TabCur].pageIndex = 0;
+				this.newsitems[this.TabCur].SearchConditions = params;
+				this.newsitems[this.TabCur].data = [];
+				this.getApprovalList();
 				this.modalNameSearch = null;
 			},
 			resetConditions() {
@@ -500,34 +514,6 @@
 				this.getApprovalList();
 				this.modalNameSearch = null;
 			},
-			doRefresh() {
-				this.newsitems[this.TabCur].data = [];
-				this.newsitems[this.TabCur].SearchConditions = [];
-				this.newsitems[this.TabCur].pageIndex = 0;
-				this.newsitems[this.TabCur].status = "loading";
-				this.newsitems[this.TabCur].loadingText === "loading";
-				if (this.TabCur === 0) {
-					this.getApprovalList({
-						FieldName: "ApproveStatus",
-						Operation: "EQUAL",
-						ConditionValue: "P"
-					});
-				}
-				if (this.TabCur === 1) {
-					this.getApprovalList({
-						FieldName: "ApproveStatus",
-						Operation: "EQUAL",
-						ConditionValue: "A"
-					});
-				}
-				if (this.TabCur === 2) {
-					this.getApprovalList({
-						FieldName: "ApproveStatus",
-						Operation: "EQUAL",
-						ConditionValue: "R"
-					});
-				}
-			},
 			goDetail(item) {
 				console.log(item.BBusinessType);
 				//业务类型
@@ -704,15 +690,16 @@
 						}],
 						LoadChildren: "NoLoad",
 						Conditions: this.newsitems[this.TabCur].SearchConditions.length > 0 ?
-							this.newsitems[this.TabCur].SearchConditions :
-							cons
+							this.newsitems[this.TabCur].SearchConditions : cons
 					}
 				};
+				console.log(ajaxJSON);
 				this.$mbservices.Request(
 					this.$webapi.getApprovalNotesList,
 					"POST",
 					ajaxJSON,
 					res => {
+						console.log(res.data.data);
 						if (res.data.RecordCount > 0) {
 							if (
 								this.newsitems[this.TabCur].data.length >=
@@ -809,13 +796,13 @@
 			}
 		},
 		onLoad(e) {
-			if(!this.$mbservices.isEmpty(e.data)){
-				if(!this.$mbservices.isEmpty(JSON.parse(e.data).from)){
+			if (!this.$mbservices.isEmpty(e.data)) {
+				if (!this.$mbservices.isEmpty(JSON.parse(e.data).from)) {
 					this.from = JSON.parse(e.data).from;
-				}else{
+				} else {
 					this.from = null;
 				}
-			}else{
+			} else {
 				this.from = null;
 			}
 			//#ifdef MP-WEIXIN
@@ -828,7 +815,7 @@
 				res[1].scrollTop; // 显示区域的竖直滚动位置
 				_this.scrollBarHeight =
 					uni.getSystemInfoSync().screenHeight -
-					_this.CustomBar -
+					_this.CustomBar - res[0].height -
 					res[0].height;
 			});
 			//#endif

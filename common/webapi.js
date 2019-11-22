@@ -1,5 +1,5 @@
 var websiteUrl = "https://oa.magicbox.net.cn"; // "https://so.magicdata.co";
-/* http://localhost:53367 */
+/* http://localhost:51682 */
 /* http://oa.magicbox.net.cn */
 /* http://192.168.0.109:8080 */
 /* https://oa.magicbox.net.cn*/
@@ -40,9 +40,33 @@ module.exports = {
 	/* 删除选中的图片 */
 	deleteImage: websiteUrl + '/api/Upload/appDeleteImage',
 	/* 添加请假审批 */
-	addLeaveEntity: websiteUrl + '/api/Leave/Save',
+	saveLeaveEntity: websiteUrl + '/api/Leave/Save',
 	/* 获取请假列表 */
 	getLeaveList: websiteUrl + '/api/Leave/GetRecords',
+	/* 请假最大ID*/
+	maxNumLeave: websiteUrl + '/api/Leave/GetMaxDocEntry',
+	/* 获取请假类型*/
+	getHolidayType: websiteUrl + '/api/HolidayType/GetRecords',
+	/* 获取请假带薪假*/
+	getHolidayRestDays: websiteUrl + '/api/HolidayType/GetRestDays',
+	/* 获取加班列表 */
+	getExtraWorkList: websiteUrl + '/api/ExtraWork/GetRecords',
+	// 加班最大ID
+	maxNumExtraWork: websiteUrl + '/api/ExtraWork/GetMaxDocEntry',
+	// 添加加班
+	saveExtraWork: websiteUrl + '/api/ExtraWork/Save',
+	/* 获取外出列表 */
+	getGooutList: websiteUrl + '/api/Goout/GetRecords',
+	// 外出最大ID
+	maxNumGoout: websiteUrl + '/api/Goout/GetMaxDocEntry',
+	// 添加外出
+	saveGoout: websiteUrl + '/api/Goout/Save',
+	/* 获取出差列表 */
+	getTripList: websiteUrl + '/api/Trip/GetRecords',
+	// 出差最大ID
+	maxNumTrip: websiteUrl + '/api/Trip/GetMaxDocEntry',
+	// 添加出差
+	saveTrip: websiteUrl + '/api/Trip/Save',
 	/* 报销最大ID */
 	maxNumReimRequest: websiteUrl + '/api/ReimbursementRequest/GetMaxDocEntry',
 	/* 得到费用报销类型 */
@@ -55,6 +79,8 @@ module.exports = {
 	updateCostItem: websiteUrl + '/api/ReimbursementRequest/Update',
 	/* 获取报销列表 */
 	getReimList: websiteUrl + '/api/ReimbursementRequest/GetRecords',
+	// 获取收款公司
+	getBusinessPartner: websiteUrl + '/api/BusinessPartner/GetRecords',
 	/* 获取审核步骤 */
 	getStages: websiteUrl + '/api/ApprovalTemplate/GetApprovalStage',
 	/* 获取待办任务列表 */
@@ -105,10 +131,14 @@ module.exports = {
 	getDepleteRequestList: websiteUrl + '/api/DepleteDetails/GetRecords',
 	/* 消耗申请最大编号 */
 	maxNumDepleteRequest: websiteUrl + '/api/DepleteDetails/GetMaxDocEntry',
-	// 在消耗申请中获取消耗管理
+	// 在消耗申请中获取消耗品管理
 	GetOpenDepletes: websiteUrl + '/api/Deplete/GetOpenDepletes',
 	// 消耗申请中获取费用明细
 	GetReimbursementType: websiteUrl + '/api/ReimbursementType/GetRecords',
+	// 在消耗申请中获取使用人
+	GetUsers: websiteUrl + '/api/User/GetUsers',
+	// 在消耗申请中获取使用车辆
+	GetVehicle: websiteUrl + '/api/VehicleManagement/GetRecords',
 	// 保存消耗申请
 	submitDepleteRequestList: websiteUrl + '/api/DepleteDetails/Save',
 	/* 获取我的审核列表 */
@@ -129,4 +159,12 @@ module.exports = {
 	getWorkRecords: websiteUrl + '/api/WorkRecord/GetRecordsList',
 	// 获取发票类型
 	getVatRecords: websiteUrl + '/api/Vat/GetRecords',
+	// 获取系统初始化表格的数据
+	 getInitialize:websiteUrl + '/api/Initialize/GetInitialize',
+	 // 获取公休时间表的数据
+	  getHolidaySchedule:websiteUrl + '/api/HolidaySchedule/GetRecords',
+	  // 获取指定用户当前月份的外出次数，出差天数，迟到，早退，旷工
+	  GetCurrentMonthGooutAndTripList:'http://localhost:51682/api/HolidayType/GetCurrentMonthGooutAndTripList',
+	  /* 获取适用当前用户的排版信息 */
+	   getScheduleList: websiteUrl + '/api/Schedule/GetRecords'
 }

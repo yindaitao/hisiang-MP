@@ -827,6 +827,15 @@ radio.white.checked .uni-radio-input {
 	height: 80upx;
 }
 
+.cu-btn.dk {
+	padding: 0 40upx;
+	font-size: 32upx;
+	height: 240upx;
+	width: 240upx;
+	border-radius: 50%;
+}
+
+
 .cu-btn.icon.sm {
 	width: 48upx;
 	height: 48upx;

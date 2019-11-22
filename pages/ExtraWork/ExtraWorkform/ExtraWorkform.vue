@@ -1,0 +1,846 @@
+<template>
+	<view>
+		<custom>加班</custom>
+		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">操作提示</view>
+					<view class="action" @tap="hideModal">
+						<text class="icon-roundclose text-black"></text>
+					</view>
+				</view>
+				<view class="padding-xl bg-white">
+					<text class="text-black text-bold">确定提交申请?</text>
+				</view>
+				<view class="cu-bar bg-white">
+					<view class="action margin-0 flex-sub text-grey" @tap="onlySave">存草稿</view>
+					<view class="action margin-0 flex-sub text-black solid-left" @tap="hideModal">取消</view>
+					<view class="action margin-0 flex-sub text-green solid-left" @tap="saveAndDoSteps">确定提交</view>
+				</view>
+			</view>
+		</view>
+		<view class="ul-swiper-box">
+			<form>
+				<view class="cu-form-group">
+					<view class="title">加班类型</view>
+					<picker :disabled="edit?true:false" @change="bindPickerChange2" :value="indexExtraWorkType" :range="ExtraWorkType">
+						<view class="picker">{{ExtraWorkType[indexExtraWorkType]}}</view>
+					</picker>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">开始日期</view>
+					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1" :current="true"
+					 @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
+					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="!$mbservices.isEmpty(itemData.BeginDate)">{{itemData.BeginDate}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="$mbservices.isEmpty(itemData.BeginDate)">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">结束日期</view>
+					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2" :current="true"
+					 @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
+					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="!$mbservices.isEmpty(itemData.EndDate)">{{itemData.EndDate}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="$mbservices.isEmpty(itemData.EndDate)">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">加班时长</view>
+					<input disabled="true" placeholder="加班时长" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
+					 :value="itemData.Hours">
+					<text v-if="false" class="icon-roundclosefill text-orange"></text>
+				</view>
+				<view class="cu-form-group">
+					<view class="title">加班时长单位</view>
+					<input disabled="true" placeholder="加班时长" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
+					 :value="itemData.ExtraWorkHoursTextName">
+				</view>
+				<view class="cu-form-group">
+					<view class="title">加班事由</view>
+				</view>
+				<view class="cu-form-group">
+					<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
+					 placeholder-class="placeholder" data-placeholder="在此输入加班事由" :value="itemData.Cause" />
+					</view>
+		    </form>
+		  </view>
+		  <view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 999;width: 100%;">
+		  	<view class="action" v-if="edit === false" style="width: 50%;">
+		  		<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
+		  			<text class="icon-upload"></text>提交
+		  		</button>
+		  	</view>
+		  	<view class="action" style="width: 50%;" v-if="from === 'firstPage'">
+		  		<button class="cu-btn round bg-blue shadow" @tap="toList">
+		  			加班记录
+		  		</button>
+		  	</view>
+		  </view>
+		</view>
+</template>
+
+<script>
+import abc from "../../components/uni-datetimepicker.vue";
+import wPicker from "../../../components/w-picker/w-picker.vue";
+var sourceType = [["camera"], ["album"], ["camera", "album"]];
+var sizeType = [["compressed"], ["original"], ["compressed", "original"]];
+export default {
+  components: {
+    abc,
+	wPicker
+  },
+  watch: {
+    showValue(val) {
+    }
+  },
+  data() {
+    return {
+			indexExtraWorkType: 0,
+			ExtraWorkType:["按实际加班时长计算","按固定加班时长计算"],
+			ExtraWorkTypeList:[
+				{
+					Code:"Actucl",
+					Name:"按实际加班时长计算",
+				},{
+					Code:"Fixed",
+					Name:"按固定加班时长计算",
+				},],
+			  modalName: null,
+			  enddate: "",
+			  themeColor: "",
+			
+			  /*图片*/
+			  imageList: [],
+			  sourceTypeIndex: 2,
+			  sourceType: ["拍照", "相册", "拍照或相册"],
+			  sizeTypeIndex: 2,
+			  sizeType: ["压缩", "原图", "压缩或原图"],
+			  countIndex: 8,
+			  count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+			  itemData:{
+				  DocEntry:"",
+				  BeginDate:this.formatDate(Date.parse(new Date())),
+				  EndDate: this.formatDate(Date.parse(new Date())),
+				  ExtraWorkTypeCode:"Actucl",
+				  ExtraWorkTypeName:"按实际加班时长计算",
+				  Hours:"",
+				  ExtraWorkHoursText:"Hour",
+				  ExtraWorkHoursTextName: "小时",
+				  Cause:"",
+				  Remarks:"",
+			},
+			  formList: [
+			    {
+			      id: 1,
+			      imageList: [],
+			      bigjine: ""
+			    }
+			  ],
+			  editEntitysList: [],
+			  totalJine: "0.00",
+			  editflag: false,
+			  editItem: {},
+			  isDoSteps: false,
+			  edit:false,
+			  from:"",
+			  startYear:new Date().getFullYear(),
+			  resultInfo1:{},
+			  resultInfo2:{},
+			  HolidayScheduleList:[],
+			};
+  },
+  computed: {
+	endYear(){
+		const date = new Date();
+		let year = date.getFullYear()+2;
+		return year;
+	},
+	defaultVal1(){
+		const date = new Date();
+		let year = date.getFullYear();
+		let m = date.getMonth()+1;
+		let d = date.getDay();
+		return '['+year+','+m+','+d+',00,00,00]';
+	},
+	defaultVal2(){
+		const date = new Date();
+		let year = date.getFullYear();
+		let m = date.getMonth()+1;
+		let d = date.getDay();
+		return '['+year+','+m+','+d+',00,00,00]';
+	},
+  },
+  methods: {
+		//获取当前时间
+		           formatDate: function (value) {
+		               let date = new Date(value);
+		               let y = date.getFullYear();
+		               let MM = date.getMonth() + 1;
+		               MM = MM < 10 ? ('0' + MM) : MM;
+		               let d = date.getDate();
+		               d = d < 10 ? ('0' + d) : d;
+		               let h = date.getHours();
+		               h = h < 10 ? ('0' + h) : h;
+		               let m = date.getMinutes();
+		               m = m < 10 ? ('0' + m) : m;
+		               let s = date.getSeconds();
+		               s = s < 10 ? ('0' + s) : s;
+		               return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
+		           },
+	 toList(){
+	 	uni.navigateTo({
+	 		url: "/pages/ExtraWork/ExtraWorklist/ExtraWorklist",
+	 		title: "加班记录"
+	 	});
+	 },
+		getInvCompany:async function(){
+			//invCompanys
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
+			this.$mbservices.Request(this.$webapi.getInvCompany,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					this.invCompanys=res.data.data;
+				}
+				
+			},err=>{})
+		},
+		getHolidaySchedule:async function(){
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
+			this.$mbservices.Request(this.$webapi.getHolidaySchedule,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					this.HolidayScheduleList=res.data.data;
+				}
+				
+			},err=>{})
+		},
+		selectOption(e){},
+		RadioChange(e) {
+			this.radio = e.detail.value;
+			this.itemData.InvCompanyId=e.detail.value;
+			this.invCompanys.forEach(item=>{
+				if(item.ACCode===e.detail.value)
+				{
+					this.itemData.InvCompanyName=item.ACName;
+				}
+			})
+			this.modalName = null;
+			this.radio = "";
+			console.log(e);
+		},
+		showModal1(e) {
+			this.modalName = e.currentTarget.dataset.target;
+		},
+    showModal(e) {
+		if(this.$mbservices.isEmpty(this.itemData.Hours))
+		{
+			uni.showModal({
+				title:"提示",
+				content:"请选择正确的开始时间和结束时间",
+				showCancel:false,
+				
+			});
+			return false;
+		}
+      var isNull_ = false;
+      var content = "";
+      this.formList.forEach(_item => {
+        
+      });
+      if (isNull_) {
+		  uni.showModal({
+		  	title:"提示",
+		  	content: content,
+		  	showCancel:false,
+		  	
+		  });
+        return false;
+      }
+      this.modalName = e.currentTarget.dataset.target;
+    },
+    hideModal(e) {
+      this.modalName = null;
+    },
+    onlySave() {
+      this.modalName = null;
+      this.isDoSteps = false;
+      this.submitForm();
+    },
+    saveAndDoSteps() {
+      this.modalName = null;
+      this.isDoSteps = true;
+      this.submitForm();
+    },
+    submitForm() {
+      var _this = this;
+      uni.showLoading({
+        title: "正在提交..."
+      });
+      var ajaxJSON = {};
+      if (_this.editflag) {
+        _this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
+        (_this.editEntitysList[0].ApproveStatus = "Pending");
+		
+				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
+				_this.editEntitysList[0].Cause = _this.itemData.Cause;
+				_this.editEntitysList[0].BeginDate = _this.itemData.BeginDate;
+				_this.editEntitysList[0].EndDate = _this.itemData.EndDate;
+				_this.editEntitysList[0].ExtraWorkType = _this.itemData.ExtraWorkTypeCode;
+				_this.editEntitysList[0].ExtraWorkHoursText = _this.itemData.ExtraWorkHoursText;
+        _this.editEntitysList[0].UIStatus = "Modify";
+        ajaxJSON = _this.editEntitysList[0];
+      } else {
+        ajaxJSON = {
+		  ObjectType: "ExtraWork",
+		  DocNum: _this.itemData.DocEntry,
+		  BeginDate: _this.itemData.BeginDate,
+		  EndDate: _this.itemData.EndDate,
+		  ExtraWorkType: _this.itemData.ExtraWorkTypeCode,
+		  Hours: _this.itemData.Hours,
+		  ExtraWorkHoursText:_this.itemData.ExtraWorkHoursText,
+		  CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
+		  Creator: uni.getStorageSync("JSUserInfo").UserName,
+		  Cause: _this.itemData.Cause, 
+		  Remarks: _this.itemData.Remarks,
+		  Approve: _this.isDoSteps ? "Yes" : "No",
+		  ApproveStatus: "Pending",
+		  Canceled: "No",
+		  Closed: "No",
+		  Attachments: "",
+		  OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
+		  OrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
+		  CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+		  CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
+		  UIStatus: "New"
+        };
+      }
+	  console.log(ajaxJSON)
+      var requestUrl = _this.editflag
+        ? _this.$webapi.saveExtraWork
+        : _this.$webapi.saveExtraWork;
+				var _$this=_this;
+      _this.$mbservices.Request(
+        requestUrl,
+        "POST",
+        ajaxJSON,
+        function(succ) {
+          setTimeout(function() {
+            uni.hideLoading();
+          }, 1000);
+          if (
+            succ.data.RecordCount == undefined ||
+            succ.data.RecordCount <= 0
+          ) {
+			  uni.showModal({
+			  	title: "提示",
+			  	content: succ.data,
+			  	showCancel: false
+			  });
+            return false;
+          }
+          uni.showToast({
+            title: "成功"
+          });
+					_$this.$mbservices.setIsRefresh(true);
+          uni.navigateBack({
+            animationDuration: 500
+          });
+        },
+        function(err) {
+			uni.showModal({
+				title: "提示",
+				content: "data: '" + JSON.stringify(err) + "'",
+				showCancel: false
+			});
+        }
+      );
+    },
+    onKeyInput: function(event) {
+      this.formList[parseInt(event.target.id) - 1].jine = event.detail.value;
+      var _cache = 0;
+      this.formList.forEach(item => {
+        _cache = (parseFloat(item.jine) + parseFloat(_cache)).toFixed(2);
+      });
+      this.totalJine = _cache.toString();
+    },
+    textareaInput(e) {
+      this.itemData.Cause = e.detail.value;
+    },
+    bindPickerChange: function(e) {
+      this.indexType = e.target.value;
+      this.formList[parseInt(e.target.id) - 1].itemOptionIndex = parseInt(
+        e.target.value
+      );
+      this.formList[parseInt(e.target.id) - 1].itemOptionText = this.arrayType[
+        parseInt(e.target.value)
+      ];
+    },
+	toggleTab(mode){
+		this.itemData.BeginDate = "";
+		this.$refs[mode].show();
+	},
+	toggleTab1(mode){
+		this.itemData.EndDate = "";
+		this.$refs[mode].show();
+	},
+	onConfirm(val){
+		this.resultInfo1=val;
+		if(this.$mbservices.isEmpty(this.resultInfo2)){
+			return;
+		}else{
+			this.computTime();
+		}
+	},
+	onConfirm1(val){
+		this.resultInfo2=val;
+		this.computTime();
+	},
+	computTime(){
+		this.itemData.BeginDate = this.resultInfo1.result;
+		this.itemData.EndDate = this.resultInfo2.result;
+		var startDate = this.resultInfo1.result;
+		startDate = startDate.replace(/-/g, '/');
+		var time1 = new Date(startDate);
+		time1 = time1.getTime();
+		var endDate = this.resultInfo2.result;
+		endDate = endDate.replace(/-/g, '/');
+		var time2 = new Date(endDate);
+		time2 = time2.getTime();
+		if(time1>time2){
+			this.itemData.BeginDate = "";
+			this.itemData.EndDate = "";
+			return;
+		}
+		var year2 = this.resultInfo2.checkArr[0];
+		var month2 = this.resultInfo2.checkArr[1];
+		var day2 = this.resultInfo2.checkArr[2];
+		var hour2 = this.resultInfo2.checkArr[3];
+		var minute2 = this.resultInfo2.checkArr[4];
+		var seconds2 = this.resultInfo2.checkArr[5];
+		var year1 = this.resultInfo1.checkArr[0];
+		var month1 = this.resultInfo1.checkArr[1];
+		var day1 = this.resultInfo1.checkArr[2];
+		var hour1 = this.resultInfo1.checkArr[3];
+		var minute1 = this.resultInfo1.checkArr[4];
+		var seconds1 = this.resultInfo1.checkArr[5];
+		if(year2===year1&&month1===month2&&day1===day2){
+				this.itemData.ExtraWorkHoursTextName = "小时";
+				var date = year2+'-'+month2+'-'+day2;
+				for(var i in this.HolidayScheduleList){
+					console.log(date);
+					if(this.HolidayScheduleList[i].Date === date){
+						console.log("##############");
+						this.itemData.Hours = (hour2-hour1+(minute2-minute1)/60).toFixed(2);
+						if(this.itemData.Hours > 8){
+							this.itemData.Hours = 8;
+						}
+					return;
+					}else{
+						// 开始时间小于18点
+						if(hour1<18){
+							// 结束时间小于18点
+							if(hour2<18){
+								uni.showModal({
+									title:"提示",
+									content:"当前时间为上班时间，不算加班",
+									showCancel:false
+								})
+							}else if(hour2>=18){
+								this.itemData.Hours = (hour2-18+minute2/60).toFixed(2);
+							}
+						}else if(hour1>=18){
+							this.itemData.Hours = (hour2-hour1+(minute2-minute2)/60).toFixed(2);
+						}
+						return;
+					}
+				}
+			}else{
+				this.itemData.ExtraWorkHoursText = "Hour";
+				this.itemData.ExtraWorkHoursTextName = "小时";
+				var hour = ((time2 -time1)/1000/24/3600*8).toFixed(2);
+				console.log(hour)
+				if(hour2<18){
+					var endTime = year2+'/'+month2+'/'+day2+' '+'18:00:00';
+					var time3 = new Date(endTime);
+					this.itemData.Hours = hour + 8-((time3-time2)/1000/3600).toFixed(2);
+				}else if(hour2>=18){
+					this.itemData.Hours = hour+8;
+					console.log(this.itemData.Hours);
+				}
+				
+			}
+	},
+    onSelected(data) {
+    },
+    sourceTypeChange: function(e) {
+      this.sourceTypeIndex = e.target.value;
+    },
+    sizeTypeChange: function(e) {
+      this.sizeTypeIndex = e.target.value;
+    },
+    countChange: function(e) {
+      this.countIndex = e.target.value;
+    },
+    chooseImage: async function(_item_) {
+      if (this.imageList.length === 9) {
+        let isContinue = await this.isFullImg();
+        if (!isContinue) {
+          return;
+        }
+      }
+      var _this = this;
+      uni.chooseImage({
+        sourceType: sourceType[this.sourceTypeIndex],
+        sizeType: sizeType[this.sizeTypeIndex],
+        count:
+          this.imageList.length + this.count[this.countIndex] > 9
+            ? 9 - this.imageList.length
+            : this.count[this.countIndex],
+        success: res => {
+          var imageSrc = res.tempFilePaths[0];
+          res.tempFilePaths.forEach(item => {
+            /* 上传图片开始 */
+            uni.uploadFile({
+              url: _this.$webapi.uploadImages,
+              header: {
+                Authorization:
+                  "bearer " + uni.getStorageSync("JSUserInfo").access_token
+              },
+              filePath: item,
+              fileType: "image",
+              name: "data",
+              success: res1 => {
+                uni.showToast({
+                  title: "上传成功",
+                  icon: "none",
+                  duration: 1000
+                });
+                var imagePath_ = {};
+                if (_this.editflag) {
+                  imagePath_ = {
+                    retInfo: JSON.parse(res1.data),
+                    url: item,
+                    deleteurl: JSON.parse(res1.data)[0].filePath
+                  };
+                } else {
+                  imagePath_ = {
+                    retInfo: JSON.parse(res1.data),
+                    url: item
+                  };
+                }
+                _item_.imageList.push(imagePath_);
+              },
+              fail: err => {
+                uni.showModal({
+                  content: err.errMsg,
+                  showCancel: false
+                });
+              }
+            });
+            /* 上传图片结束 */
+          });
+        }
+      });
+    },
+    isFullImg: function() {
+      return new Promise(res => {
+        uni.showModal({
+          content: "已经有9张图片了,是否清空现有图片？",
+          success: e => {
+            if (e.confirm) {
+              this.imageList = [];
+              res(true);
+            } else {
+              res(false);
+            }
+          },
+          fail: () => {
+            res(false);
+          }
+        });
+      });
+    },
+    previewImage: function(_item_, e) {
+      var current = e.target.dataset.src;
+      var imagePath = [];
+      _item_.imageList.forEach(item => {
+        imagePath.push(item.url);
+      });
+      uni.previewImage({
+        current: current,
+        urls: imagePath
+      });
+    },
+    deleteImage(imlist, item) {
+      var _this = this;
+      uni.showModal({
+        title: "操作提示",
+        content: "确定删除图片?",
+        success: function(ret) {
+          if (ret.confirm) {
+            var ajaxParam = {};
+            if (_this.editflag) {
+              ajaxParam.path = item.deleteurl;
+            } else {
+              ajaxParam = { path: item.retInfo[0].filePath };
+            }
+            _this.$mbservices.Request(
+              _this.$webapi.deleteImage,
+              "POST",
+              ajaxParam,
+              function(res) {
+                if (res.statusCode === 200) {
+                  var cache = [];
+                  imlist.imageList.forEach(_item => {
+                    if (_item != item) {
+                      cache.push(_item);
+                    }
+                  });
+                  imlist.imageList = [];
+                  cache.forEach(_item => {
+                    imlist.imageList.push(_item);
+                  });
+                } else {
+                  uni.showToast({
+                    title: "有异常",
+                    icon: "none"
+                  });
+                }
+              },
+              function(err) {
+              }
+            );
+          }
+        }
+      });
+    },
+    getDetailData: function() {
+      this.pageIndex = parseInt(this.pageIndex) + 1;
+      var ajaxJSON = {
+        pageIndex: this.pageIndex,
+        rowsPerPage: "10",
+        type: "Initialize",
+        Parameter: {
+          LoadChildren: "Load",
+          Conditions: [
+            {
+              FieldName: "DocEntry",
+              Operation: "EQUAL",
+              ConditionValue: this.editItem.DocEntry,
+              Relationship: "AND"
+            }
+          ]
+        }
+      };
+      uni.showLoading({
+        title: "拼命加载中..."
+      });
+      var _this = this;
+      this.$mbservices.Request(
+        this.$webapi.getExtraWorkList,
+        "POST",
+        ajaxJSON,
+        function(ret) {
+          if (!ret.data.data) {
+            uni.showToast({
+              title: "查无数据"
+            });
+            return false;
+          }
+          //_this.formList = [];
+         _this.editEntitysList = [];
+         _this.editEntitysList = ret.data.data;
+         console.log(ret.data.data)
+         					var _$this=_this;
+         ret.data.data.forEach(item => {
+           if (item.ApproveStatus === "Pending") {
+             item.AApproveStatus = "待审核";
+           }
+           if (item.ApproveStatus === "Approved") {
+             item.AApproveStatus = "已批准";
+           }
+           if (item.ApproveStatus === "Rejected") {
+             item.AApproveStatus = "已拒绝";
+           }
+         			_$this.itemData.Remarks=item.Remarks;
+					_$this.itemData.ExtraWorkTypeCode = "";
+					_$this.itemData.ExtraWorkTypeName = "";
+         			_$this.itemData.ExtraWorkTypeCode = item.ExtraWorkType;
+					_$this.ExtraWorkTypeList.forEach((__item,__index) => {
+						if(__item.Code === _$this.itemData.ExtraWorkTypeCode){
+							_$this.itemData.ExtraWorkTypeName = __item.Name;
+						}
+					})
+         			_$this.ExtraWorkType.forEach((__item,__index)=>{
+         								  if(__item===_$this.itemData.ExtraWorkTypeName)
+         								  {
+         									  _$this.itemData.indexExtraWorkType=__index;
+         									  _$this.indexExtraWorkType=__index;
+         								  }
+         			});
+					_$this.itemData.BeginDate = item.BeginDate;
+					_$this.itemData.EndDate = item.EndDate;
+					_$this.itemData.Cause = item.Cause;
+					_$this.itemData.Hours = item.Hours;
+					_$this.itemData.ExtraWorkHoursText = item.ExtraWorkHoursText;
+					if(item.ExtraWorkHoursText === 'Hour'){
+						_$this.itemData.ExtraWorkHoursText = "小时";
+					}else if(item.ExtraWorkHoursText === 'Day'){
+						_$this.itemData.ExtraWorkHoursText = "天";
+					}
+         			_$this.itemData.InvCompanyId = item.InvCompanyId;
+         			_$this.itemData.InvCompanyName = item.InvCompanyName;
+           // _this.formList = [];
+           //   var _pathArr =
+           //     _item.Imgs != "undefined" &&
+           //     _item.Imgs != null &&
+           //     _item.Imgs != ""
+           //       ? _item.Imgs.split("|")
+           //       : [];
+           //   _item.pathArr = new Array();
+           //   _pathArr.forEach(_item_ => {
+           //     _item.pathArr.push({
+           //       retInfo: {},
+           //       url: _this.$webapi.webroot + "/" + _item_,
+           //       deleteurl: _item_
+           //     });
+           //   });
+           //   _this.formList.push({
+           //     id: parseInt(_indx) + 1,
+           //     imageList: _item.pathArr,
+           //   });
+          });
+          setTimeout(() => {
+            uni.hideLoading();
+          }, 1000);
+        },
+        function(ret) {
+          uni.showToast({
+            title: ret.errMsg,
+            icon: "none",
+            success: function() {
+              setTimeout(function() {
+                uni.navigateBack();
+              }, 1000);
+            }
+          });
+        }
+      );
+    },
+  },
+  onLoad(e) {
+		this.from = JSON.parse(e.data).from;
+		
+    /* 修改传递参数 */
+    if (e.flag === "modify") {
+      this.editflag = true;
+	  this.edit = false;
+    }else if(e.flag === "Original"){
+		  this.editflag = true;
+		  this.edit = true;
+		}else if(e.flag === "tasklist"){
+			 this.editflag = true;
+			 this.edit = true;
+		}
+			
+    if (this.editflag) {
+      this.editItem = JSON.parse(e.data);
+	  this.itemData.DocEntry=this.editItem.DocEntry;
+	  /* 所属公司 */
+	  this.getInvCompany();
+	  this.getHolidaySchedule();
+	  var _this = this;
+	  setTimeout(function(){
+		  _this.getDetailData();
+	  }, 1000);
+    }
+    if(!this.editflag)
+		{
+			//最大编号
+			this.$mbservices.Request(this.$webapi.maxNumReimRequest,'GET',{},res=>{
+				this.itemData.DocEntry=res.data;
+			},null);
+		}
+		/* 所属公司 */
+		this.getInvCompany();
+		this.getHolidaySchedule();
+  },
+  onUnload() {
+    this.totalJine = "0.00";
+    (this.imageList = []), (this.sourceTypeIndex = 2);
+    this.sourceType = ["拍照", "相册", "拍照或相册"];
+    this.sizeTypeIndex = 2;
+    this.sizeType = ["压缩", "原图", "压缩或原图"];
+    this.countIndex = 8;
+  }
+};
+</script>
+
+<style>
+/* tab bar */
+.ul-uni-tab-bar {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.ul-uni-tab-bar .ul-list {
+  width: 750upx;
+  height: 100%;
+}
+
+.ul-uni-swiper-tab {
+  width: 100%;
+  white-space: nowrap;
+  line-height: 80upx;
+  height: 80upx;
+  border-bottom: 0.1px solid #eaffea;
+  text-align: -webkit-center;
+}
+
+.ul-swiper-tab-list {
+  font-size: 30upx;
+  width: 150upx;
+  display: inline-block;
+  text-align: center;
+  color: #555;
+}
+
+.ul-uni-tab-bar .ul-swiper-box {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  width: 100%;
+  height: calc(100% - 100rpx);
+}
+</style>
