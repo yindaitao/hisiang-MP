@@ -13,9 +13,12 @@
 				<text>当前连接WIFI:{{WIFIInfo.SSID}}</text>
 			</view>
 			<view class="flex padding justify-center">
-				<view @tap="showModal" data-target="ConfirmModal" :class="[toggleDelay?'animation-scale-up':'']" class="animation-reverse padding-xl justify-center bg-gradual-blue text-white text-center margin-top-xs" style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
-					<view>考勤打卡</view><br />
-					<view class="margin-top-xs">{{TimeShow}}</view>
+				<view @tap="showModal" data-target="ConfirmModal" :class="[toggleDelay?'animation-scale-up':'']" class="animation-reverse padding-xl justify-center bg-gradual-blue text-white text-center margin-top-xs"
+				 style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
+					<view class="margin-top">
+						<text class="text-bold">考勤打卡</text><br />
+						<text>{{TimeShow}}</text>
+					</view>
 				</view>
 				<!-- <text class="text-white" style="position: absolute;margin-top: 75px;">{{TimeShow}}</text> -->
 			</view>
@@ -64,22 +67,33 @@
 					<view class="action text-bold text-xxl">确定打卡?</view>
 					<view class="text-content">
 						<view class="text-left"><text class="text-bold">打卡时间:</text>{{TimeShow}}</view>
-						<view class="text-left"><text class="text-bold">打卡地点:</text><text class="text-sm">{{currentArea.address}}附近</text></view>
+						<view class="text-left" v-if="ValidateAAType()===1"><text class="text-bold">打卡地点:</text><text class="text-sm">{{currentArea.address}}附近</text></view>
+						<view class="text-left" v-if="ValidateAAType()===2"><text class="text-bold">当前链接WIFI:</text><text class="text-sm text-blue text-bold">{{WIFIInfo.SSID}}</text></view>
 						<view class="text-left">
 							<text class="text-bold">在此备注:</text>
-							<textarea class="text sm-border placeholder" v-if="modalName==='ConfirmModal'" :disabled="modalName===null" @input="txtInput" style="height: 150px;min-height: 150px;width: 100%;"></textarea>
+							<textarea class="text sm-border placeholder" v-if="modalName==='ConfirmModal'" :disabled="modalName===null"
+							 @input="txtInput" style="height: 150px;min-height: 150px;width: 100%;"></textarea>
 						</view>
 					</view>
 				</view>
 				<view class="cu-form-group text-left margin-top" style="background-color: rgba(0,0,0,0);">
 					<view class="grid col-4 grid-square flex-sub">
-						<view class="padding-xs bg-img" :style="'background-image:url(' + imgList[index] +')'" v-for="(item,index) in imgList"
+						<!-- <view class="padding-xs bg-img" :style="'background-image:url(' + imgList[index] +')'" v-for="(item,index) in imgList"
 						 :key="index" @tap="ViewImage" :data-url="imgList[index]">
 							<view class="cu-tag bg-red" @tap.stop="DelImg" :data-index="index">
 								<text class='icon-close'></text>
 							</view>
 						</view>
 						<view class="padding-xs solids" @tap="ChooseImage" v-if="imgList.length<4">
+							<text class='icon-cameraadd'></text>
+						</view> -->
+						<view class="bg-img" v-for="(item,index) in imgList" :key="index" @tap="ViewImage" :data-url="imgList[index]">
+							<image :src="imgList[index]" mode="aspectFill"></image>
+							<view class="cu-tag bg-red" @tap.stop="DelImg" :data-index="index">
+								<text class='icon-close'></text>
+							</view>
+						</view>
+						<view class="solids" @tap="ChooseImage" v-if="imgList.length<4">
 							<text class='icon-cameraadd'></text>
 						</view>
 					</view>
@@ -130,7 +144,7 @@
 					longitude: 116.893201,
 					color: '#32CD324D',
 					fillColor: '#32CD324D',
-					radius: 100.0,
+					radius: 500.0,
 					strokeWidth: 0
 				}],
 				WIFIInfo: {
@@ -163,7 +177,7 @@
 				RecordPicPathArr: [],
 				qqmapsdk: {},
 				element: {},
-				toggleDelay:false
+				toggleDelay: false
 			}
 		},
 		onShow() {
@@ -224,7 +238,26 @@
 			this.calcDistanceCurToAim();
 		},
 		methods: {
-
+			RefreshWIFIINfo() {
+				// #ifdef MP-WEIXIN
+				this.WIFIInfo.SSID = "";
+				this.WIFIInfo.BSSID = "";
+				wx.startWifi({
+					success: (res) => {},
+					fail: (err) => {},
+					complete: (cmp1) => {
+						wx.getConnectedWifi({
+							success: (res) => {},
+							fail: (err) => {},
+							complete: (cmp) => {
+								this.WIFIInfo.SSID = cmp.wifi.SSID
+								this.WIFIInfo.BSSID = cmp.wifi.BSSID
+							}
+						})
+					}
+				})
+				//#endif
+			},
 			ValidateAAType() {
 				if (this.ScheduleEntity.AttendanceAccording === 'LatLng') {
 					return 1;
@@ -240,7 +273,7 @@
 					return arr;
 				}
 				if (path.toString().lastIndexOf(',') <= -1 && !this.$mbservices.isEmpty(path)) {
-					return arr.push(this.$webapi.webroot + '/' + path);
+					arr.push(this.$webapi.webroot + '/' + path);
 				}
 				if (path.toString().lastIndexOf(',') > -1) {
 					let cArr = path.toString().split(',');
@@ -397,9 +430,10 @@
 				})
 			},
 			showModal(e) {
-				this.toggleDelay=true;
-				setTimeout(()=>{
-					this.toggleDelay= false
+				this.RefreshWIFIINfo();
+				this.toggleDelay = true;
+				setTimeout(() => {
+					this.toggleDelay = false
 				}, 50)
 				this.modalName = e.currentTarget.dataset.target;
 			},
@@ -417,6 +451,8 @@
 						} else {
 							this.imgList = res.tempFilePaths
 						}
+						console.log('看下图片数组');
+						console.log(this.imgList);
 						const tempFilePaths = res.tempFilePaths;
 						tempFilePaths.forEach(_item => {
 							uni.uploadFile({
