@@ -12,11 +12,12 @@
 			<view class="content text-center" v-if="ValidateAAType()===2">
 				<text>当前连接WIFI:{{WIFIInfo.SSID}}</text>
 			</view>
-			<view class="flex padding justify-center" style="position: relative;">
-				<button @tap="showModal" data-target="ConfirmModal" class="cu-btn lg bg-gradual-blue text-white text-center" style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;vertical-align:middle;">
-					<text>考勤打卡</text><br />
-				</button>
-				<text class="text-white" style="position: absolute;margin-top: 75px;">{{TimeShow}}</text>
+			<view class="flex padding justify-center">
+				<view @tap="showModal" data-target="ConfirmModal" :class="[toggleDelay?'animation-scale-up':'']" class="animation-reverse padding-xl justify-center bg-gradual-blue text-white text-center margin-top-xs" style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
+					<view>考勤打卡</view><br />
+					<view class="margin-top-xs">{{TimeShow}}</view>
+				</view>
+				<!-- <text class="text-white" style="position: absolute;margin-top: 75px;">{{TimeShow}}</text> -->
 			</view>
 			<view class="flex solid-bottom padding justify-center" style="position: relative;">
 				<view>
@@ -66,7 +67,7 @@
 						<view class="text-left"><text class="text-bold">打卡地点:</text><text class="text-sm">{{currentArea.address}}附近</text></view>
 						<view class="text-left">
 							<text class="text-bold">在此备注:</text>
-							<textarea class="text sm-border placeholder" :disabled="modalName===null" @input="txtInput" style="height: 150px;min-height: 150px;width: 100%;"></textarea>
+							<textarea class="text sm-border placeholder" v-if="modalName==='ConfirmModal'" :disabled="modalName===null" @input="txtInput" style="height: 150px;min-height: 150px;width: 100%;"></textarea>
 						</view>
 					</view>
 				</view>
@@ -161,10 +162,11 @@
 				WorkRecords: [],
 				RecordPicPathArr: [],
 				qqmapsdk: {},
-				element: {}
+				element: {},
+				toggleDelay:false
 			}
 		},
-		onShow(){
+		onShow() {
 			console.log('进入onShow');
 			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
 			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
@@ -172,14 +174,10 @@
 			this.isGetLocation();
 			this.getWorkRecords();
 			this.calcDistanceCurToAim();
-		},
-		onLoad(e) {
-			console.log('看下排版信息');
-			console.log(this.ScheduleEntity);
-			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
-			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
-			this.$forceUpdate()
+
 			// #ifdef MP-WEIXIN
+			this.WIFIInfo.SSID = "";
+			this.WIFIInfo.BSSID = "";
 			wx.startWifi({
 				success: (res) => {},
 				fail: (err) => {},
@@ -195,6 +193,14 @@
 				}
 			})
 			//#endif
+		},
+		onLoad(e) {
+			console.log('看下排版信息');
+			console.log(this.ScheduleEntity);
+			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
+			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
+			this.$forceUpdate()
+
 
 
 			//#ifdef MP-WEIXIN
@@ -297,10 +303,11 @@
 					data.ScheduleLmt = this.ScheduleEntity.LimitRadius; //this.element.elements[0];
 					data.CurentLat = this.latitude;
 					data.CurentLng = this.longitude;
-					if (this.element.elements[0]===undefined||this.element.elements.length<=0||this.$mbservices.isEmpty(this.element.elements[0].distance)) {
+					if (this.element.elements[0] === undefined || this.element.elements.length <= 0 || this.$mbservices.isEmpty(this.element
+							.elements[0].distance)) {
 						uni.showToast({
-							title:'正在计算距离，请稍后再试...',
-							icon:'none'
+							title: '正在计算距离，请稍后再试...',
+							icon: 'none'
 						})
 						return false;
 					}
@@ -390,7 +397,11 @@
 				})
 			},
 			showModal(e) {
-				this.modalName = e.currentTarget.dataset.target
+				this.toggleDelay=true;
+				setTimeout(()=>{
+					this.toggleDelay= false
+				}, 50)
+				this.modalName = e.currentTarget.dataset.target;
 			},
 			hideModal(e) {
 				this.modalName = null
@@ -563,7 +574,7 @@
 			},
 			calcDistanceCurToAim() {
 				var _this = this;
-				this.element={};
+				this.element = {};
 				//调用距离计算接口
 				this.qqmapsdk.calculateDistance({
 					mode: 'straight', //可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填

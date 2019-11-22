@@ -3987,6 +3987,14 @@ scroll-view.cu-steps .cu-item {
     animation-direction: reverse
 }
 
+.animation-slide-bottom {
+    animation-name: slide-bottom
+}
+
+.animation-scale-up {
+    animation-name: scale-up
+}
+
 @keyframes fade {
     0% {
         opacity: 0
@@ -3994,5 +4002,29 @@ scroll-view.cu-steps .cu-item {
 
     100% {
         opacity: 1
+    }
+}
+
+@keyframes scale-up {
+    0% {
+        opacity: 0;
+        transform: scale(.6)
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1)
+    }
+}
+
+@keyframes slide-bottom {
+    0% {
+        opacity: 0;
+        transform: translateY(100%)
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0)
     }
 }
