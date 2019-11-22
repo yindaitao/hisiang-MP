@@ -463,7 +463,105 @@ export default {
 		startTime = startTime.replace(/-/g, '/');
 		var time2 = new Date(startTime);
 		time2 = time2.getTime();
+		var year2 = this.resultInfo2.checkArr[0];
+		var month2 = this.resultInfo2.checkArr[1];
+		var day2 = this.resultInfo2.checkArr[2];
+		var hour2 = this.resultInfo2.checkArr[3];
+		var minute2 = this.resultInfo2.checkArr[4];
+		var seconds2 = this.resultInfo2.checkArr[5];
+		var year1 = this.resultInfo1.checkArr[0];
+		var month1 = this.resultInfo1.checkArr[1];
+		var day1 = this.resultInfo1.checkArr[2];
+		var hour1 = this.resultInfo1.checkArr[3];
+		var minute1 = this.resultInfo1.checkArr[4];
+		var seconds1 = this.resultInfo1.checkArr[5];
 		var leavehours = time1 - time2;
+		var leaveH = Math.floor(leavehours / (24 * 3600 * 1000)).toFixed(0);
+		if(month2!==month1){
+			this.itemData.LeaveHoursText === 'Month';
+			this.indexLeaveHoursText = 3;
+			this.itemData.LeaveHoursTextName === this.LeaveHoursTextType[this.indexLeaveHoursText] === "天";
+		}else if(year2===year1 && month2===month1){
+			for(var j=1;j<leaveH;j++){
+				var leaveDate = "";
+				leaveDate = year1+'-'+month1+"-"+day1;
+				console.log("((((((())))(((((())))))))))))");
+				console.log(leaveDate);
+				var ajaxJSON = {};
+				this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST",ajaxJSON,res=>{
+					console.log("*******)))");
+					if(res.data.RecordCount>0)
+					{
+						console.log("&&&&&&&&&&&&&**************");
+						console.log(res.data.data);
+						res.data.data.forEach(item => {
+							if(item.Date === leaveDate){
+								var type = "";
+								if(!this.$mbservices.isEmpty(item.Goout)){
+									type = "外出";
+								}else if(!this.$mbservices.isEmpty(item.Trip)){
+									type = "出差";
+								}
+								uni.showModal({
+									title:"提示",
+									content:item.Date+"这天你已经申请了"+type,
+									showCancel:false
+								})
+								return;
+							}
+						})
+					}
+					
+				},err=>{})
+				
+			}
+		}
+		if(year2===year1&&month1===month2&&day1===day2){
+				this.itemData.LeaveHoursTextName = "小时";
+				var date = year2+'-'+month2+'-'+day2;
+				for(var i in this.HolidayScheduleList){
+					console.log(date);
+					if(this.HolidayScheduleList[i].Date === date){
+						console.log("##############");
+						this.itemData.Hours = (hour2-hour1+(minute2-minute1)/60).toFixed(2);
+						if(this.itemData.Hours > 8){
+							this.itemData.Hours = 8;
+						}
+					return;
+					}else{
+						// 开始时间小于18点
+						if(hour1<18){
+							// 结束时间小于18点
+							if(hour2<18){
+								uni.showModal({
+									title:"提示",
+									content:"当前时间为上班时间，不算加班",
+									showCancel:false
+								})
+							}else if(hour2>=18){
+								this.itemData.Hours = (hour2-18+minute2/60).toFixed(2);
+							}
+						}else if(hour1>=18){
+							this.itemData.Hours = (hour2-hour1+(minute2-minute2)/60).toFixed(2);
+						}
+						return;
+					}
+				}
+			}else{
+				this.itemData.LeaveHoursText = "Hour";
+				this.itemData.LeaveHoursTextName = "小时";
+				var hour = ((time2 -time1)/1000/24/3600*8).toFixed(2);
+				console.log(hour)
+				if(hour2<18){
+					var endTime = year2+'/'+month2+'/'+day2+' '+'18:00:00';
+					var time3 = new Date(endTime);
+					this.itemData.Hours = hour + 8-((time3-time2)/1000/3600).toFixed(2);
+				}else if(hour2>=18){
+					this.itemData.Hours = hour+8;
+					console.log(this.itemData.Hours);
+				}
+				
+			}
 		if(leavehours < 0){
 			uni.showModal({
 				title:"提示",
