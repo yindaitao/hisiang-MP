@@ -165,7 +165,7 @@ export default {
 	  	const date = new Date();
 	  	let year = date.getFullYear();
 	  	let m = date.getMonth()+1;
-	  	let d = date.getDay();
+	  	let d = date.getDate();
 	  	let h = date.getHours();
 	  	let minute = date.getMinutes();
 	  	let s = date.getSeconds();
@@ -175,7 +175,7 @@ export default {
 	  	const date = new Date();
 	  	let year = date.getFullYear();
 	  	let m = date.getMonth()+1;
-	  	let d = date.getDay();
+	  	let d = date.getDate();
 	  	let h = date.getHours();
 	  	let minute = date.getMinutes();
 	  	let s = date.getSeconds();

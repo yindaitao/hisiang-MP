@@ -146,7 +146,7 @@
 					const date = new Date();
 					let year = date.getFullYear();
 					let m = date.getMonth() + 1;
-					let d = date.getDay();
+					let d = date.getDate();
 					return '[' + year + ',' + m + ',' + d + ',00,00,00]';
 				}
 			},
@@ -285,6 +285,7 @@
 						year = _this.data.years[arr[0]] || _this.data.years[_this.data.years.length - 1];
 						month = _this.data.months[arr[1]] || _this.data.months[_this.data.months.length - 1];
 						day = _this.data.days[arr[2]] || _this.data.days[_this.data.days.length - 1];
+						console.log(_this.data.days[_this.data.days.length - 1]);
 						hour = _this.data.hours[arr[3]] || _this.data.hours[_this.data.hours.length - 1];
 						minute = _this.data.minutes[arr[4]] || _this.data.minutes[_this.data.minutes.length - 1];
 						second = _this.data.seconds[arr[5]] || _this.data.seconds[_this.data.seconds.length - 1];

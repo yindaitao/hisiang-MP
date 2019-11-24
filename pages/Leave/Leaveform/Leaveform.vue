@@ -39,22 +39,22 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">开始日期</view>
-					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1"
-					 :current="true" @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
-					 <view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="!$mbservices.isEmpty(itemData.BeginDate)">{{itemData.BeginDate}}</view>
-					 <view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="$mbservices.isEmpty(itemData.BeginDate)">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
+					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1" :current="false"
+					 @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
+					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="!$mbservices.isEmpty(itemData.BeginDate)">{{itemData.BeginDate}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="$mbservices.isEmpty(itemData.BeginDate)">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">结束日期</view>
-					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2"
-					 :current="true" @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
-					 <view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="!$mbservices.isEmpty(itemData.EndDate)">{{itemData.EndDate}}</view>
-					 <view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="$mbservices.isEmpty(itemData.EndDate)">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
+					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2" :current="false"
+					 @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
+					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="!$mbservices.isEmpty(itemData.EndDate)">{{itemData.EndDate}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="$mbservices.isEmpty(itemData.EndDate)">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">请假时长</view>
-					<input disabled="true" placeholder="请假时长" name="input" type="digit" style="text-align: right;"
-					 @input="inputLeaveHours(itemData,$event)" :value="itemData.LeaveHours">
+					<input disabled="true" placeholder="请假时长" name="input" type="digit" style="text-align: right;" @input="inputLeaveHours(itemData,$event)"
+					 :value="itemData.LeaveHours">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
@@ -181,21 +181,21 @@ export default {
 		const date = new Date();
 		let year = date.getFullYear();
 		let m = date.getMonth()+1;
-		let d = date.getDay();
+		let d = date.getDate();
 		let h = date.getHours();
 		let minute = date.getMinutes();
 		let s = date.getSeconds();
-		return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+		return "["+year+","+m+","+d+",'00','00','00']";
 	},
 	defaultVal2(){
 		const date = new Date();
 		let year = date.getFullYear();
 		let m = date.getMonth()+1;
-		let d = date.getDay();
+		let d = date.getDate();
 		let h = date.getHours();
 		let minute = date.getMinutes();
 		let s = date.getSeconds();
-		return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+		return "["+year+","+m+","+d+",'00','00','00']";
 	},
   },
   methods: {
@@ -478,20 +478,17 @@ export default {
 		var leavehours = time1 - time2;
 		var leaveH = Math.floor(leavehours / (24 * 3600 * 1000)).toFixed(0);
 		var leaveDate = "";
-		if(month2!==month1){
+		if(year2!==year1 || month2!==month1){
 			this.itemData.LeaveHoursText === 'Month';
 			this.indexLeaveHoursText = 3;
 			this.itemData.LeaveHoursTextName === this.LeaveHoursTextType[this.indexLeaveHoursText] === "月";
 		}else if(year2===year1 && month2===month1){
-			for(var j=1;j<leaveH;j++){
+			if(day1===day2){
 				leaveDate = year1+'-'+month1+"-"+day1;
-				console.log("((((((())))(((((())))))))))))");
-				console.log(leaveDate);
-				this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST","",res=>{
-					console.log("*******)))");
+				var ajaxJSON ={}
+				this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST",ajaxJSON,res=>{
 					if(res.data.RecordCount>0)
 					{
-						console.log("&&&&&&&&&&&&&**************");
 						console.log(res.data.data);
 						res.data.data.forEach(item => {
 							if(item.Date === leaveDate){
@@ -514,10 +511,6 @@ export default {
 					}
 					
 				},err=>{})
-				
-			}
-		}
-		if(year2===year1&&month1===month2&&day1===day2){
 				this.itemData.LeaveHoursTextName = "小时";
 				var date = year2+'-'+month2+'-'+day2;
 				for(var i in this.HolidayScheduleList){
@@ -549,32 +542,54 @@ export default {
 					}
 				}
 			}else{
-				this.itemData.LeaveHoursText = "Hour";
-				this.itemData.LeaveHoursTextName = "小时";
-				var hour = ((time2 -time1)/1000/24/3600*8).toFixed(2);
-				console.log(hour)
-				if(hour2<18){
-					var endTime = year2+'/'+month2+'/'+day2+' '+'18:00:00';
-					var time3 = new Date(endTime);
-					this.itemData.Hours = hour + 8-((time3-time2)/1000/3600).toFixed(2);
-				}else if(hour2>=18){
-					this.itemData.Hours = hour+8;
-					console.log(this.itemData.Hours);
-				}
-				
+				for(var j=1;j<leaveH;j++){
+					console.log(j);
+					leaveDate = year1+'-'+month1+"-"+day1;
+					console.log("((((((())))(((((())))))))))))");
+					console.log(leaveDate);
+					this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST","",res=>{
+						console.log("*******)))");
+						if(res.data.RecordCount>0)
+						{
+							console.log("&&&&&&&&&&&&&**************");
+							console.log(res.data.data);
+							res.data.data.forEach(item => {
+								if(item.Date === leaveDate){
+									var type = "";
+									if(!this.$mbservices.isEmpty(item.Goout)){
+										type = "外出";
+									}else if(!this.$mbservices.isEmpty(item.Trip)){
+										type = "出差";
+									}else if(!this.$mbservices.isEmpty(item.Leave)){
+										type = "请假";
+									}
+									uni.showModal({
+										title:"提示",
+										content:item.Date+"这天你已经申请了"+type,
+										showCancel:false
+									})
+									return;
+								}
+							})
+						}
+						
+					},err=>{})
+					this.itemData.LeaveHoursText = "Hour";
+					this.itemData.LeaveHoursTextName = "小时";
+					var hour = ((time2 -time1)/1000/24/3600*8).toFixed(2);
+					console.log(hour)
+					if(hour2<18){
+						var endTime = year2+'/'+month2+'/'+day2+' '+'18:00:00';
+						var time3 = new Date(endTime);
+						this.itemData.Hours = hour + 8-((time3-time2)/1000/3600).toFixed(2);
+					}else if(hour2>=18){
+						this.itemData.Hours = hour+8;
+						console.log(this.itemData.Hours);
+					}
 			}
-		if(leavehours < 0){
-			uni.showModal({
-				title:"提示",
-				content:"开始时间不能大于结束时间,请重新选择",
-				showCancel:false
-			})
-			return;
-		}else if(this.itemData.LeaveHoursText === 'Hour'){
-			this.itemData.LeaveHours = parseFloat(leavehours / (24*3600 * 1000)*8).toFixed(2);
-		}else if(this.itemData.LeaveHoursText === 'Day'){
-			this.itemData.LeaveHours = Math.floor(leavehours / (24 * 3600 * 1000)).toFixed(1);
-		}else if(this.itemData.LeaveHoursText === 'Month'){
+			}
+		}
+		if(this.itemData.LeaveHoursText === 'Month'){
 			if(this.resultInfo2.checkArr[0] > this.resultInfo1.checkArr[0]){
 				console.log("跨年");
 				var y = this.resultInfo2.checkArr[0] - this.resultInfo1.checkArr[0];

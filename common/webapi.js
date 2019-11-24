@@ -161,10 +161,10 @@ module.exports = {
 	getVatRecords: websiteUrl + '/api/Vat/GetRecords',
 	// 获取系统初始化表格的数据
 	 getInitialize:websiteUrl + '/api/Initialize/GetInitialize',
-	 // 获取公休时间表的数据
-	  getHolidaySchedule:websiteUrl + '/api/HolidaySchedule/GetRecords',
-	  // 获取指定用户当前月份的外出次数，出差天数，迟到，早退，旷工
-	  GetCurrentMonthGooutAndTripList:'http://localhost:51682/api/HolidayType/GetCurrentMonthGooutAndTripList',
-	  /* 获取适用当前用户的排版信息 */
-	   getScheduleList: websiteUrl + '/api/Schedule/GetRecords'
+	// 获取公休时间表的数据
+	getHolidaySchedule:websiteUrl + '/api/HolidaySchedule/GetRecords',
+	// 获取指定用户当前月份的外出次数，出差天数，迟到，早退，旷工
+	GetCurrentMonthGooutAndTripList:'http://localhost:51682/api/HolidayType/GetCurrentMonthGooutAndTrip',
+	/* 获取适用当前用户的排版班信息 */
+	getScheduleList: websiteUrl + '/api/Schedule/GetRecords'
 }
