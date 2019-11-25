@@ -29,14 +29,14 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">开始日期</view>
-					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1" :current="false"
+					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1" :current="true"
 					 @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
 					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="!$mbservices.isEmpty(itemData.BeginDate)">{{itemData.BeginDate}}</view>
 					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="$mbservices.isEmpty(itemData.BeginDate)">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">结束日期</view>
-					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2" :current="false"
+					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2" :current="true"
 					 @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
 					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="!$mbservices.isEmpty(itemData.EndDate)">{{itemData.EndDate}}</view>
 					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="$mbservices.isEmpty(itemData.EndDate)">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
@@ -157,14 +157,14 @@ export default {
 		let year = date.getFullYear();
 		let m = date.getMonth()+1;
 		let d = date.getDate();
-		return "["+year+","+m+","+d+",'00','00','00']";
+		return "["+ year +","+ m +","+ d +",'0','0','0']";
 	},
 	defaultVal2(){
 		const date = new Date();
 		let year = date.getFullYear();
 		let m = date.getMonth()+1;
 		let d = date.getDate();
-		return "["+year+","+m+","+d+",'00','00','00']";
+		return "["+ year +","+ m +","+ d +",'0','0','0']";
 	},
   },
   methods: {
@@ -425,6 +425,7 @@ export default {
 	computTime(){
 		this.itemData.BeginDate = this.resultInfo1.result;
 		this.itemData.EndDate = this.resultInfo2.result;
+		this.itemData.Hours = 0;
 		var startDate = this.resultInfo1.result;
 		startDate = startDate.replace(/-/g, '/');
 		var time1 = new Date(startDate);
@@ -463,6 +464,10 @@ export default {
 						}
 					return;
 					}else{
+						if(hour1<8 && hour2<8){
+							console.log("还没开始上班");
+							return;
+						}
 						// 开始时间小于18点
 						if(hour1<18){
 							// 结束时间小于18点

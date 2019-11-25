@@ -166,20 +166,14 @@ export default {
 	  	let year = date.getFullYear();
 	  	let m = date.getMonth()+1;
 	  	let d = date.getDate();
-	  	let h = date.getHours();
-	  	let minute = date.getMinutes();
-	  	let s = date.getSeconds();
-	  	return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+	  	return "["+ year +","+ m +","+ d +",'0','0','0']";
 	  },
 	  defaultVal2(){
 	  	const date = new Date();
 	  	let year = date.getFullYear();
 	  	let m = date.getMonth()+1;
 	  	let d = date.getDate();
-	  	let h = date.getHours();
-	  	let minute = date.getMinutes();
-	  	let s = date.getSeconds();
-	  	return '['+year+','+m+','+d+','+h+','+minute+','+s+']';
+	  	return "["+ year +","+ m +","+ d +",'0','0','0']";
 	  },
   },
   methods: {
@@ -368,6 +362,7 @@ export default {
 	computTime(){
 		this.itemData.BeginDate = this.resultInfo1.result;
 		this.itemData.EndDate = this.resultInfo2.result;
+		this.itemData.Hours = 0;
 		var endTime = this.resultInfo2.result;
 		endTime = endTime.replace(/-/g, '/');
 		var time1 = new Date(endTime);
