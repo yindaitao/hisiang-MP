@@ -95,7 +95,7 @@ export default {
   data() {
     return {
 		    time: Date.parse(new Date()),
-			GooutHoursTextType:["小时","天","周","月"],
+			GooutHoursTextType:["小时","天"],
 			indexGooutHoursText:0,
 			GooutHoursTextList:[{
 				Code:"Hour",
@@ -104,14 +104,6 @@ export default {
 			{
 				Code:"Day",
 				Name:"天",
-			},
-			{
-				Code:"Week",
-				Name:"周",
-			},
-			{
-				Code:"Month",
-				Name:"月",
 			}],
       modalName: null,
       enddate: "",
@@ -365,24 +357,164 @@ export default {
 		this.itemData.Hours = 0;
 		var endTime = this.resultInfo2.result;
 		endTime = endTime.replace(/-/g, '/');
-		var time1 = new Date(endTime);
-		time1 = time1.getTime();
+		var time2 = new Date(endTime);
+		time2 = time2.getTime();
 		var startTime = this.resultInfo1.result;
 		startTime = startTime.replace(/-/g, '/');
-		var time2 = new Date(startTime);
-		time2 = time2.getTime();
-		var hours = time1 - time2;
-		if(hours < 0){
-			uni.showModal({
-				title:"提示",
-				content:"开始时间不能大于结束时间,请重新选择",
-				showCancel:false
-			})
-			return;
-		}else if(this.itemData.GooutHoursText === 'Hour'){
-			this.itemData.Hours = parseFloat(hours / (3600 * 1000)).toFixed(2);
-		}else if(this.itemData.GooutHoursText === 'Day'){
-			this.itemData.Hours = Math.floor(hours / (24 * 3600 * 1000)).toFixed(1);
+		var time1 = new Date(startTime);
+		time1 = time1.getTime();
+		var endDate1 = date+" "+"18:00:00";
+		endDate1 = endDate1.replace(/-/g, '/');
+		var Etime = new Date(endDate1);
+		Etime = Etime.getTime();
+		var beginDate1 = date+" "+"08:00:00";
+		beginDate1 = beginDate1.replace(/-/g, '/');
+		var Btime = new Date(beginDate1);
+		Btime = Btime.getTime();
+		var year2 = this.resultInfo2.checkArr[0];
+		var month2 = this.resultInfo2.checkArr[1];
+		var day2 = this.resultInfo2.checkArr[2];
+		var hour2 = this.resultInfo2.checkArr[3];
+		var minute2 = this.resultInfo2.checkArr[4];
+		var seconds2 = this.resultInfo2.checkArr[5];
+		var year1 = this.resultInfo1.checkArr[0];
+		var month1 = this.resultInfo1.checkArr[1];
+		var day1 = this.resultInfo1.checkArr[2];
+		var hour1 = this.resultInfo1.checkArr[3];
+		var minute1 = this.resultInfo1.checkArr[4];
+		var seconds1 = this.resultInfo1.checkArr[5];
+		var goouthours = time1 - time2;
+		var gooutH = Math.floor(goouthours / (24 * 3600 * 1000)).toFixed(0);
+		var gooutDate = "";
+		if(year2!==year1 || month2!==month1){
+			this.itemData.GooutHoursText === 'Day';
+			this.indexGooutHoursText = 2;
+			this.itemData.GooutHoursTextName === this.GooutHoursTextType[this.indexGooutHoursText] === "天";
+		}else if(year2===year1 && month2===month1){
+			if(day1===day2){
+				gooutDate = year1+'-'+month1+"-"+day1;
+				var ajaxJSON ={}
+				this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST",ajaxJSON,res=>{
+					if(res.data.RecordCount>0)
+					{
+						res.data.data.forEach(item => {
+							var d = new Date(item.DataDate);
+							let MM = d.getMonth() + 1;
+							MM = MM < 10 ? ('0' + MM) : MM;
+							let DD = d.getDate();
+							DD = DD < 10 ? ('0' + DD) : DD;
+							var times=d.getFullYear() + '-' + MM + '-' + DD;
+							if(times === gooutDate){
+								var type = "";
+								if(!this.$mbservices.isEmpty(item.Goout)){
+									type = "外出";
+								}else if(!this.$mbservices.isEmpty(item.Trip)){
+									type = "出差";
+								}else if(!this.$mbservices.isEmpty(item.Leave)){
+									type = "请假";
+								}
+								uni.showModal({
+									title:"提示",
+									content:times+"这天你已经申请了"+type,
+									showCancel:false
+								})
+								return;
+							}
+						})
+					}
+					
+				},err=>{})
+				this.itemData.GooutHoursTextName = "小时";
+				var date = year2+'-'+month2+'-'+day2;
+				for(var i in this.HolidayScheduleList){
+					console.log(date);
+					if(this.HolidayScheduleList[i].Date === date){
+						this.itemData.Hours = 0;
+						uni.showModal({
+							title:"提示",
+							content:"当前时间为"+this.HolidayScheduleList[i].typeDes+"，不需要申请外出",
+							showCancel:false
+						})
+					return;
+					}else{
+						if(hour1<8 && hour2<8){
+							console.log("还没开始上班");
+							return;
+						}
+						// 开始时间小于8点
+						if(hour1<=8){
+							// 结束时间小于18点
+							if(hour2<18){
+								this.itemData.Hours = 8 - ((Etime-time2)/1000/3600).toFixed(2);
+							}else if(hour2>=18){
+								this.itemData.Hours = (8).toFixed(2);
+							}
+						}else if(hour1>8){
+							if(hour2<18){
+								this.itemData.Hours = (8).toFixed(2) - ((Btime-time1)/1000/3600).toFixed(2)-((Etime-time2)/1000/3600).toFixed(2);
+							}else if(hour2>=18){
+								this.itemData.Hours =  (8).toFixed(2) - ((Btime-time1)/1000/3600).toFixed(2);
+							}
+						}
+						return;
+					}
+				}
+			}else{
+				for(var j=1;j<gooutH;j++){
+					console.log(j);
+					gooutDate = year1+'-'+month1+"-"+day1;
+					this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST","",res=>{
+						if(res.data.RecordCount>0)
+						{
+							console.log(res.data.data);
+							res.data.data.forEach(item => {
+								var d = new Date(item.DataDate);
+								let MM = d.getMonth() + 1;
+								MM = MM < 10 ? ('0' + MM) : MM;
+								let DD = d.getDate();
+								DD = DD < 10 ? ('0' + DD) : DD;
+								var times=d.getFullYear() + '-' + MM + '-' + DD;
+								if(times === gooutDate){
+									var type = "";
+									if(!this.$mbservices.isEmpty(item.Goout)){
+										type = "外出";
+									}else if(!this.$mbservices.isEmpty(item.Trip)){
+										type = "出差";
+									}else if(!this.$mbservices.isEmpty(item.Leave)){
+										type = "请假";
+									}
+									uni.showModal({
+										title:"提示",
+										content:times+"这天你已经申请了"+type,
+										showCancel:false
+									})
+									return;
+								}
+							})
+						}
+						
+					},err=>{})
+					
+			}
+			this.itemData.GooutHoursText = "Hour";
+			this.itemData.GooutHoursTextName = "小时";
+			var hour = ((time2 -time1)/1000/24/3600-1*1000/24/3600).toFixed(0);
+			if(hour1<8){
+				if(hour2<=8){
+					this.itemData.Hours = (hour*8).toFixed(2);
+				}else if(hour2>8 && hour2<18){
+					this.itemData.Hours = (hour*8+8-(Etime-time2)/1000/3600).toFixed(2);
+				}else if(hour2>=18){
+					this.itemData.Hours = (hour*8+8).toFixed(2);
+				}
+			}else if(hour1>8){
+				if(hour2<18){
+					this.itemData.Hours = (hour+8-(Btime-time1)/1000/3600+8-(Etime-time2)/1000/3600).toFixed(2);
+				}else if(hour2>=18){
+					this.itemData.Hours = (hour+8-(Btime-time1)/1000/3600+8).toFixed(2)
+				}
+			}
+			}
 		}
 	},
     onSelected(data) {

@@ -434,6 +434,14 @@ export default {
 		endDate = endDate.replace(/-/g, '/');
 		var time2 = new Date(endDate);
 		time2 = time2.getTime();
+		var endDate1 = date+" "+"18:00:00";
+		endDate1 = endDate1.replace(/-/g, '/');
+		var Etime = new Date(endDate1);
+		Etime = Etime.getTime();
+		var beginDate1 = date+" "+"08:00:00";
+		beginDate1 = beginDate1.replace(/-/g, '/');
+		var Btime = new Date(beginDate1);
+		Btime = Btime.getTime();
 		if(time1>time2){
 			this.itemData.BeginDate = "";
 			this.itemData.EndDate = "";
@@ -489,15 +497,21 @@ export default {
 			}else{
 				this.itemData.ExtraWorkHoursText = "Hour";
 				this.itemData.ExtraWorkHoursTextName = "小时";
-				var hour = ((time2 -time1)/1000/24/3600*8).toFixed(2);
-				console.log(hour)
-				if(hour2<18){
-					var endTime = year2+'/'+month2+'/'+day2+' '+'18:00:00';
-					var time3 = new Date(endTime);
-					this.itemData.Hours = hour + 8-((time3-time2)/1000/3600).toFixed(2);
-				}else if(hour2>=18){
-					this.itemData.Hours = hour+8;
-					console.log(this.itemData.Hours);
+				var hour = ((time2 -time1)/1000/24/3600-1*1000/24/3600).toFixed(0);
+				if(hour1<=8){
+					if(hour2<=8){
+						this.itemData.Hours = (hour*8).toFixed(2);
+					}else if(hour2>8 && hour2<18){
+						this.itemData.Hours = (hour*8+8-(Etime-time2)/1000/3600).toFixed(2);
+					}else if(hour2>=18){
+						this.itemData.Hours = (hour*8+8).toFixed(2);
+					}
+				}else if(hour1>8){
+					if(hour2<18){
+						this.itemData.Hours = (hour+8-(Btime-time1)/1000/3600+8-(Etime-time2)/1000/3600).toFixed(2);
+					}else if(hour2>=18){
+						this.itemData.Hours = (hour+8-(Btime-time1)/1000/3600+8).toFixed(2)
+					}
 				}
 				
 			}
