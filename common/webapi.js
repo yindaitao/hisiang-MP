@@ -1,4 +1,4 @@
-var websiteUrl = "https://oa.magicbox.net.cn"; // "https://so.magicdata.co";
+var websiteUrl = "http://localhost:51682"; // "https://so.magicdata.co";
 /* http://localhost:51682 */
 /* http://oa.magicbox.net.cn */
 /* http://192.168.0.109:8080 */
@@ -163,9 +163,9 @@ module.exports = {
 	 getInitialize:websiteUrl + '/api/Initialize/GetInitialize',
 	// 获取公休时间表的数据
 	getHolidaySchedule:websiteUrl + '/api/HolidaySchedule/GetRecords',
-	// 获取指定用户当前月份的外出次数，出差天数，迟到，早退，旷工
-	GetCurrentMonthGooutAndTripList:websiteUrl + '/api/HolidayType/GetCurrentMonthGooutAndTrip',
-	// GetCurrentMonthGooutAndTripList:'http://localhost:51682/api/HolidayType/GetCurrentMonthGooutAndTrip',
+	// 获取指定用户当前月份的外出次数，出差天数，请假，外出，
+	GetCurrentMonthGooutAndTripList:websiteUrl + '/api/HolidayType/GetCurrentMonthGooutAndTripList',
+	// GetCurrentMonthGooutAndTripList:'http://localhost:51682/api/HolidayType/GetCurrentMonthGooutAndTripList',
 	/* 获取适用当前用户的排版班信息 */
 	getScheduleList: websiteUrl + '/api/Schedule/GetRecords'
 }

@@ -500,7 +500,13 @@ export default {
 					{
 						console.log(res.data.data);
 						res.data.data.forEach(item => {
-							if(item.Date === leaveDate){
+							var d = new Date(item.DataDate);
+							let MM = d.getMonth() + 1;
+							MM = MM < 10 ? ('0' + MM) : MM;
+							let DD = d.getDate();
+							DD = DD < 10 ? ('0' + DD) : DD;
+							var times=d.getFullYear() + '-' + MM + '-' + DD;
+							if(times === leaveDate){
 								var type = "";
 								if(!this.$mbservices.isEmpty(item.Goout)){
 									type = "外出";
@@ -511,7 +517,7 @@ export default {
 								}
 								uni.showModal({
 									title:"提示",
-									content:item.Date+"这天你已经申请了"+type,
+									content:times+"这天你已经申请了"+type,
 									showCancel:false
 								})
 								return;
@@ -564,7 +570,13 @@ export default {
 						{
 							console.log(res.data.data);
 							res.data.data.forEach(item => {
-								if(item.Date === leaveDate){
+								var d = new Date(item.DataDate);
+								let MM = d.getMonth() + 1;
+								MM = MM < 10 ? ('0' + MM) : MM;
+								let DD = d.getDate();
+								DD = DD < 10 ? ('0' + DD) : DD;
+								var times=d.getFullYear() + '-' + MM + '-' + DD;
+								if(times === leaveDate){
 									var type = "";
 									if(!this.$mbservices.isEmpty(item.Goout)){
 										type = "外出";
@@ -575,7 +587,7 @@ export default {
 									}
 									uni.showModal({
 										title:"提示",
-										content:item.Date+"这天你已经申请了"+type,
+										content:times+"这天你已经申请了"+type,
 										showCancel:false
 									})
 									return;
