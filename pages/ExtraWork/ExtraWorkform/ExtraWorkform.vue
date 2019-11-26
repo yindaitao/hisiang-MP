@@ -434,11 +434,11 @@ export default {
 		endDate = endDate.replace(/-/g, '/');
 		var time2 = new Date(endDate);
 		time2 = time2.getTime();
-		var endDate1 = date+" "+"18:00:00";
+		var endDate1 = this.resultInfo2.checkArr[0]+"-"+this.resultInfo2.checkArr[1]+"-"+this.resultInfo2.checkArr[2]+" "+"18:00:00";
 		endDate1 = endDate1.replace(/-/g, '/');
 		var Etime = new Date(endDate1);
 		Etime = Etime.getTime();
-		var beginDate1 = date+" "+"08:00:00";
+		var beginDate1 =this.resultInfo1.checkArr[0]+"-"+this.resultInfo1.checkArr[1]+"-"+this.resultInfo1.checkArr[2]+" "+"08:00:00";
 		beginDate1 = beginDate1.replace(/-/g, '/');
 		var Btime = new Date(beginDate1);
 		Btime = Btime.getTime();
@@ -463,14 +463,12 @@ export default {
 				this.itemData.ExtraWorkHoursTextName = "小时";
 				var date = year2+'-'+month2+'-'+day2;
 				for(var i in this.HolidayScheduleList){
-					console.log(date);
 					if(this.HolidayScheduleList[i].Date === date){
-						console.log("##############");
 						this.itemData.Hours = (hour2-hour1+(minute2-minute1)/60).toFixed(2);
 						if(this.itemData.Hours > 8){
 							this.itemData.Hours = 8;
 						}
-					return;
+					   return;
 					}else{
 						if(hour1<8 && hour2<8){
 							console.log("还没开始上班");
@@ -491,13 +489,12 @@ export default {
 						}else if(hour1>=18){
 							this.itemData.Hours = (hour2-hour1+(minute2-minute2)/60).toFixed(2);
 						}
-						return;
 					}
 				}
 			}else{
 				this.itemData.ExtraWorkHoursText = "Hour";
 				this.itemData.ExtraWorkHoursTextName = "小时";
-				var hour = ((time2 -time1)/1000/24/3600-1*1000/24/3600).toFixed(0);
+				var hour = Math.floor((time2 -time1)/1000/24/3600-1*1000/24/3600);
 				if(hour1<=8){
 					if(hour2<=8){
 						this.itemData.Hours = (hour*8).toFixed(2);
@@ -507,10 +504,13 @@ export default {
 						this.itemData.Hours = (hour*8+8).toFixed(2);
 					}
 				}else if(hour1>8){
-					if(hour2<18){
-						this.itemData.Hours = (hour+8-(Btime-time1)/1000/3600+8-(Etime-time2)/1000/3600).toFixed(2);
+					if(hour1>=18){
+						this.itemData.Hours = (hour*8).toFixed(2);
+					}
+					else if(hour2<18){
+						this.itemData.Hours = (hour*8+8-(time1-Btime)/1000/3600-(Etime-time2)/1000/3600).toFixed(2);
 					}else if(hour2>=18){
-						this.itemData.Hours = (hour+8-(Btime-time1)/1000/3600+8).toFixed(2)
+						this.itemData.Hours = (hour*8+8-(time1-Btime)/1000/3600).toFixed(2);
 					}
 				}
 				

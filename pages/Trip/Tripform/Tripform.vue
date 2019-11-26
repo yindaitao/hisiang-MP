@@ -533,7 +533,7 @@ export default {
     },
     bindDateChange: function(itemData, e) {
       itemData.BeginDate = e.target.value;
-	  itemData.EndDate = "";
+	  itemData.EndDate = this.getDate({format: true});
 	  if(this.$mbservices.isEmpty(itemData.EndDate)){
 	  	return;
 	  }else{

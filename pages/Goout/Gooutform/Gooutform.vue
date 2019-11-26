@@ -363,11 +363,11 @@ export default {
 		startTime = startTime.replace(/-/g, '/');
 		var time1 = new Date(startTime);
 		time1 = time1.getTime();
-		var endDate1 = date+" "+"18:00:00";
+		var endDate1 = this.resultInfo2.checkArr[0]+"-"+this.resultInfo2.checkArr[1]+"-"+this.resultInfo2.checkArr[2]+" "+"18:00:00";
 		endDate1 = endDate1.replace(/-/g, '/');
 		var Etime = new Date(endDate1);
 		Etime = Etime.getTime();
-		var beginDate1 = date+" "+"08:00:00";
+		var beginDate1 = this.resultInfo1.checkArr[0]+"-"+this.resultInfo1.checkArr[1]+"-"+this.resultInfo1.checkArr[2]+" "+"08:00:00";
 		beginDate1 = beginDate1.replace(/-/g, '/');
 		var Btime = new Date(beginDate1);
 		Btime = Btime.getTime();
@@ -383,7 +383,7 @@ export default {
 		var hour1 = this.resultInfo1.checkArr[3];
 		var minute1 = this.resultInfo1.checkArr[4];
 		var seconds1 = this.resultInfo1.checkArr[5];
-		var goouthours = time1 - time2;
+		var goouthours = time2 - time1;
 		var gooutH = Math.floor(goouthours / (24 * 3600 * 1000)).toFixed(0);
 		var gooutDate = "";
 		if(year2!==year1 || month2!==month1){
@@ -418,7 +418,6 @@ export default {
 									content:times+"这天你已经申请了"+type,
 									showCancel:false
 								})
-								return;
 							}
 						})
 					}
@@ -460,8 +459,9 @@ export default {
 					}
 				}
 			}else{
-				for(var j=1;j<gooutH;j++){
+				for(var j=0;j<=gooutH;j++){
 					console.log(j);
+					gooutDate = "";
 					gooutDate = year1+'-'+month1+"-"+day1;
 					this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST","",res=>{
 						if(res.data.RecordCount>0)
@@ -483,12 +483,14 @@ export default {
 									}else if(!this.$mbservices.isEmpty(item.Leave)){
 										type = "请假";
 									}
-									uni.showModal({
-										title:"提示",
-										content:times+"这天你已经申请了"+type,
-										showCancel:false
-									})
-									return;
+									if(!this.$mbservices.isEmpty(type)){
+										uni.showModal({
+											title:"提示",
+											content:times+"这天你已经申请了"+type,
+											showCancel:false
+										})
+										return;
+									}
 								}
 							})
 						}
@@ -498,8 +500,8 @@ export default {
 			}
 			this.itemData.GooutHoursText = "Hour";
 			this.itemData.GooutHoursTextName = "小时";
-			var hour = ((time2 -time1)/1000/24/3600-1*1000/24/3600).toFixed(0);
-			if(hour1<8){
+			var hour = Math.floor((time2 -time1)/1000/24/3600-1*1000/24/3600);
+			if(hour1<=8){
 				if(hour2<=8){
 					this.itemData.Hours = (hour*8).toFixed(2);
 				}else if(hour2>8 && hour2<18){
@@ -508,10 +510,15 @@ export default {
 					this.itemData.Hours = (hour*8+8).toFixed(2);
 				}
 			}else if(hour1>8){
-				if(hour2<18){
-					this.itemData.Hours = (hour+8-(Btime-time1)/1000/3600+8-(Etime-time2)/1000/3600).toFixed(2);
+				if(hour1>=18){
+					this.itemData.Hours = (hour*8+8).toFixed(2);
+				}
+				else if(hour2<18){
+					this.itemData.Hours = (hour*8+8-(time1-Btime)/1000/3600-(Etime-time2)/1000/3600).toFixed(2);
 				}else if(hour2>=18){
-					this.itemData.Hours = (hour+8-(Btime-time1)/1000/3600+8).toFixed(2)
+					console.log("333333333333333");
+					this.itemData.Hours = (hour*8+8-(time1-Btime)/1000/3600).toFixed(2);
+					console.log(this.itemData.Hours);
 				}
 			}
 			}
