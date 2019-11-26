@@ -169,6 +169,7 @@ export default {
 	  RestDays: "",
 	  resultInfo1:{},
 	  resultInfo2:{},
+	  HolidayScheduleList:[],
     };
   },
   computed: {
@@ -255,6 +256,31 @@ export default {
 				if(res.data.RecordCount>0)
 				{
 					console.log(res.data.data);
+				}
+				
+			},err=>{})
+		},
+		getHolidaySchedule:async function(){
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
+			this.$mbservices.Request(this.$webapi.getHolidaySchedule,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					this.HolidayScheduleList=res.data.data;
 				}
 				
 			},err=>{})
@@ -495,41 +521,43 @@ export default {
 			if(day1===day2){
 				leaveDate = "";
 				leaveDate = year1+'-'+month1+"-"+day1;
-				var ajaxJSON ={}
-				this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST",ajaxJSON,res=>{
-					if(res.data.RecordCount>0)
-					{
-						console.log(res.data.data);
-						res.data.data.forEach(item => {
-							var d = new Date(item.DataDate);
-							let MM = d.getMonth() + 1;
-							MM = MM < 10 ? ('0' + MM) : MM;
-							let DD = d.getDate();
-							DD = DD < 10 ? ('0' + DD) : DD;
-							var times=d.getFullYear() + '-' + MM + '-' + DD;
-							if(times === leaveDate){
-								var type = "";
-								if(!this.$mbservices.isEmpty(item.Goout)){
-									type = "外出";
-								}else if(!this.$mbservices.isEmpty(item.Trip)){
-									type = "出差";
-								}else if(!this.$mbservices.isEmpty(item.Leave)){
-									type = "请假";
-								}
-								uni.showModal({
-									title:"提示",
-									content:times+"这天你已经申请了"+type,
-									showCancel:false
-								})
-							}
-						})
-					}
+				// var ajaxJSON ={}
+				// this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST",ajaxJSON,res=>{
+				// 	if(res.data.RecordCount>0)
+				// 	{
+				// 		console.log(res.data.data);
+				// 		res.data.data.forEach(item => {
+				// 			var d = new Date(item.DataDate);
+				// 			let MM = d.getMonth() + 1;
+				// 			MM = MM < 10 ? ('0' + MM) : MM;
+				// 			let DD = d.getDate();
+				// 			DD = DD < 10 ? ('0' + DD) : DD;
+				// 			var times=d.getFullYear() + '-' + MM + '-' + DD;
+				// 			if(times === leaveDate){
+				// 				var type = "";
+				// 				if(!this.$mbservices.isEmpty(item.Goout)){
+				// 					type = "外出";
+				// 				}else if(!this.$mbservices.isEmpty(item.Trip)){
+				// 					type = "出差";
+				// 				}else if(!this.$mbservices.isEmpty(item.Leave)){
+				// 					type = "请假";
+				// 				}
+				// 				if(!this.$mbservices.isEmpty(type)){
+				// 					uni.showModal({
+				// 						title:"提示",
+				// 						content:times+"这天你已经申请了"+type,
+				// 						showCancel:false
+				// 					})
+				// 				}
+								
+				// 			}
+				// 		})
+				// 	}
 					
-				},err=>{})
+				// },err=>{})
 				this.itemData.LeaveHoursTextName = "小时";
 				var date = year2+'-'+month2+'-'+day2;
 				for(var i in this.HolidayScheduleList){
-					console.log(date);
 					if(this.HolidayScheduleList[i].Date === date){
 						this.itemData.LeaveHours = 0;
 						uni.showModal({
@@ -544,6 +572,7 @@ export default {
 						}
 						// 开始时间小于8点
 						if(hour1<=8){
+							console.log("开始时间小于8点");
 							// 结束时间小于18点
 							if(hour2<18){
 								this.itemData.LeaveHours = 8 - ((Etime-time2)/1000/3600).toFixed(2);
@@ -552,9 +581,9 @@ export default {
 							}
 						}else if(hour1>8){
 							if(hour2<18){
-								this.itemData.LeaveHours = (8).toFixed(2) - ((Btime-time1)/1000/3600).toFixed(2)-((Etime-time2)/1000/3600).toFixed(2);
+								this.itemData.LeaveHours = (8).toFixed(2) - ((time1-Btime)/1000/3600).toFixed(2)-((Etime-time2)/1000/3600).toFixed(2);
 							}else if(hour2>=18){
-								this.itemData.LeaveHours =  (8).toFixed(2) - ((Btime-time1)/1000/3600).toFixed(2);
+								this.itemData.LeaveHours =  (8).toFixed(2) - ((time1-Btime)/1000/3600).toFixed(2);
 							}
 						}
 					}
@@ -944,6 +973,7 @@ export default {
       this.itemData.DocEntry=this.editItem.DocEntry;
       // 获取请假类型
       this.getHolidayType();
+	  this.getHolidaySchedule();
 	  uni.showLoading({
 	    title: "拼命加载中..."
 	  });
@@ -961,6 +991,7 @@ export default {
 		}
 		// 获取请假类型
 		this.getHolidayType();
+		this.getHolidaySchedule();
   },
   onUnload() {
     (this.imageList = []), (this.sourceTypeIndex = 2);
