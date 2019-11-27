@@ -144,6 +144,10 @@ export default {
 			  resultInfo1:{},
 			  resultInfo2:{},
 			  HolidayScheduleList:[],
+			  // 第一段标准上班时间
+			  FirstOnTime:"",
+			  // 第二段标准下班时间
+			  SecondOffTime:"",
 			};
   },
   computed: {
@@ -237,6 +241,32 @@ export default {
 				if(res.data.RecordCount>0)
 				{
 					this.HolidayScheduleList=res.data.data;
+				}
+				
+			},err=>{})
+		},
+		getScheduleList:async function(){
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
+			this.$mbservices.Request(this.$webapi.getScheduleList,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					this.FirstOnTime=res.data.data[0].FirstOnTime;
+					this.SecondOffTime = res.data.data[0].SecondOffTime;
 				}
 				
 			},err=>{})
@@ -434,14 +464,21 @@ export default {
 		endDate = endDate.replace(/-/g, '/');
 		var time2 = new Date(endDate);
 		time2 = time2.getTime();
-		var endDate1 = this.resultInfo2.checkArr[0]+"-"+this.resultInfo2.checkArr[1]+"-"+this.resultInfo2.checkArr[2]+" "+"18:00:00";
+		var endDate1 = this.resultInfo2.checkArr[0]+"-"+this.resultInfo2.checkArr[1]+"-"+this.resultInfo2.checkArr[2]+" "+this.SecondOffTime;
 		endDate1 = endDate1.replace(/-/g, '/');
 		var Etime = new Date(endDate1);
 		Etime = Etime.getTime();
-		var beginDate1 =this.resultInfo1.checkArr[0]+"-"+this.resultInfo1.checkArr[1]+"-"+this.resultInfo1.checkArr[2]+" "+"08:00:00";
+		var endOnTime = this.resultInfo2.checkArr[0]+"-"+this.resultInfo2.checkArr[1]+"-"+this.resultInfo2.checkArr[2]+" "+this.FirstOnTime;
+		endOnTime = endOnTime.replace(/-/g, '/');
+		var EOtime = new Date(endOnTime);
+		EOtime = EOtime.getTime();
+		var everyDay = (Etime-EOtime)/1000/3600;
+		var endHour = this.SecondOffTime.slice(0,1);
+		var beginDate1 =this.resultInfo1.checkArr[0]+"-"+this.resultInfo1.checkArr[1]+"-"+this.resultInfo1.checkArr[2]+" "+this.FirstOnTime;
 		beginDate1 = beginDate1.replace(/-/g, '/');
 		var Btime = new Date(beginDate1);
 		Btime = Btime.getTime();
+		var beginHour = this.FirstOnTime.slice(0,1);
 		if(time1>time2){
 			this.itemData.BeginDate = "";
 			this.itemData.EndDate = "";
@@ -465,28 +502,28 @@ export default {
 				for(var i in this.HolidayScheduleList){
 					if(this.HolidayScheduleList[i].Date === date){
 						this.itemData.Hours = (hour2-hour1+(minute2-minute1)/60).toFixed(2);
-						if(this.itemData.Hours > 8){
-							this.itemData.Hours = 8;
+						if(this.itemData.Hours > everyDay){
+							this.itemData.Hours = everyDay;
 						}
 					   return;
 					}else{
-						if(hour1<8 && hour2<8){
+						if(hour1<beginHour && hour2<beginHour){
 							console.log("还没开始上班");
 							return;
 						}
 						// 开始时间小于18点
-						if(hour1<18){
+						if(hour1<endHour){
 							// 结束时间小于18点
-							if(hour2<18){
+							if(hour2<endHour){
 								uni.showModal({
 									title:"提示",
 									content:"当前时间为上班时间，不算加班",
 									showCancel:false
 								})
-							}else if(hour2>=18){
-								this.itemData.Hours = (hour2-18+minute2/60).toFixed(2);
+							}else if(hour2>=endHour){
+								this.itemData.Hours = (hour2-endHour+minute2/60).toFixed(2);
 							}
-						}else if(hour1>=18){
+						}else if(hour1>=endHour){
 							this.itemData.Hours = (hour2-hour1+(minute2-minute2)/60).toFixed(2);
 						}
 					}
@@ -495,22 +532,22 @@ export default {
 				this.itemData.ExtraWorkHoursText = "Hour";
 				this.itemData.ExtraWorkHoursTextName = "小时";
 				var hour = Math.floor((time2 -time1)/1000/24/3600-1*1000/24/3600);
-				if(hour1<=8){
-					if(hour2<=8){
-						this.itemData.Hours = (hour*8).toFixed(2);
-					}else if(hour2>8 && hour2<18){
-						this.itemData.Hours = (hour*8+8-(Etime-time2)/1000/3600).toFixed(2);
-					}else if(hour2>=18){
-						this.itemData.Hours = (hour*8+8).toFixed(2);
+				if(hour1<=beginHour){
+					if(hour2<=beginHour){
+						this.itemData.Hours = (hour*everyDay).toFixed(2);
+					}else if(hour2>beginHour && hour2<endHour){
+						this.itemData.Hours = (hour*everyDay+everyDay-(Etime-time2)/1000/3600).toFixed(2);
+					}else if(hour2>=endHour){
+						this.itemData.Hours = (hour*everyDay+everyDay).toFixed(2);
 					}
-				}else if(hour1>8){
-					if(hour1>=18){
-						this.itemData.Hours = (hour*8).toFixed(2);
+				}else if(hour1>beginHour){
+					if(hour1>=endHour){
+						this.itemData.Hours = (hour*everyDay).toFixed(2);
 					}
-					else if(hour2<18){
-						this.itemData.Hours = (hour*8+8-(time1-Btime)/1000/3600-(Etime-time2)/1000/3600).toFixed(2);
-					}else if(hour2>=18){
-						this.itemData.Hours = (hour*8+8-(time1-Btime)/1000/3600).toFixed(2);
+					else if(hour2<endHour){
+						this.itemData.Hours = (hour*everyDay+everyDay-(time1-Btime)/1000/3600-(Etime-time2)/1000/3600).toFixed(2);
+					}else if(hour2>=endHour){
+						this.itemData.Hours = (hour*everyDay+everyDay-(time1-Btime)/1000/3600).toFixed(2);
 					}
 				}
 				
@@ -795,6 +832,7 @@ export default {
 	  /* 所属公司 */
 	  this.getInvCompany();
 	  this.getHolidaySchedule();
+	  this.getScheduleList();
 	  var _this = this;
 	  setTimeout(function(){
 		  _this.getDetailData();
@@ -810,6 +848,7 @@ export default {
 		/* 所属公司 */
 		this.getInvCompany();
 		this.getHolidaySchedule();
+		this.getScheduleList();
   },
   onUnload() {
     this.totalJine = "0.00";
