@@ -369,6 +369,23 @@ export default {
 			var time2 = new Date(startTime);
 			time2 = time2.getTime();
 			var LeaveHours = time1 - time2;
+			if(LeaveHours === 0){
+				var HTime = this.itemData.EndDate;
+				for(var i in this.HolidayScheduleList){
+					if(this.HolidayScheduleList[i].Date === HTime){
+						this.itemData.LeaveHours = 0;
+						uni.showModal({
+							title:"提示",
+							content:"当前时间为"+this.HolidayScheduleList[i].Name+"，不需要请假",
+							showCancel:false
+						})
+						return;
+					}else{
+						this.itemData.LeaveHours = 1;
+					}
+				}
+				this.itemData.LeaveHours = 1;
+			}
 			if(LeaveHours < 0){
 				this.itemData.BeginDate = "请选择";
 				this.itemData.LeaveHours = 0;
@@ -695,9 +712,10 @@ export default {
 						this.itemData.LeaveHours = 0;
 						uni.showModal({
 							title:"提示",
-							content:"当前时间为"+this.HolidayScheduleList[i].typeDes+"，不需要请假",
+							content:"当前时间为"+this.HolidayScheduleList[i].Name+"，不需要请假",
 							showCancel:false
 						})
+						return;
 					}else{
 						if(hour1<beginHour && hour2<beginHour){
 							console.log("还没开始上班");
