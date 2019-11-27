@@ -55,13 +55,13 @@
 								<text class="icon-title text-orange"></text>
 								编号:{{list.DocEntry}}
 							</view>
-							<view class="text-gray text-sm">
-								<text class="icon-timefill margin-right-xs"></text>
-								出发时间:{{list.BeginDate}}
+							<view class="nowarp">
+								<text class="icon-title text-orange"></text>
+								出差事由:{{$mbservices.isEmpty(list.Cause)?'无':list.Cause}}
 							</view>
 							<view class="text-gray text-sm">
 								<text class="icon-timefill margin-right-xs"></text>
-								到达时间:{{list.EndDate}}
+								{{list.CreateDate}}
 							</view>
 						</view>
 						<view class="action" v-if="list.Approve!=='No'||list.ApproveStatus==='Rejected'">
@@ -561,5 +561,11 @@
 		flex: 1;
 		width: 100%;
 		height: calc(100% - 100rpx);
+	}
+	.nowarp {
+		width: 260px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 </style>

@@ -178,24 +178,24 @@ export default {
 	  indexType:0,
 	  itemData:{
 		  DocEntry:"",
-		  BeginDate:this.getDate({format: true}),
-		  EndDate: this.getDate({format: true}),
+		  BeginDate:"请选择",
+		  EndDate: "请选择",
 		  StartPlace:"",
 		  ArrivePlace:"",
 		  TrafficType:"",
 		  TrafficTypeName:"请选择交通工具",
-		  TripHours: 1,
+		  TripHours: 0,
 		  Cause:"",
 		  Remarks:"",
 	},
-      formList: [
-        {
-          id: 1,
-          UserId:"1",
-		  UserName:"管理员",
-		  indexType:0,
-        }
-      ],
+       formList: [
+              {
+                id: 1,
+                UserId:"1",
+      		  UserName:"管理员",
+      		  indexType:0,
+              }
+            ],
       editEntitysList: [],
       editflag: false,
       editItem: {},
@@ -321,11 +321,8 @@ export default {
 		time2 = time2.getTime();
 		var TripHours = time1 - time2;
 		if(TripHours < 0){
-			uni.showModal({
-				title:"提示",
-				content:"开始时间不能大于结束时间,请重新选择",
-				showCancel:false
-			})
+			this.itemData.BeginDate = "请选择";
+			this.itemData.TripHours = 0;
 			return;
 		}else {
 			this.itemData.TripHours = (parseFloat(TripHours / (3600 * 1000)/24)+1).toFixed(1);
@@ -477,6 +474,7 @@ export default {
 		  CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
           UIStatus: "New"
         };
+		}
 	  console.log(ajaxJSON);
       var requestUrl = _this.editflag
         ? _this.$webapi.saveTrip
@@ -515,7 +513,6 @@ export default {
           });
         }
       )
-	}
 	},
 	inputHours(itemData, event) {
 	  itemData.TripHours = event.detail.value;
@@ -533,8 +530,8 @@ export default {
     },
     bindDateChange: function(itemData, e) {
       itemData.BeginDate = e.target.value;
-	  itemData.EndDate = this.getDate({format: true});
-	  if(this.$mbservices.isEmpty(itemData.EndDate)){
+	  itemData.EndDate = "请选择";
+	  if(this.$mbservices.isEmpty(itemData.EndDate)||itemData.EndDate==='请选择'){
 	  	return;
 	  }else{
 	  	this.computTime();

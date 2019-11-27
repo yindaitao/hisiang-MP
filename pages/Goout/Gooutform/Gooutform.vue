@@ -365,6 +365,7 @@ export default {
 		  CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
           UIStatus: "New"
         };
+				}
 	  console.log(ajaxJSON);
       var requestUrl = _this.editflag
         ? _this.$webapi.saveGoout
@@ -403,7 +404,6 @@ export default {
           });
         }
       )
-	}
 	},
 	inputHours(itemData, event) {
 	  itemData.Hours = event.detail.value;

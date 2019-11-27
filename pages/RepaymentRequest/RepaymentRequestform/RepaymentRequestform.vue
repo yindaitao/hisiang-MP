@@ -525,37 +525,37 @@ export default {
         ? _this.$webapi.submitpaymentRequest
         : _this.$webapi.submitpaymentRequest;
 				var _$this=_this;
-     //  _this.$mbservices.Request(
-     //    requestUrl,
-     //    "POST",
-     //    ajaxJSON,
-     //    function(succ) {
-     //      setTimeout(function() {
-     //        uni.hideLoading();
-     //      }, 1000);
-     //      if (
-     //        succ.data.RecordCount == undefined ||
-     //        succ.data.RecordCount <= 0
-     //      ) {
-     //        uni.showToast({
-     //          title: "" + succ.data
-     //        });
-     //        return false;
-     //      }
-     //      uni.showToast({
-     //        title: "成功"
-     //      });
-					// _$this.$mbservices.setIsRefresh(true);
-     //      uni.navigateBack({
-     //        animationDuration: 500
-     //      });
-     //    },
-     //    function(err) {
-     //      uni.showToast({
-     //        title: "失败:" + err.data
-     //      });
-     //    }
-     //  );
+      _this.$mbservices.Request(
+        requestUrl,
+        "POST",
+        ajaxJSON,
+        function(succ) {
+          setTimeout(function() {
+            uni.hideLoading();
+          }, 1000);
+          if (
+            succ.data.RecordCount == undefined ||
+            succ.data.RecordCount <= 0
+          ) {
+            uni.showToast({
+              title: "" + succ.data
+            });
+            return false;
+          }
+          uni.showToast({
+            title: "成功"
+          });
+					_$this.$mbservices.setIsRefresh(true);
+          uni.navigateBack({
+            animationDuration: 500
+          });
+        },
+        function(err) {
+          uni.showToast({
+            title: "失败:" + err.data
+          });
+        }
+      );
     },
     inputNum(item, event) {
       item.jine = event.detail.value;

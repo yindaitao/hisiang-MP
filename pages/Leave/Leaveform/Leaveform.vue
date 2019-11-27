@@ -28,10 +28,16 @@
 					</picker>
 				</view>
 				<view style="padding: 1rpx 30rpx;" v-if="(itemData.HolidayTypeName === '年假' || itemData.HolidayTypeName === '带薪病假'|| itemData.HolidayTypeName === '亲情假')
-				&&edit===false"
-				 >
+				&&edit===false">
 					提示：还有{{RestDays?RestDays:0}}天带薪假
 				</view>
+				<view class="cu-form-group">
+					<view class="title">请假事由</view>
+				</view>
+				<view class="cu-form-group">
+					<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
+					 placeholder-class="placeholder" data-placeholder="在此输入请假事由" :value="itemData.Cause" />
+					</view>
 				<view class="cu-form-group">
 					<view class="title">请假时长单位</view>
 					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexLeaveHoursText" :range="LeaveHoursTextType">
@@ -66,13 +72,6 @@
 					 :value="itemData.LeaveHours">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
-				<view class="cu-form-group">
-					<view class="title">请假事由</view>
-				</view>
-				<view class="cu-form-group">
-					<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
-					 placeholder-class="placeholder" data-placeholder="在此输入请假事由" :value="itemData.Cause" />
-					</view>
 				<!-- <view class="cu-form-group">
 					<view class="title">备注</view>
 				</view>
@@ -82,7 +81,7 @@
 					</view> -->
       </form>
     </view>
-	<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 1000000;width: 100%;">
+	<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 1000;width: 100%;">
 		<view class="action" v-if="edit === false" style="width: 50%;">
 			<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
 				<text class="icon-upload"></text>提交
@@ -460,6 +459,7 @@ export default {
       this.submitForm();
     },
     saveAndDoSteps() {
+	  console.log("確定提交");
       this.modalName = null;
       this.isDoSteps = true;
       this.submitForm();
@@ -469,30 +469,30 @@ export default {
       uni.showLoading({
         title: "正在提交..."
       });
-      var _indx = 0;
-      _this.formList.forEach(_item => {
-        var path = "";
-        _item.imageList.forEach(_item_ => {
-          if (_this.editflag) {
-            path += _item_.deleteurl + "|";
-          } else {
-            path += _item_.retInfo[0].filePath + "|";
-          }
-        });
-        if (path.length > 0 && path.lastIndexOf("|") > 0) {
-          path = path.substr(0, path.length - 1);
-        }
-      });
+      // var _indx = 0;
+      // _this.formList.forEach(_item => {
+      //   var path = "";
+      //   _item.imageList.forEach(_item_ => {
+      //     if (_this.editflag) {
+      //       path += _item_.deleteurl + "|";
+      //     } else {
+      //       path += _item_.retInfo[0].filePath + "|";
+      //     }
+      //   });
+      //   if (path.length > 0 && path.lastIndexOf("|") > 0) {
+      //     path = path.substr(0, path.length - 1);
+      //   }
+      // });
       var ajaxJSON = {};
       if (_this.editflag) {
-        _this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
-        (_this.editEntitysList[0].ApproveStatus = "Pending"),
-				_this.editEntitysList[0].Remarks= _this.itemData.Remarks;
-				_this.editEntitysList[0].Cause = _this.itemData.Cause;
-				_this.editEntitysList[0].BeginDate = _this.itemData.BeginDate;
-				_this.editEntitysList[0].EndDate = _this.itemData.EndDate;
-				_this.editEntitysList[0].HolidayType = _this.itemData.HolidayTypeCode;
-				_this.editEntitysList[0].HolidayTypeName = _this.itemData.HolidayTypeName;
+		  _this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
+		  _this.editEntitysList[0].ApproveStatus = "Pending";
+		  _this.editEntitysList[0].Remarks= _this.itemData.Remarks;
+		  _this.editEntitysList[0].Cause = _this.itemData.Cause;
+		  _this.editEntitysList[0].BeginDate = _this.itemData.BeginDate;
+		  _this.editEntitysList[0].EndDate = _this.itemData.EndDate;
+		  _this.editEntitysList[0].HolidayType = _this.itemData.HolidayTypeCode;
+		  _this.editEntitysList[0].HolidayTypeName = _this.itemData.HolidayTypeName;
 				_this.editEntitysList[0].LeaveHours = _this.itemData.LeaveHours;
 				_this.editEntitysList[0].LeaveHoursText = _this.itemData.LeaveHoursText;
                 _this.editEntitysList[0].UIStatus = "Modify";
@@ -521,6 +521,7 @@ export default {
 		  CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
           UIStatus: "New"
         };
+		}
 	  console.log(ajaxJSON);
       var requestUrl = _this.editflag
         ? _this.$webapi.saveLeaveEntity
@@ -556,7 +557,7 @@ export default {
             title: "失败:" + err.data
           });
         }
-      )}
+      )
 	},
 	inputLeaveHours(itemData, event) {
 	  itemData.LeaveHours = event.detail.value;
