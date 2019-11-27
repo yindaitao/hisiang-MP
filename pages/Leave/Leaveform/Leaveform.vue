@@ -29,7 +29,7 @@
 				</view>
 				<view style="padding: 1rpx 30rpx;" v-if="itemData.HolidayTypeName === '年假' || itemData.HolidayTypeName === '带薪病假'
 				 || itemData.HolidayTypeName === '亲情假'">
-					提示：还有{{RestDays}}天带薪假
+					提示：还有{{RestDays?RestDays:0}}天带薪假
 				</view>
 				<view class="cu-form-group">
 					<view class="title">请假时长单位</view>
@@ -45,8 +45,8 @@
 					</picker>
 					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1" :current="true"
 					 @confirm="onConfirm" ref="dateTime1" themeColor="#f00" v-if="itemData.LeaveHoursText!=='Day'"></w-picker>
-					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="!$mbservices.isEmpty(itemData.BeginDate)&&itemData.LeaveHoursText!=='Day'">{{itemData.BeginDate}}</view>
-					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="$mbservices.isEmpty(itemData.BeginDate)&&itemData.LeaveHoursText!=='Day'">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="(!$mbservices.isEmpty(itemData.BeginDate)||itemData.BeginDate!=='请选择')&&itemData.LeaveHoursText!=='Day'">{{itemData.BeginDate}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="($mbservices.isEmpty(itemData.BeginDate)||itemData.BeginDate==='请选择')&&itemData.LeaveHoursText!=='Day'">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">结束日期</view>
@@ -56,8 +56,8 @@
 					</picker>
 					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2" :current="true"
 					 @confirm="onConfirm1" ref="dateTime2" themeColor="#f00" v-if="itemData.LeaveHoursText!=='Day'"></w-picker>
-					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="!$mbservices.isEmpty(itemData.EndDate)&&itemData.LeaveHoursText!=='Day'">{{itemData.EndDate}}</view>
-					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="$mbservices.isEmpty(itemData.EndDate)&&itemData.LeaveHoursText!=='Day'">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="(!$mbservices.isEmpty(itemData.EndDate)||itemData.EndDate!=='请选择')&&itemData.LeaveHoursText!=='Day'">{{itemData.EndDate}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="($mbservices.isEmpty(itemData.EndDate)||itemData.EndDate==='请选择')&&itemData.LeaveHoursText!=='Day'">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">请假时长</view>
@@ -149,8 +149,8 @@ export default {
 	  time: Date.parse(new Date()),
 	  itemData:{
 		  DocEntry:"",
-		  BeginDate:this.formatDate(Date.parse(new Date())),
-		  EndDate: this.formatDate(Date.parse(new Date())),
+		  BeginDate:"请选择",
+		  EndDate: "请选择",
 		  HolidayType: [],
 		  HolidayTypeCode:"",
 		  HolidayTypeName:"",
@@ -370,11 +370,8 @@ export default {
 			time2 = time2.getTime();
 			var LeaveHours = time1 - time2;
 			if(LeaveHours < 0){
-				uni.showModal({
-					title:"提示",
-					content:"开始时间不能大于结束时间,请重新选择",
-					showCancel:false
-				})
+				this.itemData.BeginDate = "请选择";
+				this.itemData.LeaveHours = 0;
 				return;
 			}else {
 				this.itemData.LeaveHours = (parseFloat(LeaveHours / (3600 * 1000)/24)+1).toFixed(1);
@@ -389,7 +386,12 @@ export default {
 					this.itemData.LeaveHoursTextName = this.LeaveHoursTextType[this.indexLeaveHoursText];
 				}
 			}
-			if(!this.$mbservices.isEmpty(this.resultInfo1) && !this.$mbservices.isEmpty(this.resultInfo2)){
+			if(this.itemData.LeaveHoursText==='Day'){
+				var that = this;
+				that.itemData.BeginDate = '请选择';
+				that.itemData.EndDate = '请选择';
+			}
+			if(this.itemData.LeaveHoursText!=='Day'&&!this.$mbservices.isEmpty(this.resultInfo1) && !this.$mbservices.isEmpty(this.resultInfo2)){
 				this.computTime();
 			}
 		},
@@ -413,7 +415,8 @@ export default {
 			}
 		},
     showModal(e) {
-		if(this.$mbservices.isEmpty(this.itemData.LeaveHours)||this.$mbservices.isEmpty(this.itemData.BeginDate)||this.$mbservices.isEmpty(this.itemData.EndDate))
+		if(this.$mbservices.isEmpty(this.itemData.LeaveHours)||this.$mbservices.isEmpty(this.itemData.BeginDate)||this.$mbservices.isEmpty(this.itemData.EndDate)
+		||this.itemData.BeginDate==='请选择'||this.itemData.EndDate==='请选择')
 		{
 			uni.showModal({
 				title:"提示",
@@ -600,6 +603,15 @@ export default {
 		startTime = startTime.replace(/-/g, '/');
 		var time1 = new Date(startTime);
 		time1 = time1.getTime();
+		if(time2===time1){
+			this.itemData.LeaveHours = 0;
+			return;
+		}
+		if(time2<time1){
+			this.itemData.BeginDate = "请选择";
+			this.itemData.LeaveHours = 0;
+			return;
+		}
 		var endDate1 = this.resultInfo2.checkArr[0]+"-"+this.resultInfo2.checkArr[1]+"-"+this.resultInfo2.checkArr[2]+" "+this.SecondOffTime;
 		endDate1 = endDate1.replace(/-/g, '/');
 		var Etime = new Date(endDate1);
@@ -948,8 +960,8 @@ export default {
 		var that = this;
 		this.$mbservices.Request(this.$webapi.getHolidayRestDays,"POST",type,
 		  function(res) {
-			  if(res.data.data>0){
-				  that.RestDays = res.data.data;
+			  if(res.data.RecordCount>0){
+				  that.RestDays = res.data.data.restDays;
 			  }
 		  })
 	},
