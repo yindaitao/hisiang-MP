@@ -27,8 +27,9 @@
 						<view class="picker">{{HolidayType[indexHolidayType]}}</view>
 					</picker>
 				</view>
-				<view style="padding: 1rpx 30rpx;" v-if="itemData.HolidayTypeName === '年假' || itemData.HolidayTypeName === '带薪病假'
-				 || itemData.HolidayTypeName === '亲情假'">
+				<view style="padding: 1rpx 30rpx;" v-if="(itemData.HolidayTypeName === '年假' || itemData.HolidayTypeName === '带薪病假'|| itemData.HolidayTypeName === '亲情假')
+				&&edit===false"
+				 >
 					提示：还有{{RestDays?RestDays:0}}天带薪假
 				</view>
 				<view class="cu-form-group">
@@ -81,7 +82,7 @@
 					</view> -->
       </form>
     </view>
-	<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 999;width: 100%;">
+	<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 1000000;width: 100%;">
 		<view class="action" v-if="edit === false" style="width: 50%;">
 			<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
 				<text class="icon-upload"></text>提交
@@ -332,8 +333,8 @@ export default {
 		selectOption(e){},
 		bindDateChange: function(itemData, e) {
 		  itemData.BeginDate = e.target.value;
-		  itemData.EndDate = this.getDate({format: true});
-		  if(this.$mbservices.isEmpty(itemData.EndDate)){
+		  itemData.EndDate = "请选择";
+		  if(this.$mbservices.isEmpty(itemData.EndDate)||itemData.EndDate==='请选择'){
 		  	return;
 		  }else{
 			this.computTime1();

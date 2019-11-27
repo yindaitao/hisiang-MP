@@ -410,8 +410,8 @@ export default {
 	},
 	bindDateChange: function(itemData, e) {
 	  itemData.BeginDate = e.target.value;
-	  itemData.EndDate = this.getDate({format: true});
-	  if(this.$mbservices.isEmpty(itemData.EndDate)){
+	  itemData.EndDate = "请选择";
+	  if(this.$mbservices.isEmpty(itemData.EndDate)||itemData.EndDate==='请选择'){
 	  	return;
 	  }else{
 		this.computTime1();
