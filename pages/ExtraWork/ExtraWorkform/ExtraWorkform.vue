@@ -21,12 +21,12 @@
 		</view>
 		<view class="ul-swiper-box">
 			<form>
-				<view class="cu-form-group">
+				<!-- <view class="cu-form-group">
 					<view class="title">加班类型</view>
 					<picker :disabled="edit?true:false" @change="bindPickerChange2" :value="indexExtraWorkType" :range="ExtraWorkType">
 						<view class="picker">{{ExtraWorkType[indexExtraWorkType]}}</view>
 					</picker>
-				</view>
+				</view> -->
 				<view class="cu-form-group">
 					<view class="title">开始日期</view>
 					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1" :current="true"
@@ -161,14 +161,16 @@ export default {
 		let year = date.getFullYear();
 		let m = date.getMonth()+1;
 		let d = date.getDate();
-		return "["+ year +","+ m +","+ d +",'0','0','0']";
+		let h = date.getHours();
+		return "["+ year +","+ m +","+ d +","+ h +",'0','0']";
 	},
 	defaultVal2(){
 		const date = new Date();
 		let year = date.getFullYear();
 		let m = date.getMonth()+1;
 		let d = date.getDate();
-		return "["+ year +","+ m +","+ d +",'0','0','0']";
+		let h = date.getHours();
+		return "["+ year +","+ m +","+ d +","+ h +",'0','0']";
 	},
   },
   methods: {
@@ -289,7 +291,7 @@ export default {
 			this.modalName = e.currentTarget.dataset.target;
 		},
     showModal(e) {
-		if(this.$mbservices.isEmpty(this.itemData.Hours))
+		if(this.$mbservices.isEmpty(this.itemData.Hours)||this.$mbservices.isEmpty(this.itemData.BeginDate)||this.$mbservices.isEmpty(this.itemData.EndDate))
 		{
 			uni.showModal({
 				title:"提示",
@@ -297,6 +299,8 @@ export default {
 				showCancel:false,
 				
 			});
+			this.itemData.BeginDate = "";
+			this.itemData.EndDate = "";
 			return false;
 		}
       var isNull_ = false;
@@ -473,12 +477,12 @@ export default {
 		var EOtime = new Date(endOnTime);
 		EOtime = EOtime.getTime();
 		var everyDay = (Etime-EOtime)/1000/3600;
-		var endHour = this.SecondOffTime.slice(0,1);
+		var endHour = this.SecondOffTime.slice(0,2);
 		var beginDate1 =this.resultInfo1.checkArr[0]+"-"+this.resultInfo1.checkArr[1]+"-"+this.resultInfo1.checkArr[2]+" "+this.FirstOnTime;
 		beginDate1 = beginDate1.replace(/-/g, '/');
 		var Btime = new Date(beginDate1);
 		Btime = Btime.getTime();
-		var beginHour = this.FirstOnTime.slice(0,1);
+		var beginHour = this.FirstOnTime.slice(0,2);
 		if(time1>time2){
 			this.itemData.BeginDate = "";
 			this.itemData.EndDate = "";
@@ -522,6 +526,7 @@ export default {
 								})
 							}else if(hour2>=endHour){
 								this.itemData.Hours = (hour2-endHour+minute2/60).toFixed(2);
+								console.log(this.itemData.Hours);
 							}
 						}else if(hour1>=endHour){
 							this.itemData.Hours = (hour2-hour1+(minute2-minute2)/60).toFixed(2);

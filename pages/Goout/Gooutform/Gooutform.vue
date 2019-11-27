@@ -29,17 +29,25 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">开始日期</view>
+					<picker :disabled="edit?true:false" mode="date" :value="itemData.BeginDate" :start="startDate" :end="endDate"
+					 @change="bindDateChange(itemData,$event)" v-if='itemData.GooutHoursText==="Day"'>
+						<view class="picker">{{itemData.BeginDate}}</view>
+					</picker>
 					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1" :current="true"
-					 @confirm="onConfirm" ref="dateTime1" themeColor="#f00"></w-picker>
-					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="!$mbservices.isEmpty(itemData.BeginDate)">{{itemData.BeginDate}}</view>
-					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="$mbservices.isEmpty(itemData.BeginDate)">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
+					 @confirm="onConfirm" ref="dateTime1" themeColor="#f00" v-if="itemData.LeaveHoursText!=='Day'"></w-picker>
+					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="!$mbservices.isEmpty(itemData.BeginDate)&&itemData.GooutHoursText!=='Day'">{{itemData.BeginDate}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="$mbservices.isEmpty(itemData.BeginDate)&&itemData.GooutHoursText!=='Day'">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">结束日期</view>
+					<picker :disabled="edit?true:false" mode="date" :value="itemData.EndDate" :start="startDate" :end="endDate"
+					 @change="bindDateChange1(itemData,$event)" v-if='itemData.GooutHoursText==="Day"'>
+						<view class="picker">{{itemData.EndDate}}</view>
+					</picker>
 					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2" :current="true"
-					 @confirm="onConfirm1" ref="dateTime2" themeColor="#f00"></w-picker>
-					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="!$mbservices.isEmpty(itemData.EndDate)">{{itemData.EndDate}}</view>
-					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="$mbservices.isEmpty(itemData.EndDate)">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
+					 @confirm="onConfirm1" ref="dateTime2" themeColor="#f00" v-if="itemData.LeaveHoursText!=='Day'"></w-picker>
+					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="!$mbservices.isEmpty(itemData.EndDate)&&itemData.GooutHoursText!=='Day'">{{itemData.EndDate}}</view>
+					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="$mbservices.isEmpty(itemData.EndDate)&&itemData.GooutHoursText!=='Day'">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">外出时长</view>
@@ -95,15 +103,15 @@ export default {
   data() {
     return {
 		    time: Date.parse(new Date()),
-			GooutHoursTextType:["小时","天"],
+			GooutHoursTextType:["天","小时"],
 			indexGooutHoursText:0,
-			GooutHoursTextList:[{
-				Code:"Hour",
-				Name:"小时",
-			},
+			GooutHoursTextList:[
 			{
 				Code:"Day",
 				Name:"天",
+			},{
+				Code:"Hour",
+				Name:"小时",
 			}],
       modalName: null,
       enddate: "",
@@ -119,12 +127,12 @@ export default {
       count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
 	  itemData:{
 		  DocEntry:"",
-		  BeginDate:this.formatDate(Date.parse(new Date())),
-		  EndDate: this.formatDate(Date.parse(new Date())),
+		  BeginDate:this.getDate({format: true}),
+		  EndDate: this.getDate({format: true}),
 		  GooutTypeCode:"Goout",
 		  Hours: "",
-		  GooutHoursText:"Hour",
-		  GooutHoursTextName: "小时",
+		  GooutHoursText:"Day",
+		  GooutHoursTextName: "天",
 		  Cause:"",
 		  Remarks:"",
 	},
@@ -153,6 +161,12 @@ export default {
     };
   },
   computed: {
+	  startDate() {
+	    return this.getDate("start");
+	  },
+	  endDate() {
+	    return this.getDate("end");
+	  },
 	  endYear(){
 	  	const date = new Date();
 	  	let year = date.getFullYear()+2;
@@ -163,14 +177,16 @@ export default {
 	  	let year = date.getFullYear();
 	  	let m = date.getMonth()+1;
 	  	let d = date.getDate();
-	  	return "["+ year +","+ m +","+ d +",'0','0','0']";
+		let h = date.getHours();
+		return "["+ year +","+ m +","+ d +","+ h +",'0','0']";
 	  },
 	  defaultVal2(){
 	  	const date = new Date();
 	  	let year = date.getFullYear();
 	  	let m = date.getMonth()+1;
 	  	let d = date.getDate();
-	  	return "["+ year +","+ m +","+ d +",'0','0','0']";
+		let h = date.getHours();
+		return "["+ year +","+ m +","+ d +","+ h +",'0','0']";
 	  },
   },
   methods: {
@@ -251,6 +267,13 @@ export default {
 					this.itemData.GooutHoursTextName = this.GooutHoursTextType[this.indexGooutHoursText];
 				}
 			}
+			if(this.itemData.GooutHoursText==='Day'){
+				this.itemData.BeginDate = this.getDate({format: true});
+				this.itemData.EndDate = this.getDate({format: true});
+			}else{
+				this.itemData.BeginDate = this.formatDate(Date.parse(new Date()));
+				this.itemData.EndDate = this.formatDate(Date.parse(new Date()));
+			}
 			if(!this.$mbservices.isEmpty(this.resultInfo1) && !this.$mbservices.isEmpty(this.resultInfo2)){
 				this.computTime();
 			}
@@ -265,7 +288,7 @@ export default {
 			});
 		},
     showModal(e) {
-		if(this.$mbservices.isEmpty(this.itemData.Hours))
+		if(this.$mbservices.isEmpty(this.itemData.Hours)||this.$mbservices.isEmpty(this.itemData.BeginDate)||this.$mbservices.isEmpty(this.itemData.EndDate))
 		{
 			uni.showModal({
 				title:"提示",
@@ -273,6 +296,12 @@ export default {
 				showCancel:false,
 				
 			});
+			if (this.itemData.GooutHoursText==='Hour') {
+				this.itemData.BeginDate = "";
+				this.itemData.EndDate = "";
+			}else if(this.itemData.GooutHoursText==='Day'){
+				console.log("一天为单位");
+			}
 		return false;
 		}
       this.modalName = e.currentTarget.dataset.target;
@@ -376,6 +405,56 @@ export default {
 	inputHours(itemData, event) {
 	  itemData.Hours = event.detail.value;
 	},
+	bindDateChange: function(itemData, e) {
+	  itemData.BeginDate = e.target.value;
+	  itemData.EndDate = this.getDate({format: true});
+	  if(this.$mbservices.isEmpty(itemData.EndDate)){
+	  	return;
+	  }else{
+		this.computTime1();
+	  }
+	},
+	bindDateChange1: function(itemData, e) {
+	  itemData.EndDate = e.target.value;
+	  this.computTime1();
+	},
+	getDate(type) {
+	  const date = new Date();
+	  let year = date.getFullYear();
+	  let month = date.getMonth() + 1;
+	  let day = date.getDate();
+	
+	  if (type === "start") {
+	    year = year - 60;
+	  } else if (type === "end") {
+	    year = year + 2;
+	  }
+	  month = month > 9 ? month : "0" + month;
+	  day = day > 9 ? day : "0" + day;
+	
+	  return `${year}-${month}-${day}`;
+	},
+	computTime1(){
+		var endTime = this.itemData.EndDate;
+		endTime = endTime.replace(/-/g, '/');
+		var time1 = new Date(endTime);
+		time1 = time1.getTime();
+		var startTime = this.itemData.BeginDate;
+		startTime = startTime.replace(/-/g, '/');
+		var time2 = new Date(startTime);
+		time2 = time2.getTime();
+		var Hours = time1 - time2;
+		if(Hours < 0){
+			uni.showModal({
+				title:"提示",
+				content:"开始时间不能大于结束时间,请重新选择",
+				showCancel:false
+			})
+			return;
+		}else {
+			this.itemData.Hours = (parseFloat(Hours / (3600 * 1000)/24)+1).toFixed(1);
+		}
+	},
     onKeyInput: function(event) {
       this.formList[parseInt(event.target.id) - 1].jine = event.detail.value;
       var _cache = 0;
@@ -419,6 +498,10 @@ export default {
 		startTime = startTime.replace(/-/g, '/');
 		var time1 = new Date(startTime);
 		time1 = time1.getTime();
+		if(time2 === time1){
+			this.itemData.Hours = 0;
+			return
+		}
 		var endDate1 = this.resultInfo2.checkArr[0]+"-"+this.resultInfo2.checkArr[1]+"-"+this.resultInfo2.checkArr[2]+" "+this.SecondOffTime;
 		endDate1 = endDate1.replace(/-/g, '/');
 		var Etime = new Date(endDate1);
@@ -428,12 +511,12 @@ export default {
 		var EOtime = new Date(endOnTime);
 		EOtime = EOtime.getTime();
 		var everyDay = (Etime-EOtime)/1000/3600;
-		var endHour = this.SecondOffTime.slice(0,1);
+		var endHour = this.SecondOffTime.slice(0,2);
 		var beginDate1 = this.resultInfo1.checkArr[0]+"-"+this.resultInfo1.checkArr[1]+"-"+this.resultInfo1.checkArr[2]+" "+this.FirstOnTime;
 		beginDate1 = beginDate1.replace(/-/g, '/');
 		var Btime = new Date(beginDate1);
 		Btime = Btime.getTime();
-		var beginHour = this.FirstOnTime.slice(0,1);
+		var beginHour = this.FirstOnTime.slice(0,2);
 		var year2 = this.resultInfo2.checkArr[0];
 		var month2 = this.resultInfo2.checkArr[1];
 		var day2 = this.resultInfo2.checkArr[2];
@@ -451,7 +534,7 @@ export default {
 		var gooutDate = "";
 		if(year2!==year1 || month2!==month1){
 			this.itemData.GooutHoursText === 'Day';
-			this.indexGooutHoursText = 1;
+			this.indexGooutHoursText = 0;
 			this.itemData.GooutHoursTextName === this.GooutHoursTextType[this.indexGooutHoursText] === "天";
 		}else if(year2===year1 && month2===month1){
 			if(day1===day2){
@@ -490,7 +573,7 @@ export default {
 					
 				},err=>{})
 				this.itemData.GooutHoursText === 'Hour';
-				this.indexGooutHoursText = 0;
+				this.indexGooutHoursText = 1;
 				this.itemData.GooutHoursTextName === this.GooutHoursTextType[this.indexGooutHoursText] === "小时";
 				var date = year2+'-'+month2+'-'+day2;
 				for(var i in this.HolidayScheduleList){
@@ -567,7 +650,7 @@ export default {
 					
 			}
 			this.itemData.GooutHoursText === 'Hour';
-			this.indexGooutHoursText = 0;
+			this.indexGooutHoursText = 1;
 			this.itemData.GooutHoursTextName === this.GooutHoursTextType[this.indexGooutHoursText] === "小时";
 			var hour = Math.floor((time2 -time1)/1000/24/3600-1*1000/24/3600);
 			if(hour1<=beginHour){

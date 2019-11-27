@@ -147,7 +147,8 @@
 					let year = date.getFullYear();
 					let m = date.getMonth() + 1;
 					let d = date.getDate();
-					return '[' + year + ',' + m + ',' + d + ',0,0,0]';
+					let h = date.getHours();
+					return '[' + year + ',' + m + ',' + d + ',' + h + ',0,0]';
 				}
 			},
 			step: {
@@ -183,10 +184,10 @@
 				let tMonth = this.formatNum(aToday.getMonth() + 1).toString();
 				let tDay = this.formatNum(aToday.getDate()).toString();
 				let tHours = this.formatNum(aToday.getHours()).toString();
-				let tMinutes = this.formatNum(aToday.getMinutes()).toString();
-				let tSeconds = this.formatNum(aToday.getSeconds()).toString();
+				let tMinutes = this.formatNum(0).toString();
+				let tSeconds = this.formatNum(0).toString();
 				if (this.current) {
-					return [tYear, tMonth, tDay, 0, 0, 0];
+					return [tYear, tMonth, tDay, tHours, tMinutes, tSeconds];
 				} else {
 					return this.defaultVal;
 				}
