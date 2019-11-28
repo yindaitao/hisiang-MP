@@ -253,7 +253,7 @@ export default {
 				rowsPerPage: "10000",
 				type: "Initialize",
 				Parameter: {
-				  LoadChildren: "NoLoad",
+				  LoadChildren: "Load",
 				  Conditions: [
 				    {
 				      FieldName: "Activated",
@@ -267,8 +267,40 @@ export default {
 			this.$mbservices.Request(this.$webapi.getScheduleList,"POST",ajaxJSON,res=>{
 				if(res.data.RecordCount>0)
 				{
-					this.FirstOnTime=res.data.data[0].FirstOnTime;
-					this.SecondOffTime = res.data.data[0].SecondOffTime;
+					res.data.data.forEach(item => {
+						var ScheduleLines = item.ScheduleLines;
+						ScheduleLines.forEach(inner => {
+							if(inner.UserId.toString() === uni.getStorageSync('JSUserInfo').UserId.toString()){
+								this.FirstOnTime=item.FirstOnTime;
+								this.SecondOffTime = item.SecondOffTime;
+							}
+						})
+					})
+				}
+				
+			},err=>{})
+		},
+		getInitialize:async function(){
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
+			this.$mbservices.Request(this.$webapi.getInitialize,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					console.log(res.data.data);
 				}
 				
 			},err=>{})
@@ -555,7 +587,14 @@ export default {
 						this.itemData.Hours = (hour*everyDay+everyDay-(time1-Btime)/1000/3600).toFixed(2);
 					}
 				}
-				
+				var IntegralHour = this.itemData.Hours%everyDay;
+				var IntegralNumber = this.itemData.Hours/everyDay;
+				var decimal = IntegralNumber- IntegralHour;
+				if(decimal === 0){
+					this.itemData.Hours = this.itemData.Hours/everyDay;
+				}else if(decimal > 0){
+					
+				}
 			}
 	},
     onSelected(data) {
@@ -838,6 +877,7 @@ export default {
 	  this.getInvCompany();
 	  this.getHolidaySchedule();
 	  this.getScheduleList();
+	  this.getInitialize();
 	  var _this = this;
 	  setTimeout(function(){
 		  _this.getDetailData();
@@ -854,6 +894,7 @@ export default {
 		this.getInvCompany();
 		this.getHolidaySchedule();
 		this.getScheduleList();
+		this.getInitialize();
   },
   onUnload() {
     this.totalJine = "0.00";

@@ -447,6 +447,40 @@ export default {
 		var time2 = new Date(startTime);
 		time2 = time2.getTime();
 		var Hours = time1 - time2;
+		var ajaxJSON = {};
+		this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST",ajaxJSON,res=>{
+			if(res.data.RecordCount>0)
+			{
+				console.log(res.data.data);
+				res.data.data.forEach(item => {
+					var d = new Date(item.DataDate);
+					let MM = d.getMonth() + 1;
+					MM = MM < 10 ? ('0' + MM) : MM;
+					let DD = d.getDate();
+					DD = DD < 10 ? ('0' + DD) : DD;
+					var times=d.getFullYear() + '-' + MM + '-' + DD;
+					if(times === this.itemData.BeginDate){
+						var type = "";
+						if(!this.$mbservices.isEmpty(item.Goout)){
+							type = "外出";
+						}else if(!this.$mbservices.isEmpty(item.Trip)){
+							type = "出差";
+						}else if(!this.$mbservices.isEmpty(item.Leave)){
+							type = "请假";
+						}
+						if(!this.$mbservices.isEmpty(type)){
+							uni.showModal({
+								title:"提示",
+								content:times+"这天你已经申请了"+type,
+								showCancel:false
+							})
+						}
+						this.itemData.Hours = 0;
+					}
+				})
+			}
+			
+		},err=>{})
 		if(Hours < 0){
 			this.itemData.BeginDate = "请选择";
 			this.itemData.Hours = 0;
@@ -572,6 +606,7 @@ export default {
 										showCancel:false
 									})
 								}
+								this.itemData.Hours = 0;
 							}
 						})
 					}
@@ -590,6 +625,7 @@ export default {
 							content:"当前时间为"+this.HolidayScheduleList[i].typeDes+"，不需要申请外出",
 							showCancel:false
 						})
+						this.itemData.Hours = 0;
 					return;
 					}else{
 						if(hour1<beginHour && hour2<beginHour){

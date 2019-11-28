@@ -369,6 +369,40 @@ export default {
 			var time2 = new Date(startTime);
 			time2 = time2.getTime();
 			var LeaveHours = time1 - time2;
+			var ajaxJSON = {};
+			this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST",ajaxJSON,res=>{
+				if(res.data.RecordCount>0)
+				{
+					console.log(res.data.data);
+					res.data.data.forEach(item => {
+						var d = new Date(item.DataDate);
+						let MM = d.getMonth() + 1;
+						MM = MM < 10 ? ('0' + MM) : MM;
+						let DD = d.getDate();
+						DD = DD < 10 ? ('0' + DD) : DD;
+						var times=d.getFullYear() + '-' + MM + '-' + DD;
+						if(times === this.itemData.BeginDate){
+							var type = "";
+							if(!this.$mbservices.isEmpty(item.Goout)){
+								type = "外出";
+							}else if(!this.$mbservices.isEmpty(item.Trip)){
+								type = "出差";
+							}else if(!this.$mbservices.isEmpty(item.Leave)){
+								type = "请假";
+							}
+							if(!this.$mbservices.isEmpty(type)){
+								uni.showModal({
+									title:"提示",
+									content:times+"这天你已经申请了"+type,
+									showCancel:false
+								})
+							}
+							this.itemData.LeaveHours = 0;
+						}
+					})
+				}
+				
+			},err=>{})
 			if(LeaveHours === 0){
 				var HTime = this.itemData.EndDate;
 				for(var i in this.HolidayScheduleList){
@@ -408,6 +442,7 @@ export default {
 				that.itemData.BeginDate = '请选择';
 				that.itemData.EndDate = '请选择';
 			}
+			this.itemData.LeaveHours = 0;
 			if(this.itemData.LeaveHoursText!=='Day'&&!this.$mbservices.isEmpty(this.resultInfo1) && !this.$mbservices.isEmpty(this.resultInfo2)){
 				this.computTime();
 			}
@@ -430,6 +465,7 @@ export default {
 					}
 				}
 			}
+			this.itemData.LeaveHours = 0;
 		},
     showModal(e) {
 		if(this.$mbservices.isEmpty(this.itemData.LeaveHours)||this.$mbservices.isEmpty(this.itemData.BeginDate)||this.$mbservices.isEmpty(this.itemData.EndDate)
@@ -697,7 +733,7 @@ export default {
 										showCancel:false
 									})
 								}
-								
+								this.itemData.LeaveHours = 0;
 							}
 						})
 					}
@@ -715,6 +751,7 @@ export default {
 							content:"当前时间为"+this.HolidayScheduleList[i].Name+"，不需要请假",
 							showCancel:false
 						})
+						this.itemData.LeaveHours = 0;
 						return;
 					}else{
 						if(hour1<beginHour && hour2<beginHour){

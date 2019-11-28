@@ -68,8 +68,8 @@
 				</view>
 				<view class="cu-form-group">
 					<view class="title">出差时长</view>
-					<input disabled="true" placeholder="出差时长(单位:天)" name="input" type="digit" style="text-align: right;"
-					 @input="inputHours(itemData,$event)" :value="itemData.TripHours">
+					<input disabled="true" placeholder="出差时长(单位:天)" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
+					 :value="itemData.TripHours">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-bar bg-gray solid-bottom margin-top">
@@ -85,7 +85,8 @@
 						 :range="TripCompanions">
 							<view class="picker">{{TripCompanions[item.indexType].UserName}}</view>
 						</picker>
-						<button v-if="formList.length>1" v-show="edit?false:true" class="cu-btn icon" @tap="deleteOption(item)" data-target="menuModal">
+						<button v-if="formList.length>1" v-show="edit?false:true" class="cu-btn icon" @tap="deleteOption(item)"
+						 data-target="menuModal">
 							<text class="icon-roundclosefill" style="font-size: 1.5em;color:red;"></text>
 						</button>
 					</view>
@@ -101,7 +102,7 @@
 				<view class="cu-form-group">
 					<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
 					 placeholder-class="placeholder" data-placeholder="在此输入出差事由" :value="itemData.Cause" />
-				</view>
+					</view>
       </form>
     </view>
 	<view style="width: :100%;height: 50px;"></view>
@@ -174,7 +175,10 @@ export default {
 	  radio3:'radio3',
       enddate: "",
       themeColor: "",
-	  TripCompanions:[],
+	  TripCompanions:[{
+		  UserId:"0",
+		  UserName:"请选择"
+	  }],
 	  indexType:0,
 	  itemData:{
 		  DocEntry:"",
@@ -191,9 +195,9 @@ export default {
        formList: [
               {
                 id: 1,
-                UserId:"1",
-      		  UserName:"管理员",
-      		  indexType:0,
+                UserId:"0",
+      		    UserName:"请选择",
+      		    indexType:0,
               }
             ],
       editEntitysList: [],
@@ -202,6 +206,7 @@ export default {
       isDoSteps: false,
 	  edit:false,
 	  from:"",
+	  HolidayScheduleList:[],
     };
   },
   computed: {
@@ -249,7 +254,34 @@ export default {
 				  	this.$mbservices.Request(this.$webapi.getUserList,"POST",ajaxJSON,res=>{
 				  		if(res.data.RecordCount>0)
 				  		{
-				  			this.TripCompanions=res.data.data;
+				  			res.data.data.forEach(item =>{
+								this.TripCompanions.push(item)
+							})
+				  		}
+				  		
+				  	},err=>{})
+				  },
+				  getHolidaySchedule:async function(){
+				  	var ajaxJSON={
+				  		pageIndex: 1,
+				  		rowsPerPage: "10000",
+				  		type: "Initialize",
+				  		Parameter: {
+				  		  LoadChildren: "NoLoad",
+				  		  Conditions: [
+				  		    {
+				  		      FieldName: "Activated",
+				  		      Operation: "EQUAL",
+				  		      ConditionValue: "Y",
+				  		      Relationship: "AND"
+				  		    }
+				  		  ]
+				  		}
+				  	};
+				  	this.$mbservices.Request(this.$webapi.getHolidaySchedule,"POST",ajaxJSON,res=>{
+				  		if(res.data.RecordCount>0)
+				  		{
+				  			this.HolidayScheduleList=res.data.data;
 				  		}
 				  		
 				  	},err=>{})
@@ -320,6 +352,58 @@ export default {
 		var time2 = new Date(startTime);
 		time2 = time2.getTime();
 		var TripHours = time1 - time2;
+		var ajaxJSON = {};
+		this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST",ajaxJSON,res=>{
+			if(res.data.RecordCount>0)
+			{
+				console.log(res.data.data);
+				res.data.data.forEach(item => {
+					var d = new Date(item.DataDate);
+					let MM = d.getMonth() + 1;
+					MM = MM < 10 ? ('0' + MM) : MM;
+					let DD = d.getDate();
+					DD = DD < 10 ? ('0' + DD) : DD;
+					var times=d.getFullYear() + '-' + MM + '-' + DD;
+					if(times === this.itemData.BeginDate){
+						console.log();
+						var type = "";
+						if(!this.$mbservices.isEmpty(item.Goout)){
+							type = "外出";
+						}else if(!this.$mbservices.isEmpty(item.Trip)){
+							type = "出差";
+						}else if(!this.$mbservices.isEmpty(item.Leave)){
+							type = "请假";
+						}
+						if(!this.$mbservices.isEmpty(type)){
+							uni.showModal({
+								title:"提示",
+								content:times+"这天你已经申请了"+type,
+								showCancel:false
+							})
+							this.itemData.TripHours = 0;
+						}
+					}
+				})
+			}
+			
+		},err=>{})
+		if(TripHours === 0){
+			var HTime = this.itemData.EndDate;
+			this.itemData.TripHours = 1;
+			for(var i in this.HolidayScheduleList){
+				if(this.HolidayScheduleList[i].Date === HTime){
+					uni.showModal({
+						title:"提示",
+						content:"当前时间为"+this.HolidayScheduleList[i].Name+"，不能算在出差",
+						showCancel:false
+					})
+					this.itemData.TripHours = 0;
+					return;
+				}else{
+					this.itemData.TripHours = 1;
+				}
+			}
+		}
 		if(TripHours < 0){
 			this.itemData.BeginDate = "请选择";
 			this.itemData.TripHours = 0;
@@ -356,8 +440,8 @@ export default {
 		var _this = this;
 		_this.indexType = e.target.value;
 		item.indexType = e.target.value;
-		item.UserId = _this.TripCompanions[item.indexType].UserName;
-		item.UserName = _this.TripCompanions[item.indexType].UserId;
+		item.UserId = _this.TripCompanions[item.indexType].UserId;
+		item.UserName = _this.TripCompanions[item.indexType].UserName;
 	},
     onlySave() {
       this.modalName = null;
@@ -372,8 +456,8 @@ export default {
 	addOption(e) {
 	  this.formList.push({
 	    id: this.formList.length + 1,
-		UserId:"",
-		UserName:"",
+		UserId:"0",
+		UserName:"请选择",
 		indexType:0,
 	  });
 	},
@@ -403,19 +487,23 @@ export default {
 	  var _lines = new Array();
 	  var _indx = 0;
 	  _this.formList.forEach(_item => {
-	    _indx = parseInt(_indx) + 1;
-	  		var lineItem = {
-				DocEntry: _this.itemData.DocEntry,
-	  			  LineNum: _indx,
-	  			  ObjectType: "Trip",
-				  UserId: _item.UserId,
-				  UserName: _item.UserName,
-	  			  Canceled: "N",
-	  			  Closed: "N",
-	  			  LineStatus: "O",
-	  			  UIStatus: "New",
-	  			};
-				_lines.push(lineItem);
+		  if(_this.formList.length===1&&_this.formList[0].UserName==='请选择'){
+			_lines = [];
+		  }else{
+			  _indx = parseInt(_indx) + 1;
+			  var lineItem = {
+			  	DocEntry: _this.itemData.DocEntry,
+			  	  LineNum: _indx,
+			  	  ObjectType: "Trip",
+			  	  UserId: _item.UserId,
+			  	  UserName: _item.UserName,
+			  	  Canceled: "N",
+			  	  Closed: "N",
+			  	  LineStatus: "O",
+			  	  UIStatus: "New",
+			  	};
+			  	_lines.push(lineItem);
+		  }
 		})		
       var ajaxJSON = {};
       if (_this.editflag) {
@@ -827,6 +915,7 @@ export default {
 	  });
 	  var _this = this;
 	  _this.getUserList();
+	  _this.getHolidaySchedule();
 	  setTimeout(function(){
 	  		  _this.getDetailData();
 	  }, 1000);
@@ -838,6 +927,7 @@ export default {
 				this.itemData.DocEntry=res.data;
 			},null);
 			this.getUserList();
+			this.getHolidaySchedule();
 		}
   },
 };
