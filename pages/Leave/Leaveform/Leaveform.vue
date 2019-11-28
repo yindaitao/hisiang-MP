@@ -182,6 +182,8 @@ export default {
 	  FirstOnTime:"",
 	  // 第二段标准下班时间
 	  SecondOffTime:"",
+	  // 系统初始化表里的每天工作时长
+	  InitializeDay: 0,
     };
   },
   computed: {
@@ -269,11 +271,27 @@ export default {
 			},err=>{})
 		},
 		getInitialize:async function(){
-			var ajaxJSON={};
+			var ajaxJSON={
+				pageIndex: 1,
+				rowsPerPage: "10000",
+				type: "Initialize",
+				Parameter: {
+				  LoadChildren: "NoLoad",
+				  Conditions: [
+				    {
+				      FieldName: "Activated",
+				      Operation: "EQUAL",
+				      ConditionValue: "Y",
+				      Relationship: "AND"
+				    }
+				  ]
+				}
+			};
 			this.$mbservices.Request(this.$webapi.getInitialize,"POST",ajaxJSON,res=>{
 				if(res.data.RecordCount>0)
 				{
-					console.log(res.data.data);
+					this.InitializeDay = res.data.data[0].Day;
+					console.log(this.InitializeDay);
 				}
 				
 			},err=>{})
@@ -732,8 +750,8 @@ export default {
 										content:times+"这天你已经申请了"+type,
 										showCancel:false
 									})
+									this.itemData.LeaveHours = 0;
 								}
-								this.itemData.LeaveHours = 0;
 							}
 						})
 					}
@@ -751,11 +769,14 @@ export default {
 							content:"当前时间为"+this.HolidayScheduleList[i].Name+"，不需要请假",
 							showCancel:false
 						})
-						this.itemData.LeaveHours = 0;
 						return;
 					}else{
 						if(hour1<beginHour && hour2<beginHour){
-							console.log("还没开始上班");
+							uni.showModal({
+								title:"提示",
+								content:"还没开始上班，不需要请假",
+								showCancel:false
+							})
 							return;
 						}
 						// 开始时间小于8点
@@ -764,7 +785,7 @@ export default {
 							if(hour2<endHour){
 								this.itemData.LeaveHours = everyDay - ((Etime-time2)/1000/3600).toFixed(2);
 							}else if(hour2>=endHour){
-								this.itemData.LeaveHours = (everyDay).toFixed(2);
+								this.itemData.LeaveHours = (this.InitializeDay).toFixed(2);
 							}
 						}else if(hour1>beginHour){
 							if(hour2<endHour){
@@ -776,71 +797,61 @@ export default {
 					}
 				}
 			}else{
-				var leaveDateList = [];
-				var typeList = [];
-				for(var j=0;j<=leaveH;j++){ 
-					leaveDate = "";
-					leaveDate = year1+'-'+month1+"-"+(parseInt(day1)+parseInt(j));
-					var type = "";
-					this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST","",res=>{
-						if(res.data.RecordCount>0)
-						{
-							res.data.data.forEach(item => {
-								var d = new Date(item.DataDate);
-								let MM = d.getMonth() + 1;
-								MM = MM < 10 ? ('0' + MM) : MM;
-								let DD = d.getDate();
-								DD = DD < 10 ? ('0' + DD) : DD;
-								var times=d.getFullYear() + '-' + MM + '-' + DD;
-								if(times === leaveDate){
-									if(!this.$mbservices.isEmpty(item.Goout)){
-										type = "外出";
-										leaveDateList.push(times);
-										typeList.push(type)
-									}else if(!this.$mbservices.isEmpty(item.Trip)){
-										type = "出差";
-										leaveDateList.push(times);
-										typeList.push(type)
-									}else if(!this.$mbservices.isEmpty(item.Leave)){
-										type = "请假";
-										leaveDateList.push(times);
-										typeList.push(type)
-									}else{
-										type = "";
-									}
+				leaveDate = "";
+				leaveDate = year1+'-'+month1+"-"+day1;
+				var type = "";
+				this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST","",res=>{
+					if(res.data.RecordCount>0)
+					{
+						res.data.data.forEach(item => {
+							var d = new Date(item.DataDate);
+							let MM = d.getMonth() + 1;
+							MM = MM < 10 ? ('0' + MM) : MM;
+							let DD = d.getDate();
+							DD = DD < 10 ? ('0' + DD) : DD;
+							var times=d.getFullYear() + '-' + MM + '-' + DD;
+							if(times === leaveDate){
+								if(!this.$mbservices.isEmpty(item.Goout)){
+									type = "外出";
+								}else if(!this.$mbservices.isEmpty(item.Trip)){
+									type = "出差";
+								}else if(!this.$mbservices.isEmpty(item.Leave)){
+									type = "请假";
 								}
-							})
-						}
-						
-					},err=>{})
-					if(leaveDateList.length>0){
-						for(var i in leaveDateList){
-							console.log(leaveDateList[i]);
-							console.log(typeList[i]);
-							uni.showModal({
-								title:"提示",
-								content:leaveDateList[i]+"你已经申请了"+typeList[i],
-								showCancel:false
-							})
-						}
+								if(!this.$mbservices.isEmpty(type)){
+									uni.showModal({
+										title:"提示",
+										content:times+"这天你已经申请了"+type,
+										showCancel:false
+									})
+									this.itemData.LeaveHours = 0;
+								}
+							}
+						})
 					}
-			}
+					
+				},err=>{})
+				if(hour1 === hour2){
+					this.itemData.LeaveHours = ((time2 -time1)/1000/24/3600*8).toFixed(2);
+					console.log();
+					return;
+				}
 			var hour = Math.floor((time2 -time1)/1000/24/3600-1*1000/24/3600);
 			if(hour1<=beginHour){
 				if(hour2<=beginHour){
-					this.itemData.LeaveHours = (hour*everyDay).toFixed(2);
+					this.itemData.LeaveHours = (hour*this.InitializeDay).toFixed(2);
 				}else if(hour2>beginHour && hour2<endHour){
-					this.itemData.LeaveHours = (hour*everyDay+everyDay-(Etime-time2)/1000/3600).toFixed(2);
+					this.itemData.LeaveHours = (hour*this.InitializeDay+everyDay-(Etime-time2)/1000/3600).toFixed(2);
 				}else if(hour2>=endHour){
-					this.itemData.LeaveHours = (hour*everyDay+everyDay).toFixed(2);
+					this.itemData.LeaveHours = (hour*this.InitializeDay+everyDay).toFixed(2);
 				}
 			}else if(hour1>beginHour){
 				if(hour1>=endHour){
-					this.itemData.LeaveHours = (hour*everyDay).toFixed(2);
+					this.itemData.LeaveHours = (hour*this.InitializeDay).toFixed(2);
 				}else if(hour2<endHour){
-					this.itemData.LeaveHours = (hour*everyDay-(time1-Btime)/1000/3600-(Etime-time2)/1000/3600).toFixed(2);
+					this.itemData.LeaveHours = (hour*this.InitializeDay-(time1-Btime)/1000/3600-(Etime-time2)/1000/3600).toFixed(2);
 				}else if(hour2>=endHour){
-					this.itemData.LeaveHours = (hour*everyDay+everyDay-(time1-Btime)/1000/3600).toFixed(2);
+					this.itemData.LeaveHours = (hour*this.InitializeDay+everyDay-(time1-Btime)/1000/3600).toFixed(2);
 				}
 			}
 			}

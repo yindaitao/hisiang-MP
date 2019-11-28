@@ -145,9 +145,11 @@ export default {
 			  resultInfo2:{},
 			  HolidayScheduleList:[],
 			  // 第一段标准上班时间
-			  FirstOnTime:"",
+			  FirstOnTime: "",
 			  // 第二段标准下班时间
-			  SecondOffTime:"",
+			  SecondOffTime: "",
+			  // 系统初始化表里的每天工作时长
+			  InitializeDay: 0,
 			};
   },
   computed: {
@@ -300,7 +302,8 @@ export default {
 			this.$mbservices.Request(this.$webapi.getInitialize,"POST",ajaxJSON,res=>{
 				if(res.data.RecordCount>0)
 				{
-					console.log(res.data.data);
+					this.InitializeDay = res.data.data[0].Day;
+					console.log(this.InitializeDay);
 				}
 				
 			},err=>{})
@@ -515,9 +518,13 @@ export default {
 		var Btime = new Date(beginDate1);
 		Btime = Btime.getTime();
 		var beginHour = this.FirstOnTime.slice(0,2);
-		if(time1>time2){
-			this.itemData.BeginDate = "";
-			this.itemData.EndDate = "";
+		if(time2===time1){
+			this.itemData.Hours = 0;
+			return;
+		}
+		if(time2<time1){
+			this.itemData.BeginDate = "请选择";
+			this.itemData.Hours = 0;
 			return;
 		}
 		var year2 = this.resultInfo2.checkArr[0];
@@ -539,7 +546,7 @@ export default {
 					if(this.HolidayScheduleList[i].Date === date){
 						this.itemData.Hours = (hour2-hour1+(minute2-minute1)/60).toFixed(2);
 						if(this.itemData.Hours > everyDay){
-							this.itemData.Hours = everyDay;
+							this.itemData.Hours = this.InitializeDay;
 						}
 					   return;
 					}else{
@@ -571,29 +578,21 @@ export default {
 				var hour = Math.floor((time2 -time1)/1000/24/3600-1*1000/24/3600);
 				if(hour1<=beginHour){
 					if(hour2<=beginHour){
-						this.itemData.Hours = (hour*everyDay).toFixed(2);
+						this.itemData.Hours = (hour*this.InitializeDay).toFixed(2);
 					}else if(hour2>beginHour && hour2<endHour){
-						this.itemData.Hours = (hour*everyDay+everyDay-(Etime-time2)/1000/3600).toFixed(2);
+						this.itemData.Hours = (hour*this.InitializeDay+everyDay-(Etime-time2)/1000/3600).toFixed(2);
 					}else if(hour2>=endHour){
-						this.itemData.Hours = (hour*everyDay+everyDay).toFixed(2);
+						this.itemData.Hours = (hour*this.InitializeDay+this.InitializeDay).toFixed(2);
 					}
 				}else if(hour1>beginHour){
 					if(hour1>=endHour){
-						this.itemData.Hours = (hour*everyDay).toFixed(2);
+						this.itemData.Hours = (hour*this.InitializeDay).toFixed(2);
 					}
 					else if(hour2<endHour){
-						this.itemData.Hours = (hour*everyDay+everyDay-(time1-Btime)/1000/3600-(Etime-time2)/1000/3600).toFixed(2);
+						this.itemData.Hours = (hour*this.InitializeDay+everyDay-(time1-Btime)/1000/3600-(Etime-time2)/1000/3600).toFixed(2);
 					}else if(hour2>=endHour){
-						this.itemData.Hours = (hour*everyDay+everyDay-(time1-Btime)/1000/3600).toFixed(2);
+						this.itemData.Hours = (hour*this.InitializeDay+everyDay-(time1-Btime)/1000/3600).toFixed(2);
 					}
-				}
-				var IntegralHour = this.itemData.Hours%everyDay;
-				var IntegralNumber = this.itemData.Hours/everyDay;
-				var decimal = IntegralNumber- IntegralHour;
-				if(decimal === 0){
-					this.itemData.Hours = this.itemData.Hours/everyDay;
-				}else if(decimal > 0){
-					
 				}
 			}
 	},
