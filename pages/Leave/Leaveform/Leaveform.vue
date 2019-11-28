@@ -832,8 +832,7 @@ export default {
 					
 				},err=>{})
 				if(hour1 === hour2){
-					this.itemData.LeaveHours = ((time2 -time1)/1000/24/3600*8).toFixed(2);
-					console.log();
+					this.itemData.LeaveHours = ((time2 -time1)/1000/24/3600*this.InitializeDay).toFixed(2);
 					return;
 				}
 			var hour = Math.floor((time2 -time1)/1000/24/3600-1*1000/24/3600);

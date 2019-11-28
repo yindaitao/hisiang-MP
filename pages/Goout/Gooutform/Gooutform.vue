@@ -722,7 +722,7 @@ export default {
 			this.indexGooutHoursText = 1;
 			this.itemData.GooutHoursTextName === this.GooutHoursTextType[this.indexGooutHoursText] === "小时";
 			if(hour1 === hour2){
-				this.itemData.LeaveHours = ((time2 -time1)/1000/24/3600*8).toFixed(2);
+				this.itemData.LeaveHours = ((time2 -time1)/1000/24/3600*this.InitializeDay).toFixed(2);
 				console.log();
 				return;
 			}
