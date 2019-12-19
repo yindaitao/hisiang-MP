@@ -105,6 +105,7 @@
 		},
 		methods: {
 			goDetail(item) {
+				console.log(item);
 				item.flag = "tasklist";
 				item.from = "tasklist";
 				switch (item.BaseType) {
@@ -143,6 +144,12 @@
 								item)
 						});
 						break;
+					case "AttendanceRecord":
+						uni.navigateTo({
+							url: '/pages/CommonConfirm/CommonConfirm?flag=tasklist&data=' + JSON.stringify(
+								item)
+						});
+						break;
 					default:
 						break;
 				}
@@ -159,7 +166,7 @@
 				console.log(this.$refs);
 				this.$refs.mpvuePicker.show()
 			},
-			inpuSearch(e){
+			inpuSearch(e) {
 				this.searchValue = e.target.value;
 			},
 			tabSelect(e) {

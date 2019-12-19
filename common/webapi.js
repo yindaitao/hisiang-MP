@@ -1,4 +1,6 @@
-var websiteUrl = "https://oa.magicbox.net.cn"; // "https://so.magicdata.co";
+var websiteUrl = "http://localhost:62142";
+/* https://oa.magicbox.net.cn*/
+/* http://localhost:62142 */
 /* http://localhost:51682 */
 /* http://oa.magicbox.net.cn */
 /* http://192.168.0.109:8080 */
@@ -160,11 +162,15 @@ module.exports = {
 	// 获取发票类型
 	getVatRecords: websiteUrl + '/api/Vat/GetRecords',
 	// 获取系统初始化表格的数据
-	 getInitialize:websiteUrl + '/api/Initialize/GetInitialize',
+	getInitialize: websiteUrl + '/api/Initialize/GetInitialize',
 	// 获取公休时间表的数据
-	getHolidaySchedule:websiteUrl + '/api/HolidaySchedule/GetRecords',
+	getHolidaySchedule: websiteUrl + '/api/HolidaySchedule/GetRecords',
 	// 获取指定用户当前月份的外出次数，出差天数，请假，外出，
-	GetCurrentMonthGooutAndTripList:websiteUrl + '/api/HolidayType/GetCurrentMonthGooutAndTripList',
+	GetCurrentMonthGooutAndTripList: websiteUrl + '/api/HolidayType/GetCurrentMonthGooutAndTripList',
 	/* 获取适用当前用户的排版班信息 */
-	getScheduleList: websiteUrl + '/api/Schedule/GetRecords'
+	getScheduleList: websiteUrl + '/api/Schedule/GetRecords',
+	/* 考勤确认 */
+	AttendanceSave: websiteUrl + '/api/AttendanceRecord/Save',
+	/* 获取考勤 */
+	GetAttendanceRecords: websiteUrl + '/api/AttendanceRecord/GetRecordsArr'
 }

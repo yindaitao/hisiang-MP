@@ -44,6 +44,17 @@
         }
     ],
     "subPackages": [
+		{
+		    "root": "pages/CommonConfirm",
+		    "pages": [
+		        {
+		            "path": "CommonConfirm",
+		            "style": {
+		                "navigationBarTitleText": "确认"
+		            }
+		        }
+		    ]
+		},
         {
             "root": "pages/costApp",
             "pages": [
