@@ -43,12 +43,6 @@
 					</picker>
 				</view>
 				<view class="cu-form-group">
-					<view class="title">出发地点</view>
-					<input :disabled="edit?true:false" placeholder="出发地点" name="input" style="text-align: right;" @input="inputNumStartPlace($event)"
-					 :value="itemData.StartPlace">
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
-				<view class="cu-form-group">
 					<view class="title">到达日期</view>
 					<picker :disabled="edit?true:false" mode="date" :value="itemData.EndDate" :start="startDate" :end="endDate"
 					 @change="bindDateChange1(itemData,$event)">
@@ -56,22 +50,18 @@
 					</picker>
 				</view>
 				<view class="cu-form-group">
-					<view class="title">到达地点</view>
-					<input :disabled="edit?true:false" placeholder="到达地点" name="input" style="text-align: right;" @input="inputNumArrivePlace($event)"
-					 :value="itemData.ArrivePlace">
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">交通工具</view>
-					<text class="cu-tag round bg-blue light" data-target="RadioModalTraffic" @tap="showModalTraffic($event)">{{itemData.TrafficTypeName}}</text>
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
-				<view class="cu-form-group">
 					<view class="title">出差时长</view>
 					<input disabled="true" placeholder="出差时长(单位:天)" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
 					 :value="itemData.TripHours">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
+				<view class="cu-form-group">
+					<view class="title">行程及交通工具</view>
+				</view>
+				<view class="cu-form-group">
+					<textarea @input="BeginDateAStartPlaceInput" :class="itemData.BeginDateAndStartPlace?'value':''" maxlength="-1"
+					 :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入行程及交通工具" :value="itemData.BeginDateAndStartPlace" />
+					</view>
 				<view class="cu-bar bg-gray solid-bottom margin-top">
 					<view class="action">
 						<text class="icon-title text-orange"></text>
@@ -136,42 +126,7 @@ export default {
   data() {
     return {
 		    time: Date.parse(new Date()),
-			TrafficTypeList:[{
-				Code:"Gaotie",
-				Name:"高铁"
-			},{
-				Code:"Aircraft",
-				Name:"飞机"
-			},{
-				Code:"Huoche",
-				Name:"火车"
-			},{
-				Code:"Bus",
-				Name:"客车"
-			},{
-				Code:"Ship",
-				Name:"轮船"
-			},{
-				Code:"Taxi",
-				Name:"出租车"
-			},{
-				Code:"PublicBus",
-				Name:"公交车"
-			},{
-				Code:"Zuche",
-				Name:"自驾租赁"
-			},{
-				Code:"Myself",
-				Name:"自驾私车"
-			},{
-				Code:"Common",
-				Name:"自驾公车"
-			},{
-				Code:"Other",
-				Name:"其他工具"
-			}],
       modalName: null,
-	  modalNameTraffic:null,
 	  radio3:'radio3',
       enddate: "",
       themeColor: "",
@@ -184,10 +139,7 @@ export default {
 		  DocEntry:"",
 		  BeginDate:"请选择",
 		  EndDate: "请选择",
-		  StartPlace:"",
-		  ArrivePlace:"",
-		  TrafficType:"",
-		  TrafficTypeName:"请选择交通工具",
+			BeginDateAndStartPlace:"",
 		  TripHours: 0,
 		  Cause:"",
 		  Remarks:"",
@@ -297,36 +249,6 @@ export default {
 			});
 		},
     showModal(e) {
-		if(this.$mbservices.isEmpty(this.itemData.StartPlace))
-		{
-			uni.showModal({
-				title:"提示",
-				content:"请输入出发地点",
-				showCancel:false,
-				
-			});
-			return false;
-		}
-		if(this.$mbservices.isEmpty(this.itemData.ArrivePlace))
-		{
-			uni.showModal({
-				title:"提示",
-				content:"请输入到达地点",
-				showCancel:false,
-				
-			});
-			return false;
-		}
-		if(this.$mbservices.isEmpty(this.itemData.TrafficType))
-		{
-			uni.showModal({
-				title:"提示",
-				content:"请选择交通工具",
-				showCancel:false,
-				
-			});
-			return false;
-		}
 		if(this.$mbservices.isEmpty(this.itemData.TripHours))
 		{
 			uni.showModal({
@@ -411,30 +333,6 @@ export default {
 		}else {
 			this.itemData.TripHours = (parseFloat(TripHours / (3600 * 1000)/24)+1).toFixed(1);
 		}
-	},
-	RadioTrafficChange(e) {
-		this.radio3 = e.detail.value;
-		this.itemData.TrafficType=e.detail.value;
-		this.TrafficTypeList.forEach(item=>{
-			if(item.Code===e.detail.value)
-			{
-				this.itemData.TrafficTypeName=item.Name;
-			}
-		})
-		this.modalNameTraffic = null;
-		this.radio3 = "";
-	},
-	showModalTraffic(e) {
-		this.modalNameTraffic = e.currentTarget.dataset.target;
-	},
-	hideModalTraffic(e) {
-	  this.modalNameTraffic = null;
-	},
-	inputNumArrivePlace(event){
-		this.itemData.ArrivePlace=event.detail.value;
-	},
-	inputNumStartPlace(event){
-		this.itemData.StartPlace=event.detail.value;
 	},
 	bindPickerChange4(item,e){
 		var _this = this;
@@ -529,10 +427,7 @@ export default {
 				_this.editEntitysList[0].Cause = _this.itemData.Cause;
 				_this.editEntitysList[0].BeginDate = _this.itemData.BeginDate;
 				_this.editEntitysList[0].EndDate = _this.itemData.EndDate;
-				_this.editEntitysList[0].StartPlace = _this.itemData.StartPlace;
-				_this.editEntitysList[0].ArrivePlace = _this.itemData.ArrivePlace;
-				_this.editEntitysList[0].ArrivePlace = _this.itemData.ArrivePlace;
-				_this.editEntitysList[0].TrafficType = _this.itemData.TrafficType;
+				_this.editEntitysList[0].BeginDateAndStartPlace = _this.itemData.BeginDateAndStartPlace;
                 _this.editEntitysList[0].UIStatus = "Modify";
         ajaxJSON = _this.editEntitysList[0];
       } else {
@@ -541,9 +436,7 @@ export default {
 		  DocNum: _this.itemData.DocEntry.toString(),
 		  BeginDate: _this.itemData.BeginDate,
 		  EndDate: _this.itemData.EndDate,
-		  StartPlace: _this.itemData.StartPlace,
-		  ArrivePlace: _this.itemData.ArrivePlace,
-		  TrafficType: _this.itemData.TrafficType,
+			BeginDateAndStartPlace: _this.itemData.BeginDateAndStartPlace,
 		  TripHours: _this.itemData.TripHours,
 		  CreateDate: this.formatDate(this.time),
 		  TripCompanions: _lines,
@@ -616,6 +509,9 @@ export default {
     textareaInput(e) {
       this.itemData.Cause = e.detail.value;
     },
+		BeginDateAStartPlaceInput(e) {
+		  this.itemData.BeginDateAndStartPlace = e.detail.value;
+		},
     bindDateChange: function(itemData, e) {
       itemData.BeginDate = e.target.value;
 	  itemData.EndDate = "请选择";
@@ -850,14 +746,7 @@ export default {
 			_$this.itemData.TripHours = item.TripHours;
 			_$this.itemData.BeginDate = item.BeginDate;
 			_$this.itemData.EndDate = item.EndDate;
-			_$this.itemData.StartPlace = item.StartPlace;
-			_$this.itemData.ArrivePlace = item.ArrivePlace;
-			_$this.itemData.TrafficType = item.TrafficType;
-			_$this.TrafficTypeList.forEach(inner => {
-				if (inner.Code === item.TrafficType) {
-					_$this.itemData.TrafficTypeName = inner.Name;
-				}
-			})
+			_$this.itemData.BeginDateAndStartPlace = item.BeginDateAndStartPlace;
 			_$this.itemData.Cause = item.Cause;
             _this.formList = [];
 			item.TripCompanions.forEach((_item, _indx) => {
@@ -974,3 +863,6 @@ export default {
   height: calc(100% - 100rpx);
 }
 </style>
+
+
+
