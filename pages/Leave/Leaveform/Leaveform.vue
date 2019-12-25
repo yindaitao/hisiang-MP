@@ -414,8 +414,8 @@ export default {
 									content:times+"这天你已经申请了"+type,
 									showCancel:false
 								})
+								this.itemData.LeaveHours = 0;
 							}
-							this.itemData.LeaveHours = 0;
 						}
 					})
 				}
