@@ -1,163 +1,127 @@
 <template>
-    <view>
-        <div class="vbox">
-            <image
-                class="top_back_img"
-                :src="userbg"
-                mode="aspectFit"
-                style="margin-top: -10px;"
-            ></image>
-            <view class="top">
-                <view
-                    class="circle"
-                    v-if="userInfo.ProfilePhoto===null||userInfo.ProfilePhoto===''"
-                >
-                    <image
-                        v-if="userInfo.Sex==='Man'"
-                        class="head"
-                        :src="userman"
-                        mode="widthFix"
-                    ></image>
-                    <image
-                        v-if="userInfo.Sex==='Woman'"
-                        class="head"
-                        :src="userfelame"
-                        mode="widthFix"
-                    ></image>
-                </view>
-                <view
-                    class="circle"
-                    v-else
-                >
-                    <image
-                        class="head"
-                        :src="userInfo.ProfilePhoto"
-                        mode="widthFix"
-                    ></image>
-                </view>
-                <view class="top-texts">
-                    <text
-                        class="name"
-                        style="color: var(--black);"
-                    >{{userInfo.UserName}}</text>
-                    <text
-                        class="depart"
-                        style="color: var(--black);"
-                    >{{userInfo.CompanyName}}</text>
-                    <view>
-                        <!-- <text style="color: var(--black);">Tel1：</text> -->
-                        <text style="color: var(--black);">{{userInfo.OrganizationName}}</text>
-                    </view>
-                </view>
-            </view>
-        </div>
-        <view class="cu-bar bg-white solid-bottom margin-top">
-            <view class="action">
-                <text class="icon-title text-orange"></text> 我的列表
-            </view>
-            <view class="action">
-                <button
-                    class="cu-btn bg-green shadow"
-                    @click="logout"
-                    data-target="menuModal"
-                >退出登录</button>
-            </view>
-        </view>
-        <view
-            class="cu-list menu"
-            :class="[menuBorder?'sm-border':'',menuCard?'card-menu margin-top':'']"
-        >
-            <view
-                class="cu-item"
-                :class="menuArrow?'arrow':''"
-            >
-                <view class="content">
-                    <text class="icon-circlefill text-grey"></text>
-                    <text class="text-grey">编辑资料</text>
-                </view>
-            </view>
-            <view
-                class="cu-item"
-                :class="menuArrow?'arrow':''"
-            >
-                <view class="content">
-                    <text class="icon-circlefill text-grey"></text>
-                    <text class="text-grey">修改密码</text>
-                </view>
-            </view>
-            <view
-                class="cu-item"
-                :class="menuArrow?'arrow':''"
-            >
-                <view class="content">
-                    <text class="icon-circlefill text-grey"></text>
-                    <text class="text-grey">清除缓存</text>
-                </view>
-            </view>
-            <view
-                class="cu-item"
-                :class="menuArrow?'arrow':''"
-            >
-                <view class="content">
-                    <text class="icon-circlefill text-grey"></text>
-                    <text class="text-grey">关于</text>
-                </view>
-            </view>
-        </view>
-    </view>
+	<view>
+		<div class="vbox">
+			<image class="top_back_img" :src="userbg" mode="aspectFit" style="margin-top: -10px;"></image>
+			<view class="top">
+				<view class="circle" v-if="userInfo.ProfilePhoto===null||userInfo.ProfilePhoto===''">
+					<image v-if="userInfo.Sex==='Man'" class="head" :src="userman" mode="widthFix"></image>
+					<image v-if="userInfo.Sex==='Woman'" class="head" :src="userfelame" mode="widthFix"></image>
+				</view>
+				<view class="circle" v-else>
+					<image class="head" :src="userInfo.ProfilePhoto" mode="widthFix"></image>
+				</view>
+				<view class="top-texts">
+					<text class="name" style="color: var(--black);">{{userInfo.UserName}}</text>
+					<text class="depart" style="color: var(--black);">{{userInfo.CompanyName}}</text>
+					<view>
+						<!-- <text style="color: var(--black);">Tel1：</text> -->
+						<text style="color: var(--black);">{{userInfo.OrganizationName}}</text>
+					</view>
+				</view>
+			</view>
+		</div>
+		<view class="cu-bar bg-white solid-bottom margin-top noBgColor">
+			<view class="action">
+				<text class="icon-title text-orange"></text> 我的列表
+			</view>
+			<view class="action">
+				<button class="cu-btn bg-green shadow" @click="logout" data-target="menuModal">退出登录</button>
+			</view>
+		</view>
+		<view class="cu-list menu" :class="[menuBorder?'sm-border':'',menuCard?'card-menu margin-top':'']">
+			<view class="cu-item" :class="menuArrow?'arrow':''" style="background-color: rgba(0,0,0,0);" @tap="NavigateToAttendance">
+				<view class="content">
+					<text class="icon-circlefill text-grey"></text>
+					<text class="text-grey">我的考勤</text>
+				</view>
+			</view>
+			<!-- <view class="cu-item" :class="menuArrow?'arrow':''">
+				<view class="content">
+					<text class="icon-circlefill text-grey"></text>
+					<text class="text-grey">编辑资料</text>
+				</view>
+			</view>
+			<view class="cu-item" :class="menuArrow?'arrow':''">
+				<view class="content">
+					<text class="icon-circlefill text-grey"></text>
+					<text class="text-grey">修改密码</text>
+				</view>
+			</view>
+			<view class="cu-item" :class="menuArrow?'arrow':''">
+				<view class="content">
+					<text class="icon-circlefill text-grey"></text>
+					<text class="text-grey">清除缓存</text>
+				</view>
+			</view>
+			<view class="cu-item" :class="menuArrow?'arrow':''">
+				<view class="content">
+					<text class="icon-circlefill text-grey"></text>
+					<text class="text-grey">关于</text>
+				</view>
+			</view> -->
+		</view>
+	</view>
 </template>
 
 <script>
-export default {
-    data() {
-        return {
-            userInfo: {},
-            userbg: this.$webapi.webroot + "/Images/MP/userbg.png",
-            man: this.$webapi.webroot + "/Images/MP/man.png",
-            felame: this.$webapi.webroot + "/Images/MP/felame.png"
-        };
-    },
-    onLoad() {
-        var uinfo = uni.getStorageSync("JSUserInfo");
-        console.log(uinfo);
-        this.userInfo = uinfo; //JSON.parse(uinfo.User);
-        var _this = this;
-        uni.getUserInfo({
-            provider: "weixin",
-            success: function(infoRes) {
-                _this.userInfo.ProfilePhoto = infoRes.userInfo.avatarUrl;
-            }
-        });
-    },
-    methods: {
-        test() {
-            uni.navigateTo({
-                url: "/pages/demo/testColorUI/testColorUI"
-            });
-        },
-        logout() {
-            console.log("yes");
-            uni.showModal({
-                title: "提示",
-                content: "确认退出登陆？",
-                success: function(res) {
-                    if (res.confirm) {
-                        uni.removeStorage({
-                            key: "JSUserInfo",
-                            success(res) {
-                                uni.redirectTo({
-                                    url: "/pages/login/login"
-                                });
-                            }
-                        });
-                    } else if (res.cancel) {
-                        console.log("用户点击取消");
-                    }
-                }
-            });
-        }
-    }
-};
+	export default {
+		data() {
+			return {
+				menuBorder: true,
+				menuCard: true,
+				menuArrow: true,
+				userInfo: {},
+				userbg: this.$webapi.webroot + "/Images/MP/userbg.png",
+				man: this.$webapi.webroot + "/Images/MP/man.png",
+				felame: this.$webapi.webroot + "/Images/MP/felame.png"
+			};
+		},
+		onLoad() {
+			var uinfo = uni.getStorageSync("JSUserInfo");
+			console.log(uinfo);
+			this.userInfo = uinfo; //JSON.parse(uinfo.User);
+			var _this = this;
+			uni.getUserInfo({
+				provider: "weixin",
+				success: function(infoRes) {
+					_this.userInfo.ProfilePhoto = infoRes.userInfo.avatarUrl;
+				}
+			});
+		},
+		methods: {
+			test() {
+				uni.navigateTo({
+					url: "/pages/demo/testColorUI/testColorUI"
+				});
+			},
+			NavigateToAttendance(){
+				uni.navigateTo({
+					url:'/pages/My/AttendanceCollection/AttendanceCollection'
+				})
+			},
+			logout() {
+				console.log("yes");
+				uni.showModal({
+					title: "提示",
+					content: "确认退出登陆？",
+					success: function(res) {
+						if (res.confirm) {
+							uni.removeStorage({
+								key: "JSUserInfo",
+								success(res) {
+									uni.redirectTo({
+										url: "/pages/login/login"
+									});
+								}
+							});
+						} else if (res.cancel) {
+							console.log("用户点击取消");
+						}
+					}
+				});
+			}
+		}
+	};
 </script>
 
 <style scoped>

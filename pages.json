@@ -45,6 +45,14 @@
     ],
     "subPackages": [
 		{
+		    "root": "pages/My",
+		    "pages": [{
+                    "path" : "AttendanceCollection/AttendanceCollection",
+                    "style" : {}
+                }
+            ]
+		},
+		{
 		    "root": "pages/CommonConfirm",
 		    "pages": [
 		        {

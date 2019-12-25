@@ -1,4 +1,4 @@
-var websiteUrl = "http://localhost:62142";
+var websiteUrl = "https://oa.magicbox.net.cn";
 /* https://oa.magicbox.net.cn*/
 /* http://localhost:62142 */
 /* http://localhost:51682 */
@@ -172,5 +172,7 @@ module.exports = {
 	/* 考勤确认 */
 	AttendanceSave: websiteUrl + '/api/AttendanceRecord/Save',
 	/* 获取考勤 */
-	GetAttendanceRecords: websiteUrl + '/api/AttendanceRecord/GetRecordsArr'
+	GetAttendanceRecords: websiteUrl + '/api/AttendanceRecord/GetRecordsArr',
+	/* 获取当月考勤汇总 */
+	GetCurrentMonthAttendanceRecord: websiteUrl + '/api/AttendanceRecord/GetAttendanceRecordsBySelectMonth'
 }

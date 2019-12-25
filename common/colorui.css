@@ -3664,32 +3664,32 @@ scroll-view.cu-steps .cu-item {
 }
 
 .bg-gradual-red {
-	background-image:var(--gradualRed);
+	background-image: var(--gradualRed);
 	color: #fff;
 }
 
 .bg-gradual-orange {
-	background-image:var(--gradualOrange);
+	background-image: var(--gradualOrange);
 	color: #fff;
 }
 
 .bg-gradual-green {
-	background-image:var(--gradualGreen);
+	background-image: var(--gradualGreen);
 	color: #fff;
 }
 
 .bg-gradual-purple {
-	background-image:var(--gradualPurple);
+	background-image: var(--gradualPurple);
 	color: #fff;
 }
 
 .bg-gradual-pink {
-	background-image:var(--gradualPink);
+	background-image: var(--gradualPink);
 	color: #fff;
 }
 
 .bg-gradual-blue {
-	background-image:var(--gradualBlue);
+	background-image: var(--gradualBlue);
 	color: #fff;
 }
 
@@ -3970,61 +3970,66 @@ scroll-view.cu-steps .cu-item {
 	text-shadow: 2rpx 4rpx 6rpx rgba(0, 0, 0, 0.4);
 }
 
+/*公共*/
+.noBgColor {
+	background-color: rgba(0, 0, 0, 0);
+}
+
 /* 动画 */
 [class*=animation-] {
-    animation-duration: .5s;
-    animation-timing-function: ease-out;
-    animation-fill-mode: both
+	animation-duration: .5s;
+	animation-timing-function: ease-out;
+	animation-fill-mode: both
 }
 
 .animation-fade {
-    animation-name: fade;
-    animation-duration: .8s;
-    animation-timing-function: linear
+	animation-name: fade;
+	animation-duration: .8s;
+	animation-timing-function: linear
 }
 
 .animation-reverse {
-    animation-direction: reverse
+	animation-direction: reverse
 }
 
 .animation-slide-bottom {
-    animation-name: slide-bottom
+	animation-name: slide-bottom
 }
 
 .animation-scale-up {
-    animation-name: scale-up
+	animation-name: scale-up
 }
 
 @keyframes fade {
-    0% {
-        opacity: 0
-    }
+	0% {
+		opacity: 0
+	}
 
-    100% {
-        opacity: 1
-    }
+	100% {
+		opacity: 1
+	}
 }
 
 @keyframes scale-up {
-    0% {
-        opacity: 0;
-        transform: scale(.6)
-    }
+	0% {
+		opacity: 0;
+		transform: scale(.6)
+	}
 
-    100% {
-        opacity: 1;
-        transform: scale(1)
-    }
+	100% {
+		opacity: 1;
+		transform: scale(1)
+	}
 }
 
 @keyframes slide-bottom {
-    0% {
-        opacity: 0;
-        transform: translateY(100%)
-    }
+	0% {
+		opacity: 0;
+		transform: translateY(100%)
+	}
 
-    100% {
-        opacity: 1;
-        transform: translateY(0)
-    }
+	100% {
+		opacity: 1;
+		transform: translateY(0)
+	}
 }
