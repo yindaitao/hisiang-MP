@@ -3,12 +3,12 @@
 		<div class="vbox">
 			<image class="top_back_img" :src="userbg" mode="aspectFit" style="margin-top: -10px;"></image>
 			<view class="top">
-				<view class="circle" v-if="userInfo.ProfilePhoto===null||userInfo.ProfilePhoto===''">
+				<view class="circle" v-if="userInfo.Avatar===null||userInfo.Avatar===''">
 					<image v-if="userInfo.Sex==='Man'" class="head" :src="userman" mode="widthFix"></image>
 					<image v-if="userInfo.Sex==='Woman'" class="head" :src="userfelame" mode="widthFix"></image>
 				</view>
 				<view class="circle" v-else>
-					<image class="head" :src="userInfo.ProfilePhoto" mode="widthFix"></image>
+					<image class="head" :src="userInfo.Avatar" mode="widthFix"></image>
 				</view>
 				<view class="top-texts">
 					<text class="name" style="color: var(--black);">{{userInfo.UserName}}</text>
@@ -84,7 +84,7 @@
 			uni.getUserInfo({
 				provider: "weixin",
 				success: function(infoRes) {
-					_this.userInfo.ProfilePhoto = infoRes.userInfo.avatarUrl;
+					_this.userInfo.Avatar = infoRes.userInfo.avatarUrl;
 				}
 			});
 		},
