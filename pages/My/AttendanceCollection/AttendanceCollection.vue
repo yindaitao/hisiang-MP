@@ -21,15 +21,40 @@
 					<view class="content">
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">病&nbsp;&nbsp;&nbsp;&nbsp;假：{{AttendanceEntity.SickLeave}}天</text>
+							<text class="text-grey">病&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;假：{{AttendanceEntity.SickLeave}}天</text>
 						</view>
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">事&nbsp;&nbsp;&nbsp;&nbsp;假：{{AttendanceEntity.PersonLeave}}天</text>
+							<text class="text-grey">事&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;假：{{AttendanceEntity.PersonLeave}}天</text>
 						</view>
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">带薪假：{{AttendanceEntity.LeaveWithSalary}}天</text>
+							<text class="text-grey">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;假：{{AttendanceEntity.LeaveWithSalary}}天</text>
+						</view>
+						<view>
+							<text class="icon-title text-grey"></text>
+							<text class="text-grey">亲&nbsp;情&nbsp;&nbsp;假：{{AttendanceEntity.LeaveWithSalary}}天</text>
+						</view>
+						<view>
+							<text class="icon-title text-grey"></text>
+							<text class="text-grey">带薪病假：{{AttendanceEntity.LeaveWithSalary}}天</text>
+						</view>
+					</view>
+					<view class="content">
+						<view>
+							<text class="text-grey text-white">无</text>
+						</view>
+						<view>
+							<text class="text-grey text-white">无</text>
+						</view>
+						<view>
+							<text>剩余:5天</text><text class="text-grey margin-left-sm">总数:5天</text>
+						</view>
+						<view>
+							<text>剩余:5天</text><text class="text-grey margin-left-sm">总数:5天</text>
+						</view>
+						<view>
+							<text>剩余:5天</text><text class="text-grey margin-left-sm">总数:5天</text>
 						</view>
 					</view>
 				</view>
@@ -37,11 +62,11 @@
 					<view class="content">
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">当前带薪假剩余：{{AttendanceEntity.LeaveWithSalaryLast}}天</text>
+							<text class="text-grey">请假合计：{{AttendanceEntity.LeaveWithSalaryLast}}天</text>
 						</view>
 					</view>
 					<view class="action">
-						<text class="text-green text-right">总数：{{AttendanceEntity.LeaveWithSalaryTotal}}天</text>
+						<text class="text-green text-right">带薪假总数：{{AttendanceEntity.LeaveWithSalaryTotal}}天</text>
 					</view>
 				</view>
 			</view>
@@ -101,15 +126,15 @@
 					<view class="content">
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">费用：{{AttendanceEntity.GExtraWorkMeal}}次</text>
+							<text class="text-grey">餐补：{{AttendanceEntity.GExtraWorkMeal}}次</text>
 						</view>
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">费用：{{AttendanceEntity.RExtraWorkMeal}}次</text>
+							<text class="text-grey">餐补：{{AttendanceEntity.RExtraWorkMeal}}次</text>
 						</view>
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">费用：{{AttendanceEntity.HExtraWorkMeal}}次</text>
+							<text class="text-grey">餐补：{{AttendanceEntity.HExtraWorkMeal}}次</text>
 						</view>
 					</view>
 				</view>
@@ -121,7 +146,7 @@
 						</view>
 					</view>
 					<view class="action">
-						<text class="text-green text-right">费用合计：{{AttendanceEntity.MealsTotal}}次</text>
+						<text class="text-green text-right">餐补合计：{{AttendanceEntity.MealsTotal}}次</text>
 					</view>
 				</view>
 			</view>

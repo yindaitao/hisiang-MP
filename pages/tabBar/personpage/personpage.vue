@@ -29,10 +29,16 @@
 			</view>
 		</view>
 		<view class="cu-list menu" :class="[menuBorder?'sm-border':'',menuCard?'card-menu margin-top':'']">
-			<view class="cu-item" :class="menuArrow?'arrow':''" style="background-color: rgba(0,0,0,0);" @tap="NavigateToAttendance">
+			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToAttendance">
 				<view class="content">
 					<text class="icon-circlefill text-grey"></text>
 					<text class="text-grey">我的考勤</text>
+				</view>
+			</view>
+			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToAboutUs">
+				<view class="content">
+					<text class="icon-circlefill text-grey"></text>
+					<text class="text-grey">关于我们</text>
 				</view>
 			</view>
 			<!-- <view class="cu-item" :class="menuArrow?'arrow':''">
@@ -97,6 +103,11 @@
 			NavigateToAttendance(){
 				uni.navigateTo({
 					url:'/pages/My/AttendanceCollection/AttendanceCollection'
+				})
+			},
+			NavigateToAboutUs(){
+				uni.navigateTo({
+					url:'/pages/My/AboutUs/AboutUs'
 				})
 			},
 			logout() {

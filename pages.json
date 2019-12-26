@@ -50,6 +50,10 @@
                     "path" : "AttendanceCollection/AttendanceCollection",
                     "style" : {}
                 }
+                ,{
+                    "path" : "AboutUs/AboutUs",
+                    "style" : {}
+                }
             ]
 		},
 		{
