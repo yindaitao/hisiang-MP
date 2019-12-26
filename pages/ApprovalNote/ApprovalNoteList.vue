@@ -51,6 +51,10 @@
 									 style="min-width: 100px;">{{list.BBusinessType}}</text>
 									<text v-else class="bg-gradual-green radius text-center shadow-blur padding-lr margin-left-sm text-ABC" style="min-width: 100px;">{{list.BBusinessType}}</text>
 								</view>
+								<view class="nowarp">
+									<text class="icon-title text-blue"></text>
+									单据信息:{{$mbservices.isEmpty(list.RequestContent)?'无':list.RequestContent}}
+								</view>
 								<view class="text-gray text-sm">
 									<text class="icon-timefill margin-right-xs"></text>
 									创建时间:{{list.CreateDate}}
@@ -232,7 +236,7 @@
 					ConditionValue: this.searchValue,
 					Relationship: "OR",
 				})
-				if(parseInt(this.searchValue)){
+				if (parseInt(this.searchValue)) {
 					params.push({
 						FieldName: "DocEntry",
 						Operation: "CONTAIN",
@@ -846,4 +850,10 @@
 </script>
 
 <style>
+	.nowarp {
+		width: 260px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
 </style>

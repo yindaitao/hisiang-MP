@@ -49,11 +49,12 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.Creator}}提交的加班申请
+								加班申请
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
-								编号:{{list.DocEntry}}
+								编号:{{list.DocEntry}}&nbsp;&nbsp;
+								申请时长:{{list.Hours}}<text v-if="list.ExtraWorkHoursText==='Hour'">小时</text>
 							</view>
 							<view class="nowarp">
 								<text class="icon-title text-orange"></text>

@@ -46,7 +46,7 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.InvOrganizationName}}-{{list.Creator}}的{{list.CostTypeName}}消耗申请
+								费用类型:{{list.CostTypeName}}
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>

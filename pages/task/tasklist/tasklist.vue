@@ -33,7 +33,7 @@
 							<!-- <view>
 								<text class="icon-title text-orange"></text>{{list.DocNum}}</view> -->
 							<view>
-								<text class="icon-peoplefill text-blue margin-right-xs"></text> {{list.OrganizationName}}{{list.Creator}}的{{list.BaseTypeName}}</view>
+								<text class="icon-peoplefill text-blue margin-right-xs"></text>{{list.BaseTypeName}}</view>
 							<view>
 								<text class="icon-title text-orange"></text>
 								单据号:{{list.DocEntry}}

@@ -48,11 +48,13 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.Creator}}提交的{{list.GooutType==='Goout'?'外出':'出差'}}申请
+								外出申请
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
-								编号:{{list.DocEntry}}
+								编号:{{list.DocEntry}}&nbsp;&nbsp;
+								申请时长:{{list.Hours}}<text v-if="list.GooutHoursText==='Hour'">小时</text>
+								<text v-if="list.GooutHoursText==='Day'">天</text>
 							</view>
 							<view class="nowarp">
 								<text class="icon-title text-orange"></text>

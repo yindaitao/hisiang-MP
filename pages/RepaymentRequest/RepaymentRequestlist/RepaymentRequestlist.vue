@@ -32,15 +32,11 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.OrganizationName}}-{{list.Creator}}的还款申请
+								还款申请
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
-								单号:{{list.DocEntry}}
-							</view>
-							<view>
-								<text class="icon-title text-orange"></text>
-								还款金额:{{list.Amount}}
+								单号:{{list.DocEntry}}&nbsp;&nbsp;还款金额:{{list.Amount}}
 							</view>
 							<view class="text-gray text-sm">
 								<text class="icon-timefill margin-right-xs"></text>

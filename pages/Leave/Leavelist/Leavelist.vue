@@ -49,11 +49,15 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.Creator}}提交的{{list.HolidayTypeName}}申请
+								{{$mbservices.isEmpty(list.HolidayTypeName)?'请假':list.HolidayTypeName}}申请
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
-								编号:{{list.DocEntry}}
+								编号:{{list.DocEntry}}&nbsp;&nbsp;
+								申请时长:{{list.LeaveHours}}<text v-if="list.LeaveHoursText==='Hour'">小时</text>
+								<text v-if="list.LeaveHoursText==='Day'">天</text>
+								<text v-if="list.LeaveHoursText==='Week'">周</text>
+								<text v-if="list.LeaveHoursText==='Month'">月</text>
 							</view>
 							<view class="nowarp">
 								<text class="icon-title text-orange"></text>

@@ -43,19 +43,29 @@
 							<radio @click.stop="radioClick(list)" :checked="list.radchecked"></radio>
 						</view>
 						<view class="content padding-tb-sm">
-							<view>
+							<view v-if="list.ReimbursementType==='Person'">
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								{{list.OrganizationName}}-{{list.Creator}}的{{$mbservices.isEmpty(list.CostTypeName)?"":list.CostTypeName}}报销
+								报销类型:私人费用
+							</view>
+							<view v-if="list.ReimbursementType==='Share'">
+								<text class="icon-peoplefill text-blue margin-right-xs"></text>
+								报销类型:分摊费用
+							</view>
+							<view v-if="list.ReimbursementType==='Other'">
+								<text class="icon-peoplefill text-blue margin-right-xs"></text>
+								报销类型:部门费用
+							</view>
+							<view v-if="list.ReimbursementType==='Internal'">
+								<text class="icon-peoplefill text-blue margin-right-xs"></text>
+								报销类型:内部往来费用
+							</view>
+							<view v-if="list.ReimbursementType==='Union'">
+								<text class="icon-peoplefill text-blue margin-right-xs"></text>
+								报销类型:工会会费
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
-								单号:{{list.DocEntry}}
-								<text v-if="list.PayType ==='BankToUser'"></text>
-							</view>
-							<view>
-								<text class="icon-title text-orange"></text>
-								金额：{{list.Amount}}
-								<text v-if="list.PayType ==='BankToUser'"></text>
+								单号:{{list.DocEntry}}&nbsp;&nbsp;金额：{{list.Amount}}
 							</view>
 							<view class="text-gray text-sm">
 								<text class="icon-timefill margin-right-xs"></text>
