@@ -331,6 +331,19 @@
 				    "style": {}
 				}
 		    ]
+		},
+		 {
+		    "root": "pages/MessageRecords",
+		    "pages": [
+		        {
+		            "path": "MessageRecordslist/MessageRecordslist",
+		            "style": {}
+		        },
+		        {
+		            "path": "MessageRecordsform/MessageRecordsform",
+		            "style": {}
+		        }
+		    ]
 		}
     ],
     "tabBar": {

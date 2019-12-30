@@ -1,0 +1,501 @@
+<template>
+	<view class="ul-uni-tab-bar">
+		<custom>消息记录</custom>
+		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar search bg-white">
+			<view class="search-form round">
+				<text class="icon-search"></text>
+				<input @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词" confirm-type="done" :value="searchValue" />
+			</view>
+			<view class="action">
+				<button class="cu-btn icon" @click="doSearch">
+					<text class="icon-search"></text>
+				</button>
+			</view>
+		</view>
+		<view v-if="isMultiSelect" class="cu-bar search bg-white">
+			<view class="action">
+				<button class="cu-btn bg-grey shadow-blur round" @click="allSelectOrNo">{{allSeleStatus?'全选':'全不选'}}</button>
+			</view>
+			<view class="action">
+				<button class="cu-btn bg-grey shadow-blur round" @click="selectOther">反选</button>
+			</view>
+			<view class="action">
+				<button class="cu-btn bg-grey shadow-blur round" @click="deleteSelect">删除</button>
+			</view>
+			<view class="action">
+				<button class="cu-btn bg-grey shadow-blur round" @click="cancelSelModel">取消</button>
+			</view>
+		</view>
+		<view class="ul-swiper-box" style="margin-top: 2upx;">
+			<scroll-view scroll-y @scrolltolower="loadMore" style="width: 100%;margin-bottom: 10px;" :style="{'height':scrollBarHeight+'px'}">
+				<!-- :style="{'height':scrollBarHeight+'px'}" -->
+				<view class="cu-list menu">
+					<view v-if="dataList.length === 0" style="position: relative;text-align: center;">
+						暂无消息记录
+					</view>
+					<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-if="dataList.length > 0" v-for="(list,index) in dataList"
+					 :key="index" :data-target="'move-box-' + index" @tap="goDetail(list)" style="position: relative;">
+						<view class="content padding-tb-sm">
+							<view>
+								<text class="icon-peoplefill text-blue margin-right-xs"></text>
+								消息主题:{{list.Subject}}
+							</view>
+							<view>
+								<text class="icon-title text-orange"></text>
+								编码:{{list.DocEntry}}&nbsp;&nbsp;发件人:{{$mbservices.isEmpty(list.FromName)?'无':list.FromName}}
+							</view>
+							<view class="nowarp">
+								<text class="icon-title text-orange"></text>
+								消息内容:{{$mbservices.isEmpty(list.Content)?'无':list.Content}}
+							</view>
+							<view class="text-gray text-sm">
+								<text class="icon-timefill margin-right-xs"></text>
+								{{list.CreateDate}}
+							</view>
+						</view>
+						<view class="action">
+							<view v-if="list.isRead==='No'" class="cu-tag round bg-olive light">未读</view>
+							<view v-if="list.isRead==='Yes'" class="cu-tag round bg-blue light">已读</view>
+						</view>
+					</view>
+				</view>
+			</scroll-view>
+		</view>
+	</view>
+</template>
+<script>
+	export default {
+		components: {},
+		data() {
+			return {
+				isMultiSelect: false,
+				allSeleStatus: true,
+				pattern: {
+					color: "#7A7E83",
+					backgroundColor: "#fff",
+					selectedColor: "#007AFF",
+					buttonColor: "#007AFF"
+				},
+				content: [{
+						iconPath: "/static/component.png",
+						selectedIconPath: "/static/componentHL.png",
+						text: "添加",
+						active: false
+					},
+					{
+						iconPath: "/static/api.png",
+						selectedIconPath: "/static/apiHL.png",
+						text: "API",
+						active: false
+					},
+					{
+						iconPath: "/static/template.png",
+						selectedIconPath: "/static/templateHL.png",
+						text: "模版",
+						active: false
+					}
+				],
+				//title: 'tag',
+				type: "default",
+				inverted: false,
+				dataList: [],
+				pageIndex: 0,
+				scrollBarHeight: 0,
+				modalName: null,
+				listTouchStart: 0,
+				listTouchDirection: null,
+				isFirstLoad: true,
+				searchParams: [],
+				searchValue: "",
+				isLoadMore: false
+			};
+		},
+		onShow() {
+			if (this.$mbservices.getIsRefresh()) {
+				this.pageIndex = 0; // parseInt(this.pageIndex) - 1;
+				this.$mbservices.setIsRefresh(false);
+				this.newShowGetMessageRecords();
+			}
+			this.isFirstLoad = false;
+			this.isLoadMore = false;
+		},
+		onLoad(e) {
+			//#ifdef MP-WEIXIN
+			const query = wx.createSelectorQuery();
+			query.select("#_tabBar").boundingClientRect();
+			query.selectViewport().scrollOffset();
+			var _this = this;
+			query.exec(function(res) {
+				res[0].top; // #the-id节点的上边界坐标
+				res[1].scrollTop; // 显示区域的竖直滚动位置
+				_this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - _this.CustomBar - res[0].height;
+			});
+			//#endif
+			//this.dataList = [];
+			/*加载数据*/
+			this.GetMessageRecords();
+		},
+		onReachBottom() {
+			this.searchParams = [];
+			this.searchValue = "";
+			this.pageIndex = 0;
+			//this.dataList = [];
+			this.newShowGetMessageRecords();
+			uni.stopPullDownRefresh();
+		},
+		onPullDownRefresh() {
+			this.searchParams = [];
+			this.searchValue = "";
+			this.pageIndex = 0;
+			//this.dataList = [];
+			this.newShowGetMessageRecords();
+		},
+		
+		methods:{
+			goDetail(item) {
+				uni.navigateTo({
+					url: "/pages/MessageRecords/MessageRecordsform/MessageRecordsform?data=" + JSON.stringify(item.DocEntry)
+				});
+			},
+			editItem(item) {
+				console.log(item);
+				uni.navigateTo({
+					url: "/pages/ExtraWork/ExtraWorkform/ExtraWorkform?flag=modify&data=" + JSON.stringify(item)
+				});
+			},
+			searchInput(e) {
+				this.searchValue = e.detail.value;
+			},
+			doSearch(e) {
+				//this.dataList = [];
+				this.makeParams();
+				this.pageIndex = 0;
+				this.GetMessageRecords(this.searchParams);
+			},
+			loadMore() {
+				if (this.searchValue != undefined && this.searchValue.length > 0) {
+					this.makeParams();
+				}
+				this.isLoadMore = true;
+				this.newShowGetMessageRecords(this.searchParams);
+			},
+			makeParams() {
+				if (this.$mbservices.isEmpty(this.searchValue)) {
+					this.searchParams = [];
+					return false;
+				}
+				this.searchParams.push({
+					FieldName: "Subject",
+					Operation: "CONTAIN",
+					ConditionValue: this.searchValue,
+					Relationship: "OR"
+				}, {
+					FieldName: "Content",
+					Operation: "CONTAIN",
+					ConditionValue: this.searchValue,
+					Relationship: "OR"
+				}, {
+					FieldName: "FromName",
+					Operation: "CONTAIN",
+					ConditionValue: this.searchValue,
+					Relationship: "OR",
+				}, {
+					FieldName: "ToName",
+					Operation: "CONTAIN",
+					ConditionValue: this.searchValue,
+					Relationship: "OR",
+				})
+				if (parseInt(this.searchValue)) {
+					this.searchParams.push({
+						FieldName: "DocEntry",
+						Operation: "CONTAIN",
+						ConditionValue: this.searchValue,
+						Relationship: "OR"
+					}, )
+				}
+			},
+			newShowGetMessageRecords: async function(params) {
+				this.pageIndex = parseInt(this.pageIndex) + 1;
+				var ajaxJSON = {
+					pageIndex: this.pageIndex,
+					rowsPerPage: "10",
+					type: "Initialize",
+					Parameter: {
+						Sorts: [{
+							FieldName: "DocEntry",
+							type: "Descending"
+						}],
+						LoadChildren: "NoLoad",
+						Conditions: [{
+							FieldName: "Activated",
+							Operation: "EQUAL",
+							ConditionValue: "Y",
+							Relationship: "AND"
+						}, {
+							FieldName: "isRead",
+							Operation: "EQUAL",
+							ConditionValue: "N",
+							Relationship: "AND"
+						}]
+					}
+				};
+				if (params != undefined && params.length > 0) {
+					params.forEach(item => {
+						ajaxJSON.Parameter.Conditions.push(item);
+					});
+				}
+				var _this = this;
+				this.$mbservices.Request(
+					this.$webapi.GetMessageRecords,
+					"POST",
+					ajaxJSON,
+					function(ret) {
+						if (!ret.data.data) {
+							_this.dataList = [];
+							uni.showToast({
+								title: "查无数据"
+							});
+							return false;
+						}
+						console.log(ret.data.data);
+						var _cacheList = [];
+						ret.data.data.forEach(item => {
+							item.radchecked = false;
+							if (item.ApproveStatus === "Pending") {
+								item.AApproveStatus = "待审核";
+							}
+							if (item.ApproveStatus === "Approved") {
+								item.AApproveStatus = "已批准";
+							}
+							if (item.ApproveStatus === "Rejected") {
+								item.AApproveStatus = "已拒绝";
+							}
+							_cacheList.push(item);
+						});
+						if (_this.isLoadMore) {
+							if (_cacheList.length <= 0) {
+								_this.pageIndex = parseInt(_this.pageIndex) - 1;
+							}
+							_cacheList.forEach(item => {
+								_this.dataList.push(item);
+							})
+						} else {
+							_this.dataList = _cacheList;
+						}
+
+					},
+					function(ret) {
+						uni.showToast({
+							title: ret.errMsg,
+							icon: "none",
+							success: function() {
+								setTimeout(function() {
+									uni.navigateBack();
+								}, 1000);
+							}
+						});
+					}
+				);
+			},
+			GetMessageRecords(params) {
+				uni.showLoading({
+					title: "拼命加载中..."
+				});
+				this.pageIndex = parseInt(this.pageIndex) + 1;
+				var ajaxJSON = {
+					pageIndex: this.pageIndex,
+					rowsPerPage: "10",
+					type: "Initialize",
+					Parameter: {
+						Sorts: [{
+							FieldName: "DocEntry",
+							type: "Descending"
+						}],
+						LoadChildren: "NoLoad",
+						Conditions: [{
+							FieldName: "Activated",
+							Operation: "EQUAL",
+							ConditionValue: "Y",
+							Relationship: "AND"
+						}, {
+							FieldName: "To",
+							Operation: "EQUAL",
+							ConditionValue: uni.getStorageSync("JSUserInfo").UserId,
+							Relationship: "AND"
+						}, {
+							FieldName: "isRead",
+							Operation: "EQUAL",
+							ConditionValue: "N",
+							Relationship: "AND"
+						}]
+					}
+				};
+				if (params != undefined && params.length > 0) {
+					params.forEach(item => {
+						ajaxJSON.Parameter.Conditions.push(item);
+					});
+				}
+				var _this = this;
+				this.$mbservices.Request(
+					this.$webapi.GetMessageRecords,
+					"POST",
+					ajaxJSON,
+					function(ret) {
+						if (!ret.data.data) {
+							_this.dataList = [];
+							uni.showToast({
+								title: "查无数据"
+							});
+							return false;
+						}
+						console.log('aaaaaaaaaaaaaaaaa');
+						console.log(ret.data.data);
+						setTimeout(() => {
+							var _cacheList = [];
+							ret.data.data.forEach(item => {
+								item.radchecked = false;
+								if (item.ApproveStatus === "Pending") {
+									item.AApproveStatus = "待审核";
+								}
+								if (item.ApproveStatus === "Approved") {
+									item.AApproveStatus = "已批准";
+								}
+								if (item.ApproveStatus === "Rejected") {
+									item.AApproveStatus = "已拒绝";
+								}
+								_cacheList.push(item);
+							});
+							_this.dataList = _cacheList;
+							uni.hideLoading();
+						}, 1000);
+					},
+					function(ret) {
+						uni.showToast({
+							title: ret.errMsg,
+							icon: "none",
+							success: function() {
+								setTimeout(function() {
+									uni.navigateBack();
+								}, 1000);
+							}
+						});
+					}
+				);
+			},
+			allSelectOrNo(e) {
+				this.allSeleStatus = !this.allSeleStatus;
+				if (!this.allSeleStatus) {
+					this.dataList.forEach(item => {
+						item.radchecked = true;
+					});
+				} else {
+					this.dataList.forEach(item => {
+						item.radchecked = false;
+					});
+				}
+			},
+			selectOther(e) {
+				this.dataList.forEach(item => {
+					item.radchecked = !item.radchecked;
+				});
+			},
+			deleteSelect(e) {},
+			cancelSelModel(e) {
+				this.isMultiSelect = false;
+			},
+			radioClick(item) {
+				item.radchecked = !item.radchecked;
+			},
+			actionView(item) {
+				this.isMultiSelect = true;
+				return true;
+				item.radchecked = true;
+				uni.showActionSheet({
+					itemList: ["编辑", "删除"],
+					success: e => {}
+				});
+			},
+
+			// ListTouch触摸开始
+			ListTouchStart(indx, e) {
+				if (this.dataList[indx].Approve === "Yes" && (this.dataList[indx].ApproveStatus === 'Pending' || this.dataList[indx]
+						.ApproveStatus === 'Approved')) {
+					return false;
+				}
+				this.listTouchStart = e.touches[0].pageX;
+			},
+
+			// ListTouch计算方向
+			ListTouchMove(indx, e) {
+				if (this.dataList[indx].Approve === "Yes" && (this.dataList[indx].ApproveStatus === 'Pending' || this.dataList[indx]
+						.ApproveStatus === 'Approved')) {
+					return false;
+				}
+				this.listTouchDirection =
+					e.touches[0].pageX - this.listTouchStart > 0 ? "right" : "left";
+			},
+
+			// ListTouch计算滚动
+			ListTouchEnd(indx, e) {
+				if (this.dataList[indx].Approve === "Yes" && (this.dataList[indx].ApproveStatus === 'Pending' || this.dataList[indx]
+						.ApproveStatus === 'Approved')) {
+					return false;
+				}
+				if (this.listTouchDirection == "left") {
+					this.modalName = e.currentTarget.dataset.target;
+				} else {
+					this.modalName = null;
+				}
+				this.listTouchDirection = null;
+			}
+		}
+	};
+</script>
+
+<style>
+	.ul-uni-tab-bar {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		overflow: hidden;
+		height: 100%;
+	}
+
+	.ul-uni-tab-bar .ul-list {
+		width: 750upx;
+		height: 100%;
+	}
+
+	.ul-uni-swiper-tab {
+		width: 100%;
+		white-space: nowrap;
+		line-height: 80upx;
+		height: 80upx;
+		border-bottom: 0.1px solid #eaffea;
+		text-align: -webkit-center;
+	}
+
+	.ul-swiper-tab-list {
+		font-size: 30upx;
+		width: 150upx;
+		display: inline-block;
+		text-align: center;
+		color: #555;
+	}
+
+	.ul-uni-tab-bar .ul-swiper-box {
+		-webkit-box-flex: 1;
+		-webkit-flex: 1;
+		-ms-flex: 1;
+		flex: 1;
+		width: 100%;
+		height: calc(100% - 100rpx);
+	}
+
+	.nowarp {
+		width: 260px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+</style>
