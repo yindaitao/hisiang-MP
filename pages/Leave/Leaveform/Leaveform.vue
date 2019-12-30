@@ -118,13 +118,13 @@ export default {
 			LeaveHoursTextType:["天","小时","周","月"],
 			indexLeaveHoursText:0,
 			LeaveHoursTextList:[{
+				Code:"Day",
+				Name:"天",
+			},{
 				Code:"Hour",
 				Name:"小时",
 			},
-			{
-				Code:"Day",
-				Name:"天",
-			},
+			
 			{
 				Code:"Week",
 				Name:"周",
@@ -570,29 +570,29 @@ export default {
         ajaxJSON = _this.editEntitysList[0];
       } else {
         ajaxJSON = {
-		  ObjectType: "Leave",
-		  DocNum: _this.itemData.DocEntry,
-		  BeginDate: _this.itemData.BeginDate,
-		  EndDate: _this.itemData.EndDate,
-		  HolidayType: _this.itemData.HolidayTypeCode,
-		  LeaveHours: _this.itemData.LeaveHours,
-		  LeaveHoursText: _this.itemData.LeaveHoursText,
-          CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
-		  Creator: uni.getStorageSync("JSUserInfo").UserName,
-		  Cause: _this.itemData.Cause, 
-          Remarks: _this.itemData.Remarks,
-          Approve: _this.isDoSteps ? "Yes" : "No",
-          ApproveStatus: "Pending",
-          Canceled: "No",
-          Closed: "No",
-          Attachments: "",
-          OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
-		  OrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
-		  CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
-		  CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
-          UIStatus: "New"
+			ObjectType: "Leave",
+		     DocNum: _this.itemData.DocEntry,
+		     BeginDate: _this.itemData.BeginDate,
+		     EndDate: _this.itemData.EndDate,
+		     HolidayType: _this.itemData.HolidayTypeCode,
+		     LeaveHours: _this.itemData.LeaveHours,
+		     LeaveHoursText: _this.itemData.LeaveHoursText,
+             CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
+		     Creator: uni.getStorageSync("JSUserInfo").UserName,
+		     Cause: _this.itemData.Cause, 
+             Remarks: _this.itemData.Remarks,
+             Approve: _this.isDoSteps ? "Yes" : "No",
+             ApproveStatus: "Pending",
+             Canceled: "No",
+             Closed: "No",
+             Attachments: "",
+             OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
+		     OrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
+		     CompanyId:uni.getStorageSync("JSUserInfo").CompanyId,
+		     CompanyName:uni.getStorageSync("JSUserInfo").CompanyName,
+             UIStatus: "New"
         };
-		}
+	}
 	  console.log(ajaxJSON);
       var requestUrl = _this.editflag
         ? _this.$webapi.saveLeaveEntity
