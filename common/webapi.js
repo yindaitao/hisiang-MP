@@ -1,4 +1,4 @@
-var websiteUrl = "https://oa.magicbox.net.cn";
+var websiteUrl = "http://localhost:62142";
 /* https://oa.magicbox.net.cn*/
 /* http://localhost:62142 */
 /* http://localhost:51682 */
@@ -182,5 +182,9 @@ module.exports = {
 	/* 年假申请记录 */
 	GetHolidayDelayRecords: websiteUrl + '/api/HolidayDelay/GetRecords',
 	/* 获取年假剩余可用天数 */
-	GetLastLeaveDays: websiteUrl + '/api/HolidayType/GetRestDays'
+	GetLastLeaveDays: websiteUrl + '/api/HolidayType/GetRestDays',
+	/* 获取年假申请最大编号 */
+	GetHolidayDelayMaxNum: websiteUrl + '/api/HolidayDelay/GetMaxDocEntry',
+	/* 保存年假延期申请 */
+	SaveHolidayDelay: websiteUrl + '/api/HolidayDelay/Save'
 }

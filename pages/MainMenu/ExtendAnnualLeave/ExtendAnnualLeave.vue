@@ -4,7 +4,7 @@
 		<view id="tab-bar" class="cu-bar top">
 			<view class="action">截至目前您当前剩余年假</view>
 			<view class="action ">
-				<text class="text-red">2.5天</text>
+				<text class="text-red bottom-border">{{HolidayDelay.Days}}天</text>
 			</view>
 		</view>
 		<view class="cu-list menu sm-border card-menu animation-slide-bottom margin-top-xs" :style="[{animationDelay: (10 + 1)*0.1 + 's'}]">
@@ -16,27 +16,31 @@
 				<view class="content">
 					<view>
 						<text class="icon-title text-grey"></text>
-						<text class="text-grey">单据编号：200</text>
+						<text class="text-grey">单据编号：{{HolidayDelay.DocEntry}}</text>
 					</view>
 					<view>
 						<text class="icon-title text-grey"></text>
-						<text class="text-grey">延期天数：2.5天</text>
+						<text class="text-grey">延期天数：{{HolidayDelay.Days}}天</text>
 					</view>
 					<view>
 						<text class="icon-title text-grey"></text>
-						<text class="text-grey">延期日期：2020-03-31</text>
+						<text class="text-grey">延期日期：{{HolidayDelay.StopDate}}</text><text class="text-orange margin-left-sm">[前]</text>
 					</view>
-
 				</view>
 			</view>
 			<view class="cu-item padding">
-				<view class="content">
+				<view class="content" v-if="HolidayDelay.Approve==='No'">
+					<view></view>
+				</view>
+				<view class="content" v-if="HolidayDelay.Approve==='Yes'">
 					<view>
-						<text class="text-blue">等待审核</text>
+						<text class="text-blue" v-if="HolidayDelay.ApproveStatus==='Pending'">等待审核</text>
+						<text class="text-blue" v-if="HolidayDelay.ApproveStatus==='Approved'">审核通过</text>
+						<text class="text-blue" v-if="HolidayDelay.ApproveStatus==='Rejected'">审核拒绝</text>
 					</view>
 				</view>
 				<view class="action">
-					<button class="cu-btn radius round shadow bg-grey" @tap="showModal" data-target="DialogModal">提交申请</button>
+					<button class="cu-btn radius round shadow bg-grey" @tap="showModal" data-target="DialogModal" v-if="HolidayDelay.Days>0&&(HolidayDelay.Approve==='No'||HolidayDelay.ApproveStatus==='Rejected')">提交申请</button>
 				</view>
 			</view>
 		</view>
@@ -70,17 +74,29 @@
 			return {
 				modalName: null,
 				HolidayDelay: {
-					Approve: '',
+					DocEntry: 0,
+					Approve: 'No',
 					ApproveStatus: '',
-					Days: 0
-				}
+					Days: 0,
+					UIStatus: '',
+					StopDate: ''
+				},
+				Annualeave: '',
+				ExtendToDate: '',
+				SaveExtendToDate: '',
+				initEntity: {}
 			}
 		},
 		onLoad(e) {
+			this.BradgeMethod()
 			this.GetRecords()
 		},
 		methods: {
 			GetRecords() {
+				console.log('yyyyyyyyyyyyyy');
+				console.log(this.initEntity);
+				let dateStr = (new Date().getFullYear() + 1) + '-' + this.ExtendToDate;
+				this.SaveExtendToDate = this.$mbservices.formatDateTime(dateStr, 'yyyy-MM-dd')
 				let ajaxJson = {
 					type: "Search",
 					Parameter: {
@@ -89,12 +105,20 @@
 							Operation: "EQUAL",
 							ConditionValue: uni.getStorageSync("JSUserInfo").UserId,
 							Relationship: "AND"
+						}, {
+							FieldName: "CreateDate",
+							Operation: "GRATER_EQUAL",
+							ConditionValue: this.$mbservices.formatDateTime((new Date().getFullYear()) + '-01-01','yyyy-MM-dd'),
+							Relationship: "AND"
+						}, {
+							FieldName: "CreateDate",
+							Operation: "LESS_EQUAL",
+							ConditionValue: this.SaveExtendToDate,
+							Relationship: "AND"
 						}]
 					}
 				};
 				this.$mbservices.Request(this.$webapi.GetHolidayDelayRecords, 'POST', ajaxJson, res => {
-					console.log('返回数据');
-					console.log(res);
 					if (res.data.RecordCount > 0) {
 						let isHave = false;
 						res.data.data.forEach(item => {
@@ -103,6 +127,8 @@
 								this.HolidayDelay.Approve = item.Approve
 								this.HolidayDelay.ApproveStatus = item.ApproveStatus
 								this.HolidayDelay.Days = item.Days
+								this.HolidayDelay.DocEntry = item.DocEntry
+								this.HolidayDelay.UIStatus = "Modify"
 								isHave = true
 							}
 						});
@@ -116,11 +142,75 @@
 
 				});
 			},
-			GetNewHolidayDelay() {
-
+			async GetNewHolidayDelay() {
+				/* let param = await this.GetInitRecord();
+				if (param.data.RecordCount <= 0) {
+					uni.showToast({
+						title: '获取系统初始化信息失败',
+						icon: 'none'
+					})
+					return false;
+				} */
+				//this.Annualeave = this.initEntity.Annualeave;//param.data.data[0].Annualeave;
+				//this.ExtendToDate = this.initEntity.ExtendToDate;//param.data.data[0].ExtendToDate;
+				let dateStr = (new Date().getFullYear() + 1) + '-' + this.ExtendToDate;
+				this.SaveExtendToDate = this.$mbservices.formatDateTime(dateStr, 'yyyy-MM-dd')
+				this.HolidayDelay.StopDate = this.$mbservices.formatDateTime(dateStr, 'yyyy年MM月dd日')
+				this.getLastNianJia()
+				this.getMaxNum()
 			},
-			async GetInitRecord(){
+			async BradgeMethod(){
+				let param=await this.GetInitRecord();
+				if (param.data.RecordCount <= 0) {
+					uni.showToast({
+						title: '获取系统初始化信息失败',
+						icon: 'none'
+					})
+					return false;
+				}
 				
+				console.log('jjjjjjjjjjjjjjjjjj');
+				console.log(param);
+				//this.initEntity=param.data.data[0]
+				this.Annualeave = param.data.data[0].Annualeave;
+				this.ExtendToDate = param.data.data[0].ExtendToDate;
+			},
+			async GetInitRecord() {
+				return new Promise((resolve, reject) => {
+					let ajaxJson = {
+						type: "Search",
+						Parameter: {
+							Conditions: [{
+								FieldName: "CompanyId",
+								Operation: "EQUAL",
+								ConditionValue: uni.getStorageSync("JSUserInfo").CompanyId,
+								Relationship: "AND"
+							}]
+						}
+					};
+					this.$mbservices.Request(this.$webapi.getInitialize, 'POST', ajaxJson, res => {
+						resolve(res)
+					}, err => {
+						reject(err)
+					})
+				});
+			},
+			getLastNianJia() {
+				let param = {
+					HolidayCode: this.Annualeave
+				}
+				this.$mbservices.Request(this.$webapi.GetLastLeaveDays, 'POST', this.Annualeave, res => {
+					if (res.data.RecordCount > 0) {
+						this.HolidayDelay.Days = res.data.data.restDays
+						this.HolidayDelay.UIStatus = "New"
+					}
+				}, err => {})
+			},
+			getMaxNum() {
+				this.$mbservices.Request(this.$webapi.GetHolidayDelayMaxNum, 'GET', {}, res => {
+					this.HolidayDelay.DocEntry = res.data
+					this.HolidayDelay.UIStatus = "New"
+				}, err => {})
 			},
 			showModal(e) {
 				this.modalName = e.currentTarget.dataset.target
@@ -128,6 +218,37 @@
 			hideModal(e) {
 				this.modalName = null
 			},
+			actionClick() {
+				this.modalName = null
+				uni.showLoading({
+					title: '正在提交,请稍后...'
+				})
+				this.HolidayDelay.Approve = 'Yes'
+				this.HolidayDelay.ApproveStatus = 'Pending'
+				this.HolidayDelay.ApproveStatus = 'Pending'
+				this.HolidayDelay.CompanyId = uni.getStorageSync("JSUserInfo").CompanyId
+				this.$mbservices.Request(this.$webapi.SaveHolidayDelay, 'POST', this.HolidayDelay, res => {
+					if (res.data.RecordCount > 0) {
+						uni.showToast({
+							title: '提交成功',
+							icon: 'none'
+						})
+					} else {
+						uni.showToast({
+							title: '提交失败',
+							icon: 'none'
+						})
+					}
+					this.GetRecords()
+					uni.hideLoading()
+				}, err => {
+					uni.showToast({
+						title: '请求错误',
+						icon: 'none'
+					})
+					uni.hideLoading()
+				})
+			}
 		}
 	}
 </script>
