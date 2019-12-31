@@ -85,6 +85,8 @@
 				],
 				ApprovalBage: "",
 				BacklogBage: "",
+				MessageBage:"",
+				pageIndex: 0,
 			};
 		},
 		methods: {
@@ -183,27 +185,6 @@
 							})
 						})
 						break;
-						// case "approvalNote":
-						//     uni.navigateTo({
-						//         url: "/pages/ApprovalNote/ApprovalNote?data=110"
-						//     });
-						//     break;
-						// case "approvalNote1":
-						//     uni.navigateTo({
-						//         url: "/pages/ApprovalNote/ApprovalNoteBT?data=100"
-						//     });
-						//     break;
-						// case "approvalNote2":
-						//     uni.navigateTo({
-						//         url: "/pages/ApprovalNote/ApprovalNoteBorrow?data=107"
-						//     });
-						//     break;
-						// case "approvalNote3":
-						//     uni.navigateTo({
-						//         url:
-						//             "/pages/ApprovalNote/ApprovalNoteRepayment?data=125"
-						//     });
-						//     break;
 					case "histasklist": //已办任务
 						uni.navigateTo({
 							url: "/pages/histask/histasklist/histasklist"
@@ -267,6 +248,45 @@
 				this.$mbservices.Request(this.$webapi.getBacklog, 'POST', ajax, res => {
 					if (res.data.RecordCount >= 0) {
 						_this.BacklogBage = res.data.data.length;
+					}
+					uni.hideLoading()
+				}, err => {
+					uni.hideLoading()
+				});
+			},
+			getMessage() {
+				var _this = this;
+				_this.pageIndex = parseInt(_this.pageIndex) + 1;
+				var ajax = {
+					pageIndex: 1,
+					rowsPerPage: "100",
+					type: "Initialize",
+					Parameter: {
+						Sorts: [{
+							FieldName: "DocEntry",
+							type: "Descending"
+						}],
+						LoadChildren: "NoLoad",
+						Conditions: [{
+							FieldName: "Activated",
+							Operation: "EQUAL",
+							ConditionValue: "Y",
+							Relationship: "AND"
+						}, {
+							FieldName: "To",
+							Operation: "EQUAL",
+							ConditionValue: uni.getStorageSync("JSUserInfo").UserId,
+							Relationship: "AND"
+						}, {
+							FieldName: "isRead",
+							Operation: "EQUAL",
+							ConditionValue: "N",
+							Relationship: "AND"
+						}]
+					}};
+				this.$mbservices.Request(this.$webapi.GetMessageRecords, 'POST', ajax, res => {
+					if (res.data.RecordCount >= 0) {
+						_this.MessageBage = res.data.data.length;
 					}
 					uni.hideLoading()
 				}, err => {
@@ -365,6 +385,7 @@
 			if (this.$store.state.access_token !== null) {
 				this.getApprovalNote();
 				this.getBacklog();
+				this.getMessage();
 				uni.showLoading({
 					title: '努力加载菜单中...'
 				})
@@ -406,6 +427,14 @@
 												icon: __item.Icon,
 												color: __item.Remarks,
 												badge: _this.BacklogBage,
+												name: __item.Name
+											});
+										}  else if (__item.Code === "AlertMessage") {
+											_this.iconList.push({
+												id: __item.Code,
+												icon: __item.Icon,
+												color: __item.Remarks,
+												badge: _this.MessageBage,
 												name: __item.Name
 											});
 										} else {

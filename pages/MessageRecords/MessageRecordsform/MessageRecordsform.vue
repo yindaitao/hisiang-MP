@@ -1,10 +1,10 @@
 <template>
-	<view>
+	<view style="height:100%">
 		<custom>消息内容</custom>
-		<view class="ul-swiper-box">
+		<view class="ul-swiper-box" style="height: calc(100% - 130upx)">
 			<form>
-				<view class="cu-form-group">
-					<textarea :class="MessageRecords.Content?'value':''" maxlength="-1" placeholder-class="placeholder" :value="MessageRecords.Content" />
+				<view class="cu-form-group" style="height: 100%;">
+					<textarea class="textarea" maxlength="-1" placeholder-class="placeholder" :value="MessageRecords.Content" />
 					</view>
 		    </form>
 		  </view>
@@ -127,9 +127,7 @@ export default {
 
 .ul-uni-swiper-tab {
   width: 100%;
-  white-space: nowrap;
-  line-height: 80upx;
-  height: 80upx;
+  height: calc(100% - 100upx);
   border-bottom: 0.1px solid #eaffea;
   text-align: -webkit-center;
 }
@@ -143,11 +141,11 @@ export default {
 }
 
 .ul-uni-tab-bar .ul-swiper-box {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-  -ms-flex: 1;
-  flex: 1;
   width: 100%;
-  height: calc(100% - 100rpx);
+  height: calc(100% - 100upx);
+}
+.textarea{
+	width: 100%;
+	height: 100%!important;
 }
 </style>

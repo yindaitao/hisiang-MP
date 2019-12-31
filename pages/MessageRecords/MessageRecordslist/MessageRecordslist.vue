@@ -232,6 +232,11 @@
 							ConditionValue: "Y",
 							Relationship: "AND"
 						}, {
+							FieldName: "To",
+							Operation: "EQUAL",
+							ConditionValue: uni.getStorageSync("JSUserInfo").UserId,
+							Relationship: "AND"
+						}, {
 							FieldName: "isRead",
 							Operation: "EQUAL",
 							ConditionValue: "N",
