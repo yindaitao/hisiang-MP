@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<custom>关于我们</custom>
-		<web-view src="http://card.magicdata.net.cn/"></web-view>
+		<web-view :src="AboutUs"></web-view>
 	</view>
 </template>
 
@@ -9,12 +9,14 @@
 	export default {
 		data() {
 			return {
-				
+				AboutUs:"",
 			}
 		},
-		methods: {
-			
-		}
+		onLoad(e) {
+			var that = this;
+			console.log(JSON.parse(e.data));
+			that.AboutUs = JSON.parse(e.data);
+		},
 	}
 </script>
 

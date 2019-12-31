@@ -79,7 +79,8 @@
 				userInfo: {},
 				userbg: this.$webapi.webroot + "/Images/MP/userbg.png",
 				man: this.$webapi.webroot + "/Images/MP/man.png",
-				felame: this.$webapi.webroot + "/Images/MP/felame.png"
+				felame: this.$webapi.webroot + "/Images/MP/felame.png",
+				AboutUs:"",
 			};
 		},
 		onLoad() {
@@ -93,6 +94,7 @@
 					_this.userInfo.Avatar = infoRes.userInfo.avatarUrl;
 				}
 			});
+			this.getInitialize();
 		},
 		methods: {
 			test() {
@@ -106,9 +108,36 @@
 				})
 			},
 			NavigateToAboutUs(){
+				var that = this;
 				uni.navigateTo({
-					url:'/pages/My/AboutUs/AboutUs'
+					url:'/pages/My/AboutUs/AboutUs?data='+JSON.stringify(that.AboutUs)
 				})
+			},
+			getInitialize:async function(){
+				var ajaxJSON={
+					pageIndex: 1,
+					rowsPerPage: "10000",
+					type: "Initialize",
+					Parameter: {
+					  LoadChildren: "NoLoad",
+					  Conditions: [
+					    {
+					      FieldName: "Activated",
+					      Operation: "EQUAL",
+					      ConditionValue: "Y",
+					      Relationship: "AND"
+					    }
+					  ]
+					}
+				};
+				this.$mbservices.Request(this.$webapi.getInitialize,"POST",ajaxJSON,res=>{
+					if(res.data.RecordCount>0)
+					{
+						var _this = this;
+						_this.AboutUs = res.data.data[0].AboutUs;
+					}
+					
+				},err=>{})
 			},
 			logout() {
 				console.log("yes");
