@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<custom>关于我们</custom>
-		<web-view style="width:100px;height: 100px;" :src="AboutUs"></web-view>
+		<web-view :src="AboutUs"></web-view>
 	</view>
 </template>
 
