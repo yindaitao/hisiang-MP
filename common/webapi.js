@@ -179,4 +179,8 @@ module.exports = {
 	GetMessageRecords: websiteUrl + '/api/MessageRecords/GetMessageRecords',
 	/* 警报提醒已读（修改状态） */
 	SaveMessageRecords: websiteUrl + '/api/MessageRecords/Save',
+	/* 年假申请记录 */
+	GetHolidayDelayRecords: websiteUrl + '/api/HolidayDelay/GetRecords',
+	/* 获取年假剩余可用天数 */
+	GetLastLeaveDays: websiteUrl + '/api/HolidayType/GetRestDays'
 }

@@ -219,6 +219,11 @@
 							url: "/pages/MessageRecords/MessageRecordslist/MessageRecordslist"
 						});
 						break;
+					case "ExtendAnnualLeave": //警报提醒
+						uni.navigateTo({
+							url: "/pages/MainMenu/ExtendAnnualLeave/ExtendAnnualLeave"
+						});
+						break;
 				}
 			},
 			getApprovalNote() {

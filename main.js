@@ -29,12 +29,19 @@ Vue.prototype.$mbservices = mbservices
 import custom from './pages/components/custom/custom.vue'
 Vue.component('custom', custom)
 
+/* 全局变量·排版信息 */
+Vue.prototype.ScheduleEntity = {
+	latitude: '',
+	longitude: '',
+	AttendanceAccording: ''
+};
+
 Vue.prototype.$store = store
 // Vue.component('page-head', pageHead)
 // Vue.component('page-foot', pageFoot)
 
 const app = new Vue({
-    store,
-    ...App
+	store,
+	...App
 })
 app.$mount()

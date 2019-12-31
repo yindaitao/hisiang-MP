@@ -209,6 +209,7 @@
 			//#endif
 		},
 		onLoad(e) {
+			console.log(e);
 			console.log('看下排版信息');
 			console.log(this.ScheduleEntity);
 			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
