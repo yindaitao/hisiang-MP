@@ -563,6 +563,7 @@ export default {
 									content:"当前时间为上班时间，不算加班",
 									showCancel:false
 								})
+								return;
 							}else if(hour2>=endHour){
 								this.itemData.Hours = (hour2-endHour+minute2/60).toFixed(2);
 								console.log(this.itemData.Hours);

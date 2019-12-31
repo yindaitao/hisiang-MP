@@ -174,5 +174,9 @@ module.exports = {
 	/* 获取考勤 */
 	GetAttendanceRecords: websiteUrl + '/api/AttendanceRecord/GetRecordsArr',
 	/* 获取当月考勤汇总 */
-	GetCurrentMonthAttendanceRecord: websiteUrl + '/api/AttendanceRecord/GetAttendanceRecordsBySelectMonth'
+	GetCurrentMonthAttendanceRecord: websiteUrl + '/api/AttendanceRecord/GetAttendanceRecordsBySelectMonth',
+	/* 警报提醒 */
+	GetMessageRecords: websiteUrl + '/api/MessageRecords/GetMessageRecords',
+	/* 警报提醒已读（修改状态） */
+	SaveMessageRecords: websiteUrl + '/api/MessageRecords/Save',
 }

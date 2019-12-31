@@ -304,17 +304,7 @@
 							type: "Descending"
 						}],
 						LoadChildren: "NoLoad",
-						Conditions: [{
-							FieldName: "CreatorId",
-							Operation: "EQUAL",
-							ConditionValue: parseInt(uni.getStorageSync("JSUserInfo").UserId),
-							Relationship: "AND"
-						},{
-							FieldName: "Canceled",
-							Operation: "EQUAL",
-							ConditionValue: "N",
-							Relationship: "AND"
-						}]
+						Conditions: []
 					}
 				};
 				if (params != undefined && params.length > 0) {
@@ -392,17 +382,7 @@
 							type: "Descending"
 						}],
 						LoadChildren: "NoLoad",
-						Conditions: [{
-							FieldName: "CreatorId",
-							Operation: "EQUAL",
-							ConditionValue: parseInt(uni.getStorageSync("JSUserInfo").UserId),
-							Relationship: "AND"
-						},{
-							FieldName: "Canceled",
-							Operation: "EQUAL",
-							ConditionValue: "N",
-							Relationship: "AND"
-						}]
+						Conditions: []
 					}
 				};
 				if (params != undefined && params.length > 0) {

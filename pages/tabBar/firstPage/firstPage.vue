@@ -214,6 +214,11 @@
 							url: "/pages/meeting/meetingroomlist"
 						});
 						break;
+					case "AlertMessage": //警报提醒
+						uni.navigateTo({
+							url: "/pages/MessageRecords/MessageRecordslist/MessageRecordslist"
+						});
+						break;
 				}
 			},
 			getApprovalNote() {

@@ -292,16 +292,6 @@
 						}],
 						LoadChildren: "NoLoad",
 						Conditions: [{
-							FieldName: "CreatorId",
-							Operation: "EQUAL",
-							ConditionValue: parseInt(uni.getStorageSync("JSUserInfo").UserId),
-							Relationship: "AND"
-						}, {
-							FieldName: "Canceled",
-							Operation: "EQUAL",
-							ConditionValue: "N",
-							Relationship: "AND"
-						}, {
 							FieldName: "GooutType",
 							Operation: "EQUAL",
 							ConditionValue: "G",
@@ -385,16 +375,6 @@
 						}],
 						LoadChildren: "NoLoad",
 						Conditions: [{
-							FieldName: "CreatorId",
-							Operation: "EQUAL",
-							ConditionValue: parseInt(uni.getStorageSync("JSUserInfo").UserId),
-							Relationship: "AND"
-						}, {
-							FieldName: "Canceled",
-							Operation: "EQUAL",
-							ConditionValue: "N",
-							Relationship: "AND"
-						}, {
 							FieldName: "GooutType",
 							Operation: "EQUAL",
 							ConditionValue: "G",

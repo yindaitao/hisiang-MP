@@ -154,12 +154,7 @@
 							type: "Descending"
 						}],
 						LoadChildren: "NoLoad",
-						Conditions: [{
-							FieldName: "Canceled",
-							Operation: "EQUAL",
-							ConditionValue: "N",
-							Relationship: "AND"
-						}]
+						Conditions: []
 					}
 				};
 				if (params != undefined && params.length > 0) {
@@ -239,12 +234,7 @@
 							type: "Descending"
 						}],
 						LoadChildren: "NoLoad",
-						Conditions: [{
-							FieldName: "Canceled",
-							Operation: "EQUAL",
-							ConditionValue: "N",
-							Relationship: "AND"
-						}]
+						Conditions: []
 					}
 				};
 				if (params != undefined && params.length > 0) {
