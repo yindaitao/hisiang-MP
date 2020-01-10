@@ -48,13 +48,13 @@
 							<text class="text-grey text-white">无</text>
 						</view>
 						<view>
-							<text>剩余:5天</text><text class="text-grey margin-left-sm">总数:5天</text>
+							<text>剩余:{{AttendanceEntity.UseNianJia}}天</text><text class="text-grey margin-left-sm">总数:{{AttendanceEntity.SumNianJia}}天</text>
 						</view>
 						<view>
-							<text>剩余:5天</text><text class="text-grey margin-left-sm">总数:5天</text>
+							<text>剩余:{{AttendanceEntity.UseQinQingJia}}天</text><text class="text-grey margin-left-sm">总数:{{AttendanceEntity.SumQinQingJia}}天</text>
 						</view>
 						<view>
-							<text>剩余:5天</text><text class="text-grey margin-left-sm">总数:5天</text>
+							<text>剩余:{{AttendanceEntity.UseDaiXinBingJia}}天</text><text class="text-grey margin-left-sm">总数:{{AttendanceEntity.SumDaiXinBingJia}}天</text>
 						</view>
 					</view>
 				</view>
@@ -187,7 +187,16 @@
 					HExtraWorkHours: 0,
 					HExtraWorkMeal: 0,
 					HoursTotal: 0,
-					MealsTotal: 0
+					MealsTotal: 0,
+					SumNianJia: 0,
+					SumDaiXinBingJia: 0,
+					SumQinQingJia: 0,
+					LastNianJia: 0,
+					LastDaiXinBingJia: 0,
+					LastQinQingJia: 0,
+					UseNianJia: 0,
+					UseDaiXinBingJia: 0,
+					UseQinQingJia: 0
 				}
 			}
 		},
@@ -214,15 +223,17 @@
 				if (parseInt(e.target.value.toString().split('-')[1]) === (new Date().getMonth() + 1)) {
 					//选择月份是当前月份
 					this.getCurrentAttendanceRecords();
-				} else if (parseInt(e.target.value.toString().split('-')[1]) < (new Date().getMonth() + 1)) {
+				} else{
 					//选择月份小于当前月份
 					this.getLastAttendanceRecords();
-				} else {
+				} 
+				//(parseInt(e.target.value.toString().split('-')[1]) < (new Date().getMonth() + 1)) 
+				/* else {
 					uni.showToast({
 						title: '选择月份不正确',
 						icon: 'none'
 					})
-				}
+				} */
 			},
 			InitAttendanceEntity() {
 				this.AttendanceEntity.SickLeave = 0;
@@ -243,6 +254,15 @@
 				this.AttendanceEntity.HExtraWorkMeal = 0;
 				this.AttendanceEntity.HoursTotal = 0;
 				this.AttendanceEntity.MealsTotal = 0;
+				this.AttendanceEntity.SumNianJia = 0;
+				this.AttendanceEntity.SumDaiXinBingJia = 0;
+				this.AttendanceEntity.SumQinQingJia = 0;
+				this.AttendanceEntity.LastNianJia = 0;
+				this.AttendanceEntity.LastDaiXinBingJia = 0;
+				this.AttendanceEntity.LastQinQingJia = 0;
+				this.AttendanceEntity.UseNianJia = 0;
+				this.AttendanceEntity.UseDaiXinBingJia = 0;
+				this.AttendanceEntity.UseQinQingJia = 0;
 			},
 			getLastAttendanceRecords() {
 				uni.showLoading({
@@ -283,8 +303,10 @@
 						this.AttendanceEntity.RExtraWorkMeal = res.data.data[0].RExtraWorkMeal;
 						this.AttendanceEntity.SickLeave = res.data.data[0].SickLeave;
 						this.AttendanceEntity.StandardAttendanceCount = res.data.data[0].StandardAttendanceCount;
-						this.AttendanceEntity.HoursTotal=parseFloat(this.AttendanceEntity.GExtraWorkHours)+parseFloat(this.AttendanceEntity.RExtraWorkHours)+parseFloat(this.AttendanceEntity.HExtraWorkHours);
-						this.AttendanceEntity.MealsTotal=parseInt(this.AttendanceEntity.GExtraWorkMeal)+parseInt(this.AttendanceEntity.HExtraWorkMeal)+parseInt(this.AttendanceEntity.RExtraWorkMeal);
+						this.AttendanceEntity.HoursTotal = parseFloat(this.AttendanceEntity.GExtraWorkHours) + parseFloat(this.AttendanceEntity
+							.RExtraWorkHours) + parseFloat(this.AttendanceEntity.HExtraWorkHours);
+						this.AttendanceEntity.MealsTotal = parseInt(this.AttendanceEntity.GExtraWorkMeal) + parseInt(this.AttendanceEntity
+							.HExtraWorkMeal) + parseInt(this.AttendanceEntity.RExtraWorkMeal);
 						this.calcLeaveWithSalaryDays()
 					} else {
 						uni.showToast({
@@ -306,18 +328,17 @@
 					}, 500);
 				})
 			},
-			calcLeaveWithSalaryDays(){
+			calcLeaveWithSalaryDays() {
 				let ajaxJson = {
 					ARDate: this.SelectYearMonth
 				};
 				this.$mbservices.Request(this.$webapi.GetCurrentMonthAttendanceRecord, 'POST', ajaxJson, res => {
 					if (res.data.RecordCount > 0) {
-						this.AttendanceEntity.LeaveWithSalary=res.data.data.LeaveWithSalary;
-						this.AttendanceEntity.LeaveWithSalaryLast=res.data.data.LeaveWithSalaryLast;
-						this.AttendanceEntity.LeaveWithSalaryTotal=res.data.data.LeaveWithSalaryTotal;
+						this.AttendanceEntity.LeaveWithSalary = res.data.data.LeaveWithSalary;
+						this.AttendanceEntity.LeaveWithSalaryLast = res.data.data.LeaveWithSalaryLast;
+						this.AttendanceEntity.LeaveWithSalaryTotal = res.data.data.LeaveWithSalaryTotal;
 					}
-				}, err => {
-				});
+				}, err => {});
 			},
 			getCurrentAttendanceRecords() {
 				uni.showLoading({

@@ -85,7 +85,7 @@
 				],
 				ApprovalBage: "",
 				BacklogBage: "",
-				MessageBage:"",
+				MessageBage: "",
 				pageIndex: 0,
 			};
 		},
@@ -204,6 +204,11 @@
 						uni.navigateTo({
 							url: "/pages/MainMenu/ExtendAnnualLeave/ExtendAnnualLeave"
 						});
+						break; //
+					case "mySalary": //警报提醒
+						uni.navigateTo({
+							url: "/pages/My/MySalary/MySalary"
+						});
 						break;
 				}
 			},
@@ -288,7 +293,8 @@
 							ConditionValue: "N",
 							Relationship: "AND"
 						}]
-					}};
+					}
+				};
 				this.$mbservices.Request(this.$webapi.GetMessageRecords, 'POST', ajax, res => {
 					if (res.data.RecordCount >= 0) {
 						_this.MessageBage = res.data.data.length;
@@ -434,7 +440,7 @@
 												badge: _this.BacklogBage,
 												name: __item.Name
 											});
-										}  else if (__item.Code === "AlertMessage") {
+										} else if (__item.Code === "AlertMessage") {
 											_this.iconList.push({
 												id: __item.Code,
 												icon: __item.Icon,

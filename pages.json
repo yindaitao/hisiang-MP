@@ -50,7 +50,11 @@
 			}, {
 				"path": "AboutUs/AboutUs",
 				"style": {}
-			}]
+			}    ,{
+                    "path" : "MySalary/MySalary",
+                    "style" : {}
+                }
+            ]
 		},
 		{
 			"root": "pages/CommonConfirm",
