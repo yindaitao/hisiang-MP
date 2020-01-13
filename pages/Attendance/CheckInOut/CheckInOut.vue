@@ -69,6 +69,8 @@
 						<view class="text-left"><text class="text-bold">打卡时间:</text>{{TimeShow}}</view>
 						<view class="text-left" v-if="ValidateAAType()===1"><text class="text-bold">打卡地点:</text><text class="text-sm">{{currentArea.address}}附近</text></view>
 						<view class="text-left" v-if="ValidateAAType()===2"><text class="text-bold">当前链接WIFI:</text><text class="text-sm text-blue text-bold">{{WIFIInfo.SSID}}</text></view>
+						<view class="text-left" v-if="ValidateAAType()===2"><text class="text-bold">当前Mac地址:</text><text class="text-sm text-blue text-bold">{{WIFIInfo.BSSID}}</text>&nbsp;<button
+							 class="cu-btn sm bg-yellow" @tap="cloneMac">复制</button></view>
 						<view class="text-left">
 							<text class="text-bold">在此备注:</text>
 							<textarea class="text sm-border placeholder" v-if="modalName==='ConfirmModal'" :disabled="modalName===null"
@@ -239,6 +241,21 @@
 			this.calcDistanceCurToAim();
 		},
 		methods: {
+			cloneMac() {
+				if (this.$mbservices.isEmpty(this.WIFIInfo.BSSID)) {
+					uni.showToast({
+						title: '无可用Mac',
+						icon: 'none'
+					})
+					return false;
+				}
+				uni.setClipboardData({
+					data: this.WIFIInfo.BSSID,
+					success: function() {
+						console.log('success');
+					}
+				});
+			},
 			RefreshWIFIINfo() {
 				// #ifdef MP-WEIXIN
 				this.WIFIInfo.SSID = "";
@@ -329,7 +346,8 @@
 					UIStatus: "New"
 				};
 				if (this.ScheduleEntity.AttendanceAccording === 'Wifi') {
-					data.RecordIsEffective = this.ScheduleEntity.WifiMac === this.WIFIInfo.BSSID ? 'Yes' : 'No'
+					data.RecordIsEffective = this.ScheduleEntity.WifiMac.toLocaleLowerCase() === this.WIFIInfo.BSSID.toLocaleLowerCase() ?
+						'Yes' : 'No'
 				}
 				if (this.ScheduleEntity.AttendanceAccording === 'LatLng') {
 					data.ScheduleLat = this.ScheduleEntity.Latitude;

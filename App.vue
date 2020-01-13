@@ -279,10 +279,10 @@
 
             };
             this.$mbservices.Request(this.$webapi.getScheduleList, 'POST', param, res => {
-                console.log('成功返回');
+                console.log('成功返回排版信息');
                 console.log(res);
                 if (res.data.RecordCount > 0) {
-                    this.ScheduleEntity = res.data.data[0];
+                    Vue.prototype.ScheduleEntity = res.data.data[0];
                 }
             }, err => {
                 console.log('失败返回');

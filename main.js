@@ -30,11 +30,11 @@ import custom from './pages/components/custom/custom.vue'
 Vue.component('custom', custom)
 
 /* 全局变量·排版信息 */
-Vue.prototype.ScheduleEntity = {
+/* Vue.prototype.ScheduleEntity = {
 	latitude: '',
 	longitude: '',
 	AttendanceAccording: ''
-};
+}; */
 
 Vue.prototype.$store = store
 // Vue.component('page-head', pageHead)
