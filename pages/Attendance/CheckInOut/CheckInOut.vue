@@ -1,22 +1,24 @@
 <template>
 	<view>
 		<custom :isBack="false">打卡</custom>
+
 		<scroll-view scroll-y class="page" :style="{'height':scrollBarHeight+'px'}">
 			<view class="bg-white">
 				<map id="_mapController" :latitude="latitude" @markertap="openMap()" @callouttap="openMap()" :longitude="longitude"
-				 :markers="covers" :circles="circles"></map>
-			</view>
-			<view class="content text-center" v-if="ValidateAAType()===1">
-				<text>当前经纬度:{{latitude}},{{longitude}}</text>
+				 :markers="covers" :circles="circles" :scale="scale">
+					<cover-view class="cu-bar tabbar top flex" style="position: relative;display: flex;">
+						<cover-view class="bg-grey margin-0" style="margin-top: 0px;">当前经纬度:{{latitude}},{{longitude}}</cover-view>
+					</cover-view>
+				</map>
 			</view>
 			<view class="content text-center" v-if="ValidateAAType()===2">
 				<text>当前连接WIFI:{{WIFIInfo.SSID}}</text>
 			</view>
 			<view class="flex padding justify-center">
-				<view @tap="showModal" data-target="ConfirmModal" :class="[toggleDelay?'animation-scale-up':'']" class="animation-reverse padding-xl justify-center bg-gradual-blue text-white text-center margin-top-xs"
-				 style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
+				<view @tap="showModal" data-target="ConfirmModal" :class="[toggleDelay?'animation-scale-up':'',IsOutSideWork?'bg-gradual-orange':'bg-gradual-blue']"
+				 class="animation-reverse padding-xl justify-center text-white text-center margin-top-xs" style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
 					<view class="margin-top">
-						<text class="text-bold">考勤打卡</text><br />
+						<text class="text-bold">{{BtnActionName}}</text><br />
 						<text>{{TimeShow}}</text>
 					</view>
 				</view>
@@ -80,22 +82,13 @@
 				</view>
 				<view class="cu-form-group text-left margin-top" style="background-color: rgba(0,0,0,0);">
 					<view class="grid col-4 grid-square flex-sub">
-						<!-- <view class="padding-xs bg-img" :style="'background-image:url(' + imgList[index] +')'" v-for="(item,index) in imgList"
-						 :key="index" @tap="ViewImage" :data-url="imgList[index]">
-							<view class="cu-tag bg-red" @tap.stop="DelImg" :data-index="index">
-								<text class='icon-close'></text>
-							</view>
-						</view>
-						<view class="padding-xs solids" @tap="ChooseImage" v-if="imgList.length<4">
-							<text class='icon-cameraadd'></text>
-						</view> -->
 						<view class="bg-img" v-for="(item,index) in imgList" :key="index" @tap="ViewImage" :data-url="imgList[index]">
 							<image :src="imgList[index]" mode="aspectFill"></image>
 							<view class="cu-tag bg-red" @tap.stop="DelImg" :data-index="index">
 								<text class='icon-close'></text>
 							</view>
 						</view>
-						<view class="solids" @tap="ChooseImage" v-if="imgList.length<4">
+						<view class="solids" @tap="TakePhotos" v-if="imgList.length<4">
 							<text class='icon-cameraadd'></text>
 						</view>
 					</view>
@@ -109,18 +102,53 @@
 						<button class="cu-btn round bg-blue" @tap="submitData">确定</button>
 					</view>
 					<view class="action"></view>
-					<!-- <view class="flex solid-bottom padding justify-around">
-						<view class=" padding-sm margin-xs" style="border-right: 1px solid #929292;">
-							<button class="cu-btn round">不打卡</button>
-						</view>
-						<view class=" padding-sm margin-xs">
-							<button class="cu-btn round">确定</button>
-						</view>
-					</view> -->
 				</view>
 			</view>
 		</view>
-
+		<!-- 关联申请单-开始 -->
+		<view class="cu-modal" :class="modalName==='RelatedRequest'?'show':''">
+			<view class="cu-dialog" @tap.stop="" style="width: 280px;max-width: 280px;">
+				<view class="cu-item padding-lr-xl">
+					<view class="action text-bold text-xxl">选择填写申请单类型</view>
+				</view>
+				<scroll-view scroll-y="true" :style="{'height':(scrollBarHeight/2)+'px'}">
+					<radio-group class="block" @change="RadioChange">
+						<view class="cu-list menu text-left">
+							<view class="cu-item" v-for="(item,index) in 2" :key="index">
+								<label class="flex justify-between align-center flex-sub" v-if="index===0">
+									<view class="flex-sub">
+										<text>{{index +1}}、出差申请单</text>
+									</view>
+									<radio class="round" :class="radio=='radio' + index?'checked':''" :checked="radio=='radio' + index?true:false"
+									 :value="'radio' + index"></radio>
+								</label>
+								<label class="flex justify-between align-center flex-sub" v-if="index===1">
+									<view class="flex-sub">
+										<text>{{index +1}}、外出申请单</text>
+									</view>
+									<radio class="round" :class="radio=='radio' + index?'checked':''" :checked="radio=='radio' + index?true:false"
+									 :value="'radio' + index"></radio>
+								</label>
+							</view>
+						</view>
+					</radio-group>
+					<!-- <view class="text-content">
+						<text class="text-red text-center">该项打卡没有</text>
+					</view> -->
+				</scroll-view>
+				<view class="cu-bar solid-top">
+					<view class="action"></view>
+					<view class="action">
+						<button class="cu-btn round bg-blue" @tap="hideModal()">取消</button>
+					</view>
+					<view class="action solid-left">
+						<button class="cu-btn round bg-blue" @tap="CreateRequest">创建</button>
+					</view>
+					<view class="action"></view>
+				</view>
+			</view>
+		</view>
+		<!-- 关联申请单-结束 -->
 	</view>
 </template>
 
@@ -141,12 +169,16 @@
 				},
 				latitude: 36.645008,
 				longitude: 116.915131,
+				scale: 20,
+				IsOutSideWork: false,
+				BtnActionName: "考勤打卡",
+				radio: 'radio1',
 				circles: [{
 					latitude: 36.658565,
 					longitude: 116.893201,
 					color: '#32CD324D',
 					fillColor: '#32CD324D',
-					radius: 500.0,
+					radius: this.ScheduleEntity.LimitRadius > 0 ? this.ScheduleEntity.LimitRadius : 500.0,
 					strokeWidth: 0
 				}],
 				WIFIInfo: {
@@ -182,38 +214,61 @@
 				toggleDelay: false
 			}
 		},
-		onShow() {
-			console.log('进入onShow');
+		async onShow() {
+			//#ifdef MP-WEIXIN
+			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 53;
+			//#endif
 			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
 			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
 			this.$forceUpdate();
 			this.isGetLocation();
 			this.getWorkRecords();
-			this.calcDistanceCurToAim();
-
-			// #ifdef MP-WEIXIN
-			this.WIFIInfo.SSID = "";
-			this.WIFIInfo.BSSID = "";
-			wx.startWifi({
-				success: (res) => {},
-				fail: (err) => {},
-				complete: (cmp1) => {
-					wx.getConnectedWifi({
-						success: (res) => {},
-						fail: (err) => {},
-						complete: (cmp) => {
-							this.WIFIInfo.SSID = cmp.wifi.SSID
-							this.WIFIInfo.BSSID = cmp.wifi.BSSID
-						}
-					})
+			/* 锁定经纬度打卡-开始 */
+			if (this.ScheduleEntity.AttendanceAccording === "LatLng") {
+				var disEntity = await this.calcDistanceCurToAim();
+				console.log('看下计算距离');
+				console.log(disEntity);
+				console.log(this.ScheduleEntity.LimitRadius);
+				if (parseFloat(disEntity.elements[0].distance) > parseFloat(this.ScheduleEntity.LimitRadius)) {
+					this.BtnActionName = "外勤打卡";
+					this.IsOutSideWork = true;
 				}
-			})
-			//#endif
+			}
+			/* 锁定经纬度打卡-结束 */
+			/* 锁定WIFI打卡-开始 */
+			if (this.ScheduleEntity.AttendanceAccording === "Wifi") {
+				// #ifdef MP-WEIXIN
+				this.WIFIInfo.SSID = "";
+				this.WIFIInfo.BSSID = "";
+				wx.startWifi({
+					success: (res) => {},
+					fail: (err) => {},
+					complete: (cmp1) => {
+						wx.getConnectedWifi({
+							success: (res) => {
+								this.WIFIInfo.SSID = res.wifi.SSID
+								this.WIFIInfo.BSSID = res.wifi.BSSID
+								if (!(this.WIFIInfo.BSSID.toLocaleLowerCase().indexOf(this.ScheduleEntity.WifiMac.toLocaleLowerCase()) ===
+										-1)) {
+									this.BtnActionName = "外勤打卡";
+									this.IsOutSideWork = true;
+								}
+							},
+							fail: (err) => {
+								uni.showToast({
+									title: '获取不到WIFI信息',
+									icon: 'none'
+								})
+							},
+							complete: (cmp) => {}
+						})
+					}
+				})
+				//#endif
+			}
+			/* 锁定WIFI打卡-结束 */
 		},
 		onLoad(e) {
-			console.log(e);
-			console.log('看下排版信息');
-			console.log(this.ScheduleEntity);
 			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
 			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
 			this.$forceUpdate()
@@ -225,7 +280,6 @@
 			this.qqmapsdk = new QQMapWX({
 				key: 'RTGBZ-QCCKU-HWRVD-2BYLK-PGWAT-PLFRG' // 必填
 			});
-
 			//#endif
 
 
@@ -235,12 +289,51 @@
 			setInterval(() => {
 				this.TimeShow = this.$mbservices.formatDateTime(new Date(), 'hh:mm:ss')
 			}, 1000);
+
+			uni.$on('GetPhotoImgPath', this.GetPhotoImgPath)
 			// #endif
-			this.isGetLocation()
-			this.getWorkRecords();
-			this.calcDistanceCurToAim();
 		},
 		methods: {
+			CreateRequest(e) {
+				if (this.radio === 'radio0') {
+					uni.navigateTo({
+						url: '/pages/Trip/Tripform/Tripform'
+					})
+				}
+				if (this.radio === 'radio1') {
+					uni.navigateTo({
+						url: '/pages/Goout/Gooutform/Gooutform'
+					})
+				}
+				this.modalName = null;
+			},
+			RadioChange(e) {
+				this.radio = e.detail.value
+			},
+			GetPhotoImgPath(e) {
+				/* if (this.imgList.length != 0) {
+					this.imgList = this.imgList.concat(e.data)
+				} else {
+					this.imgList = e.data
+				} */
+				this.imgList.push(e.data)
+				uni.uploadFile({
+					url: this.$webapi.uploadFilePath, //仅为示例，非真实的接口地址
+					header: {
+						Authorization: "bearer " + uni.getStorageSync("JSUserInfo").access_token
+					},
+					filePath: e.data,
+					name: 'file',
+					formData: {
+						'user': 'test'
+					},
+					success: (uploadFileRes) => {
+						JSON.parse(uploadFileRes.data).forEach(item => {
+							this.PicPaths.push(item.filePath)
+						});
+					}
+				});
+			},
 			cloneMac() {
 				if (this.$mbservices.isEmpty(this.WIFIInfo.BSSID)) {
 					uni.showToast({
@@ -265,12 +358,12 @@
 					fail: (err) => {},
 					complete: (cmp1) => {
 						wx.getConnectedWifi({
-							success: (res) => {},
+							success: (res) => {
+								this.WIFIInfo.SSID = res.wifi.SSID
+								this.WIFIInfo.BSSID = res.wifi.BSSID
+							},
 							fail: (err) => {},
-							complete: (cmp) => {
-								this.WIFIInfo.SSID = cmp.wifi.SSID
-								this.WIFIInfo.BSSID = cmp.wifi.BSSID
-							}
+							complete: (cmp) => {}
 						})
 					}
 				})
@@ -317,6 +410,13 @@
 				return '未知'
 			},
 			submitData() {
+				if (this.IsOutSideWork && this.PicPaths.length <= 0) {
+					uni.showToast({
+						title: '外勤打卡必须上传图片',
+						icon: 'none'
+					})
+					return false;
+				}
 				this.modalName = null;
 				uni.showLoading({
 					title: '正在打卡...'
@@ -365,13 +465,41 @@
 					}
 					data.DistanceToAim = this.element.elements[0].distance;
 				}
+
 				this.$mbservices.Request(this.$webapi.saveWorkRecord, 'POST', data, res => {
 					uni.hideLoading()
 					if (res.data.RecordCount > 0) {
+						uni.showToast({
+							title: '已打卡',
+							icon: 'none'
+						})
 						this.txtContent = "";
 						this.imgList = [];
 						this.PicPaths = [];
 						this.getWorkRecords();
+						
+						let param = {
+							PageIndex: 1,
+							RowsPerPage: "1000",
+							type: "Initialize",
+							Parameter: {
+								LoadChildren: "NoLoad",
+								Conditions: []
+							}
+						
+						};
+						this.$mbservices.Request(this.$webapi.ValidateIsHaveGooutTripRequest, 'POST', param,
+							ret => {
+								if(ret.data.RecordCount>0){
+									if(ret.data.data==='N'){
+										this.modalName = 'RelatedRequest';
+									}
+								}
+							},
+							err => {
+								reject(err)
+							}
+						)
 					}
 				}, err => {
 					uni.hideLoading()
@@ -401,7 +529,6 @@
 							Relationship: "AND"
 						}],
 					}
-
 				};
 				this.$mbservices.Request(this.$webapi.getWorkRecords, 'POST', param, res => {
 					if (res.data.RecordCount) {
@@ -428,8 +555,6 @@
 					type: 'gcj02',
 					success: (res) => {
 						//根据坐标获取当前位置名称，显示在顶部，腾讯地图逆地址解析
-						console.log(res.latitude);
-						console.log(res.longitude);
 						this.latitude = res.latitude;
 						this.longitude = res.longitude;
 						this.qqmapsdk.reverseGeocoder({
@@ -438,10 +563,8 @@
 								longitude: res.longitude
 							},
 							success: (addressRes) => {
-								console.log(addressRes);
 								var address = addressRes.result.formatted_addresses.recommend;
 								this.currentArea.address = address;
-								console.log(address);
 							}
 
 						})
@@ -459,6 +582,47 @@
 			hideModal(e) {
 				this.modalName = null
 			},
+			TakePhotos() {
+				uni.navigateTo({
+					url: '/pages/CommonTools/TakePhotos/TakePhotos'
+				})
+				return false;
+				uni.authorize({
+					scope: 'scope.camera',
+					success() {
+						/* 拍照开始 */
+						var cameraContext = uni.createCameraContext();
+						cameraContext.takePhoto({
+							quality: "normal",
+							success: (e) => {
+								[tempFilePaths].forEach(_item => {
+									uni.uploadFile({
+										url: this.$webapi.uploadFilePath, //仅为示例，非真实的接口地址
+										header: {
+											Authorization: "bearer " + uni.getStorageSync("JSUserInfo").access_token
+										},
+										filePath: _item,
+										name: 'file',
+										formData: {
+											'user': 'test'
+										},
+										success: (uploadFileRes) => {
+											JSON.parse(uploadFileRes.data).forEach(item => {
+												this.PicPaths.push(item.filePath)
+											});
+
+										}
+									});
+								})
+							},
+							fail: (e) => {},
+							complete: (e) => {}
+						});
+						/* 拍照结束 */
+					}
+				})
+
+			},
 			ChooseImage() {
 				uni.chooseImage({
 					count: 4, //默认9
@@ -470,8 +634,6 @@
 						} else {
 							this.imgList = res.tempFilePaths
 						}
-						console.log('看下图片数组');
-						console.log(this.imgList);
 						const tempFilePaths = res.tempFilePaths;
 						tempFilePaths.forEach(_item => {
 							uni.uploadFile({
@@ -485,7 +647,6 @@
 									'user': 'test'
 								},
 								success: (uploadFileRes) => {
-									console.log(uploadFileRes);
 									JSON.parse(uploadFileRes.data).forEach(item => {
 										this.PicPaths.push(item.filePath)
 									});
@@ -563,34 +724,13 @@
 					}
 				})
 			},
-			getLocationInfo() { //2. 获取地理位置
-				/* var _this = this;
-				uni.getLocation({
-					type: 'wgs84',
-					success: (res) => {
-						let latitude, longitude;
-						latitude = res.latitude.toString();
-						longitude = res.longitude.toString();
-						_this.latitude = latitude;
-						_this.longitude = longitude;
-
-						_this.covers[0].latitude = _this.latitude;
-						_this.covers[0].longitude = _this.longitude;
-						_this.$forceUpdate();
-						_this.getAddressBylatLong();
-					}
-				}); */
-
-
-
-
+			getLocationInfo() {
+				//2. 获取地理位置
 				let _this = this;
 				wx.getLocation({
 					type: 'gcj02',
 					success: (res) => {
 						//根据坐标获取当前位置名称，显示在顶部，腾讯地图逆地址解析
-						console.log(res.latitude);
-						console.log(res.longitude);
 						this.latitude = res.latitude;
 						this.longitude = res.longitude;
 
@@ -603,14 +743,13 @@
 								longitude: res.longitude
 							},
 							success: (addressRes) => {
-								console.log(addressRes);
 								var address = addressRes.result.formatted_addresses.recommend;
 								this.latitude = addressRes.result.location.lat;
 								this.longitude = addressRes.result.location.lng;
 								this.currentArea.address = address;
-								console.log(address);
+								console.log('从这里进去');
+								this.calcDistanceCurToAim();
 							}
-
 						})
 					},
 				})
@@ -627,36 +766,49 @@
 					}
 				});
 			},
-			calcDistanceCurToAim() {
-				var _this = this;
-				this.element = {};
-				//调用距离计算接口
-				this.qqmapsdk.calculateDistance({
-					mode: 'straight', //可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填
-					//from参数不填默认当前地址
-					//获取表单提交的经纬度并设置from和to参数（示例为string格式）
-					from: this.latitude + ',' + this.longitude || '', //若起点有数据则采用起点坐标，若为空默认当前地址
-					to: this.ScheduleEntity.Latitude + ',' + this.ScheduleEntity.Longitude, //终点坐标
-					success: (res) => { //成功后的回调
-						console.log(res);
-						var res = res.result;
-						var dis = [];
-						for (var i = 0; i < res.elements.length; i++) {
-							dis.push(res.elements[i].distance); //将返回数据存入dis数组，
+			async calcDistanceCurToAim() {
+				return new Promise((resolve, reject) => {
+					var _this = this;
+					this.element = {};
+					//调用距离计算接口
+					this.qqmapsdk.calculateDistance({
+						mode: 'straight', //可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填
+						//from参数不填默认当前地址
+						//获取表单提交的经纬度并设置from和to参数（示例为string格式）
+						from: this.latitude + ',' + this.longitude || '', //若起点有数据则采用起点坐标，若为空默认当前地址
+						to: this.ScheduleEntity.Latitude + ',' + this.ScheduleEntity.Longitude, //终点坐标
+						success: (res) => {
+							//成功后的回调
+							var res = res.result;
+							/* var dis = [];
+							for (var i = 0; i < res.elements.length; i++) {
+								dis.push(res.elements[i].distance); //将返回数据存入dis数组，
+							} */
+							/* 锁定经纬度打卡-开始 */
+							if (this.ScheduleEntity.AttendanceAccording === "LatLng") {
+								console.log('看下计算距离11111');
+								console.log(res);
+								console.log(this.ScheduleEntity.LimitRadius);
+								if (parseFloat(res.elements[0].distance) > parseFloat(this.ScheduleEntity.LimitRadius)) {
+									this.BtnActionName = "外勤打卡";
+									this.IsOutSideWork = true;
+								}else{
+									this.BtnActionName = "考勤打卡";
+									this.IsOutSideWork = false;
+								}
+							}
+							/* 锁定经纬度打卡-结束 */
+							this.element = res;
+							resolve(res);
+						},
+						fail: function(error) {
+							console.error(error);
+							reject(error);
+						},
+						complete: function(res) {
+							console.log(res);
 						}
-						console.log(res);
-						this.element = res;
-						/* _this.setData({ 
-							  //设置并更新distance数据
-				            distance: dis
-				          }); */
-					},
-					fail: function(error) {
-						console.error(error);
-					},
-					complete: function(res) {
-						console.log(res);
-					}
+					});
 				});
 			}
 		}

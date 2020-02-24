@@ -419,7 +419,6 @@
 							return;
 						}
 						_this.iconList = [];
-						console.log(resultM.data);
 						resultM.data.forEach(item => {
 							item.children.forEach(_item => {
 								_item.children.forEach(__item => {
@@ -480,7 +479,6 @@
 						}, 3000);
 					}
 				});
-				console.log()
 			} else {
 				// #ifdef MP-WEIXIN
 				uni.login({

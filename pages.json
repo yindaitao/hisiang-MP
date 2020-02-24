@@ -43,6 +43,18 @@
 		}
 	],
 	"subPackages": [{
+			"root": "pages/CommonTools",
+			"pages": [{
+				"path": "TakePhotos/TakePhotos",
+				"style": {
+					"app-plus": {
+						//app页面不显示滚动条
+						"scrollIndicator": "none"
+					}
+				}
+			}]
+		},
+		{
 			"root": "pages/My",
 			"pages": [{
 				"path": "AttendanceCollection/AttendanceCollection",
@@ -50,11 +62,10 @@
 			}, {
 				"path": "AboutUs/AboutUs",
 				"style": {}
-			}    ,{
-                    "path" : "MySalary/MySalary",
-                    "style" : {}
-                }
-            ]
+			}, {
+				"path": "MySalary/MySalary",
+				"style": {}
+			}]
 		},
 		{
 			"root": "pages/CommonConfirm",
@@ -329,10 +340,9 @@
 		{
 			"root": "pages/MainMenu",
 			"pages": [{
-                    "path" : "ExtendAnnualLeave/ExtendAnnualLeave",
-                    "style" : {}
-                }
-            ]
+				"path": "ExtendAnnualLeave/ExtendAnnualLeave",
+				"style": {}
+			}]
 		}
 	],
 	"tabBar": {

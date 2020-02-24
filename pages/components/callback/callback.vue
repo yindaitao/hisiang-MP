@@ -34,32 +34,37 @@
 		},
 		methods: {
 			back() {
+				console.log('aaaaauuuuu');
 				if (this.backFrom === "ApprovalNoteList") {
 					if (this.$mbservices.isEmpty(this.baseEntry)) {
 						uni.switchTab({
-						    url: '/pages/tabBar/firstPage/firstPage?data=' + JSON.stringify({
-								from:"ApprovalNoteList",
+							url: '/pages/tabBar/firstPage/firstPage?data=' + JSON.stringify({
+								from: "ApprovalNoteList",
 							})
 						});
-					}else{
+					} else {
 						uni.navigateBack({
-						    delta: 1
+							delta: 1
 						});
 					}
 				} else if (this.backFrom === "ApprovalHandle") {
 					if (this.$mbservices.isEmpty(this.baseEntry)) {
 						uni.switchTab({
-						    url: '/pages/tabBar/firstPage/firstPage?data=' + JSON.stringify({
-								from:"ApprovalHandle",
+							url: '/pages/tabBar/firstPage/firstPage?data=' + JSON.stringify({
+								from: "ApprovalHandle",
 							})
 						});
 					}
-				} 
+				} else if (this.backFrom === "MessageRecordsForm") {
+					uni.switchTab({
+						url: '/pages/tabBar/firstPage/firstPage'
+					});
+				}
 			}
 		},
 		onLoad(e) {
 			if (e.hasOwnProperty("data")) {
-			    this.baseEntrys = e.data;
+				this.baseEntrys = e.data;
 				console.log(this.baseEntrys)
 			}
 		}
@@ -107,33 +112,33 @@
 				if (this.backFrom === "ApprovalNoteList") {
 					if (this.$mbservices.isEmpty(this.baseEntry)) {
 						uni.reLaunch({
-						    url: '/pages/tabBar/firstPage/firstPage?data=' + JSON.stringify({
-								from:"ApprovalNoteList",
+							url: '/pages/tabBar/firstPage/firstPage?data=' + JSON.stringify({
+								from: "ApprovalNoteList",
 							})
 						});
-					}else{
+					} else {
 						uni.navigateBack({
-						    delta: 1
+							delta: 1
 						});
 					}
 				} else if (this.backFrom === "ApprovalHandle") {
 					if (this.$mbservices.isEmpty(this.baseEntry)) {
 						uni.reLaunch({
-						    url: '/pages/tabBar/firstPage/firstPage?data=' + JSON.stringify({
-								from:"ApprovalHandle",
+							url: '/pages/tabBar/firstPage/firstPage?data=' + JSON.stringify({
+								from: "ApprovalHandle",
 							})
 						});
-					}else{
+					} else {
 						uni.navigateBack({
-						    delta: 1
+							delta: 1
 						});
 					}
-				} 
+				}
 			}
 		},
 		onLoad(e) {
 			if (e.hasOwnProperty("data")) {
-			    this.baseEntrys = e.data;
+				this.baseEntrys = e.data;
 				console.log(this.baseEntrys)
 			}
 		}

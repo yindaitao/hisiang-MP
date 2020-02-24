@@ -163,7 +163,6 @@
         onShow: function () {
             console.log('App Show')
             // #ifdef MP-WEIXIN
-            console.log(this.$store.state.access_token);
             if (this.$store.state.access_token === null) {
                 uni.login({
                     provider: 'weixin',
@@ -279,13 +278,11 @@
 
             };
             this.$mbservices.Request(this.$webapi.getScheduleList, 'POST', param, res => {
-                console.log('成功返回排版信息');
-                console.log(res);
                 if (res.data.RecordCount > 0) {
                     Vue.prototype.ScheduleEntity = res.data.data[0];
                 }
             }, err => {
-                console.log('失败返回');
+                console.log('排版信息失败返回');
                 console.log(err);
             })
             //#endif
