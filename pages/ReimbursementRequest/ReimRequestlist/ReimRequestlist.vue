@@ -1,7 +1,7 @@
 <template>
 	<view class="ul-uni-tab-bar">
 		<custom>报销申请列表</custom>
-		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar search bg-white">
+		<view id="_tabBar" ref="_tabBar" v-if="!isMultiSelect" class="cu-bar top search bg-white">
 			<view class="search-form round">
 				<text class="icon-search"></text>
 				<input @input="searchInput" :adjust-position="false" type="text" placeholder="输入搜索关键词" confirm-type="done" :value="searchValue" />
@@ -140,6 +140,17 @@
 			});
 		},
 		onShow() {
+			//#ifdef MP-WEIXIN
+			const query = wx.createSelectorQuery();
+			query.select("#_tabBar").boundingClientRect();
+			query.selectViewport().scrollOffset();
+			var _this = this;
+			query.exec(function(res) {
+				res[0].top; // #the-id节点的上边界坐标
+				res[1].scrollTop; // 显示区域的竖直滚动位置
+				_this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - _this.CustomBar - res[0].height;
+			});
+			//#endif
 			/* if (!this.isFirstLoad) {
 				this.pageIndex = parseInt(this.pageIndex) - 1;
 				this.newShowGetReimList();
@@ -153,17 +164,7 @@
 			this.isLoadMore = false;
 		},
 		onLoad(e) {
-			//#ifdef MP-WEIXIN
-			const query = wx.createSelectorQuery();
-			query.select("#_tabBar").boundingClientRect();
-			query.selectViewport().scrollOffset();
-			var _this = this;
-			query.exec(function(res) {
-				res[0].top; // #the-id节点的上边界坐标
-				res[1].scrollTop; // 显示区域的竖直滚动位置
-				_this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - _this.CustomBar - res[0].height;
-			});
-			//#endif
+			
 			//this.dataList = [];
 			/*加载数据*/
 			this.getReimList();

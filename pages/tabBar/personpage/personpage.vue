@@ -22,23 +22,29 @@
 		</div>
 		<view class="cu-bar bg-white solid-bottom margin-top noBgColor">
 			<view class="action">
-				<text class="icon-title text-orange"></text> 我的列表
+				<text class="icon-moreandroid text-bold"></text> <text class="text-bold">我的列表</text>
 			</view>
 			<view class="action">
-				<button class="cu-btn bg-green shadow" @click="logout" data-target="menuModal">退出登录</button>
+				<button class="cu-btn line-green round sm" @click="logout" data-target="menuModal">退出登录</button>
 			</view>
 		</view>
 		<view class="cu-list menu" :class="[menuBorder?'sm-border':'',menuCard?'card-menu margin-top':'']">
 			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToAttendance">
 				<view class="content">
-					<text class="icon-circlefill text-grey"></text>
+					<text class="icon-timefill text-grey"></text>
 					<text class="text-grey">我的考勤</text>
 				</view>
 			</view>
 			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToAboutUs">
 				<view class="content">
-					<text class="icon-circlefill text-grey"></text>
+					<text class="icon-infofill text-grey"></text>
 					<text class="text-grey">关于我们</text>
+				</view>
+			</view>
+			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToMySalary">
+				<view class="content">
+					<text class="icon-brandfill text-grey"></text>
+					<text class="text-grey">工资条</text>
 				</view>
 			</view>
 			<!-- <view class="cu-item" :class="menuArrow?'arrow':''">
@@ -112,6 +118,11 @@
 				uni.navigateTo({
 					url:'/pages/My/AboutUs/AboutUs?data='+JSON.stringify(that.AboutUs)
 				})
+			},
+			NavigateToMySalary(){
+				uni.navigateTo({
+					url: "/pages/My/MySalary/MySalary"
+				});
 			},
 			getInitialize:async function(){
 				var ajaxJSON={

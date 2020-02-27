@@ -1,8 +1,7 @@
 <template>
-	<picker @change="bindTimeChange" @columnchange="columnchange" mode="multiSelector" :value="index" :disabled="disabled"
+	<picker @change="bindTimeChange" @columnchange="columnchange" mode="multiSelector" :value="index" :disabled="DisabledBtn"
 	 :range="array">
-		<view class="text text-bold" v-if="timeValue">{{timeValue}}
-		</view>
+		<view class="text text-bold" v-if="timeValue">{{timeValue}}</view>
 		<view v-else class="placeholder">{{placeholder}} </view>
 	</picker>
 </template>
@@ -20,7 +19,6 @@
 					return '请选择'
 				}
 			},
-
 			timeType: {
 				type: String,
 				default () {
@@ -33,9 +31,7 @@
 					return []
 				}
 			},
-
-
-			disabled: {
+			DisabledBtn: {
 				type: Boolean,
 				default () {
 					return false
@@ -44,7 +40,7 @@
 			minDate: {
 				type: Number,
 				default () {
-					return new Date('2001/01/05').getTime()
+					return new Date('2019/01/01').getTime()
 				}
 			},
 			timeIntervalMsec: {
@@ -111,8 +107,23 @@
 			this.init()
 		},
 		methods: {
+			resetCmpents() {
+				this.$nextTick(() => {
+					this.array = [];
+					this.init();
+					this.timeValue = "";
+					this.$forceUpdate();
+				});
+			},
 			refresh() {
-				this.value = "";
+				this.$nextTick(() => {
+					this.timeValue = "";
+				});
+			},
+			refreshAll(value) {
+				this.$nextTick(() => {
+					this.timeValue = value;
+				});
 			},
 			moment(strTime, type) {
 				if (!strTime) {
@@ -140,6 +151,9 @@
 				if (type === 'datetime') {
 					value = `${y}/${m}/${d} ${hh}:${mm}:${ss}`
 				}
+				if (this.anyTime === 'other') {
+					value = `${hh}:${mm}:${ss}`
+				}
 				return value
 			},
 			bindTimeChange(e) {
@@ -157,15 +171,20 @@
 					let timindex = indexArr[3] ? indexArr[3] : 0
 					time = this.array[3][timindex]
 				} else {
-					let hourindex = indexArr[3] ? indexArr[3] : 0
-					let hour = parseInt(this.array[3][hourindex])
-					hour = hour < 10 ? `0${hour}` : hour
-					let minsindex = indexArr[4] ? indexArr[4] : 0
-					let minuts = parseInt(this.array[4][minsindex])
-					minuts = minuts < 10 ? `0${minuts}` : minuts
-					time = `${hour}:${minuts}`
+					if (this.timeType !== 'other') {
+						let hourindex = indexArr[3] ? indexArr[3] : 0
+						let hour = parseInt(this.array[3][hourindex])
+						hour = hour < 10 ? `0${hour}` : hour
+						let minsindex = indexArr[4] ? indexArr[4] : 0
+						let minuts = parseInt(this.array[4][minsindex])
+						minuts = minuts < 10 ? `0${minuts}` : minuts
+						time = `${hour}:${minuts}`
+					}
 				}
 				this.timeValue = `${year}-${month}-${date} ${time}`
+				if (this.timeType === 'other') {
+					this.timeValue = `${year}-${month}-${date}`
+				}
 				this.$emit('getData', this.timeValue)
 			},
 			indexInit() {},
@@ -175,9 +194,10 @@
 				if (this.timeType === 'anyTime' && !this.timeOptions.length) {
 					this.timeInit()
 				} else {
-					this.array[3] = this.timeOptions
+					if (this.timeOptions.length > 0) {
+						this.array[3] = this.timeOptions
+					}
 				}
-
 				let arr = []
 				this.valueEchoed()
 			},
@@ -213,7 +233,7 @@
 						})
 				}
 
-				if (value && !this.timeOptions.length) {
+				if (value && !this.timeOptions.length && this.timeType === 'anyTime') {
 
 					let timeArr = value[1].split(':')
 
@@ -237,7 +257,7 @@
 					})
 				}
 
-				if (this.timevalue && this.timeOptions.length) {
+				if (this.timevalue && this.timeOptions.length && this.timeType === 'anyTime') {
 					let index =
 						this.array[3].findIndex(item => item === this.timevalue) || 0
 					this.index[3] = index

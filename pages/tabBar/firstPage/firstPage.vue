@@ -205,7 +205,7 @@
 							url: "/pages/MainMenu/ExtendAnnualLeave/ExtendAnnualLeave"
 						});
 						break; //
-					case "mySalary": //警报提醒
+					case "mySalary": //工资条
 						uni.navigateTo({
 							url: "/pages/My/MySalary/MySalary"
 						});

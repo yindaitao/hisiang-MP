@@ -52,9 +52,9 @@
 					<picker-view-column>
 						<view class="w-picker-item" v-for="(item,index) in data.minutes" :key="index">{{item}}分</view>
 					</picker-view-column>
-					<picker-view-column>
+					<!-- <picker-view-column>
 						<view class="w-picker-item" v-for="(item,index) in data.seconds" :key="index">{{item}}秒</view>
-					</picker-view-column>
+					</picker-view-column> -->
 				</picker-view>
 			</view>
 			<view class="w-picker-view" v-if="mode=='dateTime1'">
@@ -74,9 +74,9 @@
 					<picker-view-column>
 						<view class="w-picker-item" v-for="(item,index) in data.minutes" :key="index">{{item}}分</view>
 					</picker-view-column>
-					<picker-view-column>
+					<!-- <picker-view-column>
 						<view class="w-picker-item" v-for="(item,index) in data.seconds" :key="index">{{item}}秒</view>
-					</picker-view-column>
+					</picker-view-column> -->
 				</picker-view>
 			</view>
 		</view>
@@ -303,7 +303,7 @@
 							_this.data.days = days;
 						};
 						_this.checkArr = [year, month, day, hour, minute, second];
-						_this.resultStr = `${year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second}`;
+						_this.resultStr = `${year+'-'+month+'-'+day+' '+hour+':'+minute}`;//+':'+second
 						break;
 					case "dateTime1":
 						year = _this.data.years[arr[0]] || _this.data.years[_this.data.years.length - 1];
@@ -325,7 +325,7 @@
 							_this.data.days = days;
 						};
 						_this.checkArr = [year, month, day, hour, minute, second];
-						_this.resultStr = `${year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second}`;
+						_this.resultStr = `${year+'-'+month+'-'+day+' '+hour+':'+minute}`;//+':'+second
 						break;
 				}
 				_this.$nextTick(() => {
