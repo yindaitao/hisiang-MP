@@ -65,7 +65,15 @@
 			}, {
 				"path": "MySalary/MySalary",
 				"style": {}
-			}]
+			}    ,{
+                    "path" : "Question/Question",
+                    "style" : {}
+                }
+                ,{
+                    "path" : "Result/Result",
+                    "style" : {}
+                }
+            ]
 		},
 		{
 			"root": "pages/CommonConfirm",

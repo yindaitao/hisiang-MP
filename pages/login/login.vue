@@ -111,7 +111,6 @@
 					provider: __this.providerList[0].id,
 					success: res => {
 						/* 验证是否让登录 */
-						console.log('验证是否让登录');
 						this.validateCanLogin(res.code)
 					},
 					fail: err => {
@@ -195,8 +194,6 @@
 						})],
 					},
 					success: result => {
-						console.log('登录返回');
-						console.log(result);
 						if (result.statusCode != 200) {
 							uni.showToast({
 								title: result.data.error_description,
@@ -239,9 +236,7 @@
 				});
 			},
 			BindInput: function(e) {
-				console.log(e);
 				var dataval = e.currentTarget.dataset.val;
-				console.log(dataval);
 				this.logininfo[dataval] = e.detail.value;
 			},
 			mpGetUserInfo(result) {

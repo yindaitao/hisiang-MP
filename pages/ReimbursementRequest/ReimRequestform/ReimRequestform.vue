@@ -111,8 +111,8 @@
 					</view>
 					<view class="cu-form-group">
 						<view class="title">费用名称</view>
-						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange" :value="item.itemOptionIndex"
-						 :range="arrayType">
+						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" @change="bindPickerChange(item,$event)"
+						 :value="item.itemOptionIndex" :range="arrayType">
 							<view class="picker">{{arrayType[item.itemOptionIndex]}}</view>
 						</picker>
 					</view>
@@ -422,7 +422,6 @@
 				})
 				this.modalName = null;
 				this.radio = "";
-				console.log(e);
 			},
 			RadioChangeBP(e) {
 				this.radio = e.detail.value;
@@ -434,7 +433,6 @@
 				})
 				this.modalName = null;
 				this.radio = "";
-				console.log(e);
 			},
 			showModal1(e) {
 				this.modalName = e.currentTarget.dataset.target;
@@ -540,7 +538,7 @@
 					_indx = parseInt(_indx) + 1;
 					var lineItem = {
 						DocEntry: _this.itemData.DocEntry,
-						LineNum: _indx,
+						LineNum: _this.editflag ? _item.LineNum : _indx,
 						ObjectType: "ReimbursementRequest",
 						Remarks: _item.itemReason,
 						Amount: parseFloat(_item.jine).toFixed(2),
@@ -567,7 +565,8 @@
 						_calcuItem => {
 							var _ishave = false;
 							_lines.forEach(__option => {
-								if (_calcuItem.DocEntry === __option.DocEntry) {
+
+								if (_calcuItem.DocEntry === __option.DocEntry && _calcuItem.LineNum === __option.LineNum) {
 									_calcuItem.UIStatus = "Modify";
 									_calcuItem.Amount = __option.Amount;
 									_calcuItem.ReimbursementTypeCode =
@@ -609,6 +608,7 @@
 					_this.editEntitysList[0].ReimbursementType = _this.itemData.ReimbursementTypeCode1;
 					_this.editEntitysList[0].ShareType = _this.itemData.ShareType;
 					_this.editEntitysList[0].UIStatus = "Modify";
+
 					ajaxJSON = _this.editEntitysList[0];
 				} else {
 					ajaxJSON = {
@@ -648,7 +648,6 @@
 						UIStatus: "New"
 					};
 				}
-				console.log(ajaxJSON)
 				var requestUrl = _this.editflag ?
 					_this.$webapi.submitCostForm :
 					_this.$webapi.submitCostForm;
@@ -759,14 +758,16 @@
 				});
 				this.totalJine = _cache;
 			},
-			bindPickerChange: function(e) {
+			bindPickerChange: function(item, e) {
 				this.indexType = e.target.value;
-				this.formList[parseInt(e.target.id) - 1].itemOptionIndex = parseInt(
+				item.itemOptionIndex = parseInt(e.target.value);
+				item.itemOptionText = this.arrayType[parseInt(e.target.value)];
+				/* this.formList[parseInt(e.target.id) - 1].itemOptionIndex = parseInt(
 					e.target.value
 				);
 				this.formList[parseInt(e.target.id) - 1].itemOptionText = this.arrayType[
 					parseInt(e.target.value)
-				];
+				]; */
 			},
 			bindPickerChange1: function(e) {
 				this.indexPayType = e.target.value;
@@ -1062,7 +1063,6 @@
 						}
 						//_this.formList = [];
 						_this.editEntitysList = [];
-						console.log(ret.data.data)
 						_this.editEntitysList = ret.data.data;
 						var _$this = _this;
 						ret.data.data.forEach(item => {
@@ -1143,7 +1143,6 @@
 									});
 								});
 								_$this.VatType.forEach((__item, __index) => {
-									console.log()
 									if (__item === _item.VatName) {
 										_item.indexVatType = __index;
 									}
@@ -1168,7 +1167,8 @@
 									Count1: _item.Count,
 									bigjine: _this.$mbservices.smalltoBIG(
 										parseFloat(_item.Amount).toFixed(2)
-									)
+									),
+									LineNum: _item.LineNum
 								});
 							});
 							//_this.formList.push(item);
@@ -1308,8 +1308,8 @@
 				ajaxJSON,
 				function(success) {
 					if (success.statusCode === 200) {
-						console.log(_this.arrayType)
 						_this.resourceArray = [];
+						_this.arrayType = [];
 						success.data.data.forEach(_item => {
 							_this.arrayType.push(_item.ReimbursementTypeName);
 							_this.resourceArray.push(_item);

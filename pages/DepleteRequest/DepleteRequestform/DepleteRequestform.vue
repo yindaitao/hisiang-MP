@@ -448,7 +448,6 @@
 			RadioChangeBaseEntry(e) {
 				var _this = this;
 				this.radio2 = e.detail.value;
-				console.log(this.DepletesList)
 				this.DepletesList.forEach(item => {
 					if (item.DocEntry.toString() === e.detail.value.toString()) {
 						_this.itemData.BaseEntry = item.DocEntry;
@@ -583,7 +582,6 @@
 						ajaxJSON.AmountOrQuantity = itemData.num;
 					}
 				}
-				console.log(ajaxJSON);
 				var requestUrl = _this.editflag ?
 					_this.$webapi.submitDepleteRequestList :
 					_this.$webapi.submitDepleteRequestList;
@@ -929,7 +927,6 @@
 						//_this.formList = [];
 						_this.editEntitysList = [];
 						_this.editEntitysList = ret.data.data;
-						console.log(ret.data.data)
 						var _$this = _this;
 						ret.data.data.forEach(item => {
 							if (item.ApproveStatus === "Pending") {

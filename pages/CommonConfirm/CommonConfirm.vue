@@ -66,9 +66,10 @@
 		onLoad(e) {
 			let item = JSON.parse(e.data)
 			this.ParamOption = item;
-			this.Content = item.Remarks.toString().split(',');
 			//获取数据
 			this.GetAttendanceRecords();
+			this.Content = item.Remarks.toString().split(',');
+
 		},
 		methods: {
 			GetAttendanceRecords() {
@@ -85,9 +86,25 @@
 				this.$mbservices.Request(this.$webapi.GetAttendanceRecords, 'POST', ajaxJson, res => {
 					if (res.data.RecordCount > 0) {
 						this.AttendanceRecord = res.data.data[0];
+						this.Content.push("病假:" + parseFloat(this.AttendanceRecord.SickLeave).toFixed(2) + "(小时)")
+						this.Content.push("事假:" + parseFloat(this.AttendanceRecord.PersonalLeave).toFixed(2) + "(小时)")
+						this.Content.push("旷工:" + parseFloat(this.AttendanceRecord.Absence).toFixed(2) + "(次)")
+						this.Content.push("迟到:" + parseFloat(this.AttendanceRecord.Late).toFixed(2) + "(次)")
+						this.Content.push("早退:" + parseFloat(this.AttendanceRecord.Early).toFixed(2) + "(次)")
+						this.Content.push("出差:" + parseFloat(this.AttendanceRecord.GooutDays).toFixed(2) + "(次)")
+						this.Content.push("应出勤:" + parseFloat(this.AttendanceRecord.StandardAttendanceCount).toFixed(2) + "(天)")
+						this.Content.push("实出勤:" + parseFloat(this.AttendanceRecord.ActualAttendanceCount).toFixed(2) + "(天)")
+						this.Content.push("工作日加班:" + parseFloat(this.AttendanceRecord.GExtraWorkHours).toFixed(2) + "(小时)")
+						this.Content.push("工作日加班费用:" + parseFloat(this.AttendanceRecord.GExtraWorkMeal).toFixed(2) + "(元)")
+						this.Content.push("周末加班:" + parseFloat(this.AttendanceRecord.RExtraWorkHours).toFixed(2) + "(小时)")
+						this.Content.push("周末加班费用:" + parseFloat(this.AttendanceRecord.RExtraWorkMeal).toFixed(2) + "(元)")
+						this.Content.push("法定假日加班:" + parseFloat(this.AttendanceRecord.HExtraWorkHours).toFixed(2) + "(小时)")
+						this.Content.push("法定假日加班费用:" + parseFloat(this.AttendanceRecord.HExtraWorkMeal).toFixed(2) + "(元)")
+						this.Content.push("餐补次数:" + parseFloat(this.AttendanceRecord.Meals).toFixed(2) + "(次)")
 					}
 				}, err => {
-
+					console.log('失败');
+					console.log(err);
 				})
 			},
 			textareaAInput(e) {
@@ -107,7 +124,6 @@
 				this.confirmContent = '';
 			},
 			actionClick() {
-				console.log('进来了');
 				if (this.modalName === 'DialogModal1') {
 					this.AttendanceRecord.IsConfirm = 'No';
 					this.AttendanceRecord.ApproveStatus = 'Rejected';
@@ -123,7 +139,7 @@
 				this.AttendanceRecord.UIStatus = 'Modify';
 				this.modalName = null;
 				uni.showLoading({
-					title:'提交中,请稍后...'
+					title: '提交中,请稍后...'
 				})
 				this.$mbservices.Request(this.$webapi.AttendanceSave, 'POST', this.AttendanceRecord, res => {
 					if (res.data.RecordCount > 0) {

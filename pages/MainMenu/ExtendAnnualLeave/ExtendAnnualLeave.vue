@@ -93,8 +93,6 @@
 		},
 		methods: {
 			GetRecords() {
-				console.log('yyyyyyyyyyyyyy');
-				console.log(this.initEntity);
 				let dateStr = (new Date().getFullYear() + 1) + '-' + this.ExtendToDate;
 				this.SaveExtendToDate = this.$mbservices.formatDateTime(dateStr, 'yyyy-MM-dd')
 				let ajaxJson = {
@@ -169,8 +167,6 @@
 					return false;
 				}
 				
-				console.log('jjjjjjjjjjjjjjjjjj');
-				console.log(param);
 				//this.initEntity=param.data.data[0]
 				this.Annualeave = param.data.data[0].Annualeave;
 				this.ExtendToDate = param.data.data[0].ExtendToDate;

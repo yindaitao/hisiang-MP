@@ -404,7 +404,6 @@
 				})
 				this.modalName = null;
 				this.radio = "";
-				console.log(e);
 			},
 			onlySave() {
 				this.modalName = null;
@@ -521,7 +520,6 @@
 						UIStatus: "New"
 					};
 				}
-				console.log(ajaxJSON)
 				var requestUrl = _this.editflag ?
 					_this.$webapi.submitpaymentRequest :
 					_this.$webapi.submitpaymentRequest;
@@ -611,7 +609,6 @@
 					"POST",
 					ajaxJSON,
 					function(ret) {
-						console.log(ret.data.data);
 						_this.BorrowRequestList = ret.data.data;
 					},
 					function(ret) {
@@ -871,7 +868,6 @@
 							});
 							return false;
 						}
-						console.log(ret.data.data)
 						_this.editEntitysList = [];
 						_this.editEntitysList = ret.data.data;
 						var _$this = _this;

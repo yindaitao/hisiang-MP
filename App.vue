@@ -13,8 +13,6 @@
 						Vue.prototype.CustomBar = e.statusBarHeight + 45;
 					};
 					// #endif
-					console.log('customerBar1');
-					console.log(Vue.prototype.CustomBar);
 
 					// #ifdef MP-WEIXIN
 					Vue.prototype.StatusBar = e.statusBarHeight;
@@ -22,8 +20,7 @@
 					Vue.prototype.Custom = custom;
 					Vue.prototype.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
 					// #endif
-					console.log('customerBar2');
-					console.log(Vue.prototype.CustomBar);
+					
 					Vue.prototype.ColorList = [{
 							title: '嫣红',
 							name: 'red',
@@ -284,7 +281,6 @@
 					Vue.prototype.ScheduleEntity = res.data.data[0];
 				}
 			}, err => {
-				console.log('排版信息失败返回');
 				console.log(err);
 			})
 			//#endif

@@ -35,16 +35,28 @@
 					<text class="text-grey">我的考勤</text>
 				</view>
 			</view>
+			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToMySalary">
+				<view class="content">
+					<text class="icon-brandfill text-grey"></text>
+					<text class="text-grey">月工资条</text>
+				</view>
+			</view>
+			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToResult">
+				<view class="content">
+					<text class="icon-appreciatefill text-grey"></text>
+					<text class="text-grey">业绩绩效</text>
+				</view>
+			</view>
+			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToQuestion">
+				<view class="content">
+					<text class="icon-commandfill text-grey"></text>
+					<text class="text-grey">问题反馈</text>
+				</view>
+			</view>
 			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToAboutUs">
 				<view class="content">
 					<text class="icon-infofill text-grey"></text>
 					<text class="text-grey">关于我们</text>
-				</view>
-			</view>
-			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToMySalary">
-				<view class="content">
-					<text class="icon-brandfill text-grey"></text>
-					<text class="text-grey">工资条</text>
 				</view>
 			</view>
 			<!-- <view class="cu-item" :class="menuArrow?'arrow':''">
@@ -91,7 +103,6 @@
 		},
 		onLoad() {
 			var uinfo = uni.getStorageSync("JSUserInfo");
-			console.log(uinfo);
 			this.userInfo = uinfo; //JSON.parse(uinfo.User);
 			var _this = this;
 			uni.getUserInfo({
@@ -124,6 +135,16 @@
 					url: "/pages/My/MySalary/MySalary"
 				});
 			},
+			NavigateToQuestion(){
+				uni.navigateTo({
+					url:'/pages/My/Question/Question'
+				})
+			},
+			NavigateToResult(){
+				uni.navigateTo({
+					url:'/pages/My/Result/Result'
+				})
+			},
 			getInitialize:async function(){
 				var ajaxJSON={
 					pageIndex: 1,
@@ -151,7 +172,6 @@
 				},err=>{})
 			},
 			logout() {
-				console.log("yes");
 				uni.showModal({
 					title: "提示",
 					content: "确认退出登陆？",
@@ -166,7 +186,6 @@
 								}
 							});
 						} else if (res.cancel) {
-							console.log("用户点击取消");
 						}
 					}
 				});

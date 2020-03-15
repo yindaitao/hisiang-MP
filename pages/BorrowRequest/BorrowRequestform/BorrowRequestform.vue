@@ -93,7 +93,7 @@
 					<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1">{{itemData.InvCompanyName}}</text>
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
-				<view class="cu-form-group">
+				<!-- <view class="cu-form-group">
 					<view class="title">账户(卡号)</view>
 					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum1($event)"
 					 :value="itemData.AccountNumber">
@@ -104,7 +104,7 @@
 					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum2($event)"
 					 :value="itemData.AcceptingUnit">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
+				</view> -->
 				<view class="cu-form-group">
 					<view class="title">备注</view>
 					<!-- <view class="action">
@@ -141,7 +141,6 @@
 		},
 		watch: {
 			showValue(val) {
-				console.log(val);
 			}
 		},
 		data() {
@@ -268,7 +267,6 @@
 			if (e.flag === "modify") {
 				this.editflag = true;
 				this.edit = false;
-				console.log("modify" + this.edit);
 			} else if (e.flag === "Original") {
 				this.editflag = true;
 				this.edit = true;
@@ -350,7 +348,6 @@
 					}
 				})
 				this.modalName = null;
-				console.log(e);
 			},
 			showModal1(e) {
 				this.modalName = e.currentTarget.dataset.target;
@@ -386,8 +383,6 @@
 							});
 							return false;
 						}
-						console.log("看编辑");
-						console.log(ret.data.data);
 						_this.itemData = ret.data.data[0];
 						_this.itemData.InvCompanyId = _this.itemData.InvCompanyId;
 						_this.invCompanys.forEach(item => {
@@ -396,18 +391,20 @@
 							}
 						})
 						_this.itemData.PayTypeCode = _this.itemData.PayType;
-						_this.PayTypeList.forEach(inner => {
+						_this.PayTypeList.forEach((inner, indexP) => {
 							if (inner.Code === _this.itemData.PayTypeCode) {
 								_this.itemData.PayTypeName = inner.Name;
+								_this.indexPayType = indexP;
+								_this.itemData.indexPayType = indexP;
 							}
 						})
-						_this.PayType.forEach((_item, index) => {
+						/* _this.PayType.forEach((_item, index) => {
 							if (_item === _this.itemData.PayTypeName) {
 								_this.indexPayType = index;
 								_this.itemData.indexPayType = index;
 
 							}
-						});
+						}); */
 						_this.itemData.CostTypeCode = _this.itemData.CostTypeCode;
 						_this.itemData.CostTypeName = _this.itemData.CostTypeName;
 						_this.CostType.forEach((_item, index) => {
@@ -424,7 +421,6 @@
 								_item.BorrowTypeCode ===
 								_this.itemData.BorrowTypeCode
 							) {
-								console.log("KKKKKKKKKKKKKKK");
 								_this.indexBorrowType = index;
 								_this.itemData.indexBorrowType = index;
 							}
@@ -495,7 +491,8 @@
 				if (_this.editflag) {
 					_this.itemData.Approve = _this.isDoSteps ? "Y" : "N";
 					//_this.itemData.BorrowTypeCode=_this.BaseBorrowType[_this.indexBorrowType].BorrowTypeCode;
-					_this.itemData.PayTypeCoce = _this.itemData.PayTypeCode;
+					_this.itemData.PayTypeCode = _this.itemData.PayTypeCode;
+					_this.itemData.PayType = _this.itemData.PayType;
 					_this.itemData.BackDate = _this.itemData.BackDate;
 					_this.itemData.CostTypeCode = _this.itemData.CostTypeCode;
 					_this.itemData.CostTypeName = _this.itemData.CostTypeName;
@@ -524,7 +521,8 @@
 						OrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 						CompanyId: uni.getStorageSync("JSUserInfo").CompanyId,
 						CompanyName: uni.getStorageSync("JSUserInfo").CompanyName,
-						PayType: _this.itemData.PayTypeCode,
+						PayType: _this.itemData.PayType,
+						PayTypeCode: _this.itemData.PayTypeCode,
 						BackDate: _this.itemData.BackDate,
 						CostTypeCode: _this.itemData.CostTypeCode,
 						CostTypeName: _this.itemData.CostTypeName,
@@ -538,8 +536,6 @@
 						UIStatus: "New"
 					};
 				}
-				console.log("ajaxson")
-				console.log(ajaxJSON)
 				var requestUrl = _this.$webapi.submitBorrowRequest;
 				var _$this = _this;
 				_this.$mbservices.Request(
@@ -639,17 +635,19 @@
 			bindPickerChange: function(e) {
 				this.indexBorrowType = e.target.value;
 				this.itemData.indexBorrowType = e.target.value;
-				console.log("也走了" + this.indexBorrowType);
 			},
 			bindPickerChange1: function(e) {
 				this.indexPayType = e.target.value;
 				this.itemData.indexPayType = e.target.value;
-				for (var i in this.PayTypeList) {
+				this.itemData.PayTypeCode = this.PayTypeList[this.itemData.indexPayType].Code;
+				this.itemData.PayType = this.PayTypeList[this.itemData.indexPayType].Code;
+				this.itemData.PayTypeName = this.PayType[this.itemData.indexPayType];
+				/* for (var i in this.PayTypeList) {
 					if (this.PayType[this.indexPayType] === this.PayTypeList[i].Name) {
 						this.itemData.PayTypeCode = this.PayTypeList[i].Code;
 						this.itemData.PayTypeName = this.PayType[this.indexPayType];
 					}
-				}
+				} */
 
 				// if (this.PayType[this.indexPayType] != "BankToUser") {this.itemData.AcceptingUnit=this.PayType[this.indexPayType];}
 				//    else {this.itemData.AcceptingUnit="";}
@@ -666,7 +664,6 @@
 			chooseImage: async function() {
 				if (this.imageList.length === 9) {
 					let isContinue = await this.isFullImg();
-					console.log("是否继续?", isContinue);
 					if (!isContinue) {
 						return;
 					}

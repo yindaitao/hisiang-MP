@@ -60,9 +60,9 @@
 		</view>
 		<view class="cu-modal" :class="modalNameTraffic=='RadioModalTraffic'?'show':''" @tap="hideModalTraffic" v-if="edit === false"
 		 @touchmove.stop.prevent="moveHandle">
-			<view class="cu-dialog" @tap.stop="">
-				<radio-group class="block" @change="RadioTrafficChange">
-					<scroll-view class="radius" :style="{'height':(scrollBarHeight/2)+'px'}" scroll-y>
+			<view class="cu-dialog">
+				<scroll-view class="radius" :style="{'height':(scrollBarHeight/1.5)+'px'}" scroll-y>
+					<radio-group class="block radius" @change="RadioTrafficChange">
 						<view class="cu-list menu text-left radius">
 							<view class="cu-item" v-for="(item,index) in TrafficTypeList" :key="index">
 								<label class="flex justify-between align-center flex-sub">
@@ -71,8 +71,8 @@
 								</label>
 							</view>
 						</view>
-					</scroll-view>
-				</radio-group>
+					</radio-group>
+				</scroll-view>
 			</view>
 		</view>
 		<!-- <scroll-view scroll-y :style="{'height':scrollBarHeight+'px'}" :scroll-with-animation="true"> -->
@@ -249,13 +249,13 @@
 				<view class="cu-form-group">
 					<view class="title">账户(卡号)</view>
 					<input :disabled="edit?true:false" placeholder="账户(卡号)" name="input" style="text-align: right;" @input="inputNum11($event)"
-					 :value="itemData.AccountNumber">
+					 :value="itemData.AccountCode">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
 					<view class="title">受理单位(银行)</view>
 					<input :disabled="edit?true:false" placeholder="受理单位(银行)" name="input" style="text-align: right;" @input="inputNum22($event)"
-					 :value="itemData.AcceptingUnit">
+					 :value="itemData.Bank">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
 				<view class="cu-form-group">
@@ -428,8 +428,8 @@
 				itemData: {
 					DocEntry: "",
 					indexPayType: 0,
-					AccountNumber: "",
-					AcceptingUnit: "",
+					AccountCode: "",
+					Bank: "",
 					PayTypeCode: "ToRequestUser",
 					PayTypeName: "转账给申请人",
 					Remarks: "",
@@ -552,7 +552,6 @@
 			RadioTypeChange(e) {
 				this.radio2 = e.detail.value;
 				this.formList[this.DetailId - 1].DetailType = e.detail.value;
-				console.log(this.formList[this.DetailId - 1].DetailType)
 				this.DetailTypeList.forEach(item => {
 					if (item.Code === e.detail.value) {
 						this.formList[this.DetailId - 1].DetailTypeName = item.Name;
@@ -696,7 +695,7 @@
 					if (_item.DetailType === 'Traffic') {
 						lineItem = {
 							DocEntry: _this.itemData.DocEntry,
-							LineNum: _indx,
+							LineNum: _this.editflag ? _item.LineNum : _indx,
 							ObjectType: "BusinessTravelRequest",
 							Remarks: _item.Remarks1,
 							DocDateStart: _item.DocDateStart,
@@ -756,7 +755,7 @@
 						_calcuItem => {
 							var _ishave = false;
 							_lines.forEach(__option => {
-								if (_calcuItem.DocEntry === __option.DocEntry) {
+								if (_calcuItem.DocEntry === __option.DocEntry && _calcuItem.LineNum === __option.LineNum) {
 									_calcuItem.UIStatus = "Modify";
 									_calcuItem.Amount = __option.Amount;
 									_calcuItem.ReimbursementTypeCode =
@@ -766,6 +765,8 @@
 									(_calcuItem.Remarks = __option.Remarks),
 									(_calcuItem.Imgs = __option.Imgs);
 									_calcuItem.DocDate = __option.DocDate;
+									_calcuItem.VatCode = __option.VatCode;
+									_calcuItem.VatName = __option.VatTypeName;
 									_ishave = true;
 								}
 							});
@@ -781,8 +782,8 @@
 						_this.totalJine
 					).toFixed(2));
 					_this.editEntitysList[0].PayType = _this.itemData.PayTypeCode;
-					_this.editEntitysList[0].AccountCode = _this.itemData.AccountNumber;
-					_this.editEntitysList[0].Bank = _this.itemData.AcceptingUnit;
+					_this.editEntitysList[0].AccountCode = _this.itemData.AccountCode;
+					_this.editEntitysList[0].Bank = _this.itemData.Bank;
 					_this.editEntitysList[0].AccountName = _this.itemData.AccountName;
 					_this.editEntitysList[0].Remarks = _this.itemData.Remarks;
 					_this.editEntitysList[0].InvCompanyId = _this.itemData.InvCompanyId;
@@ -822,8 +823,8 @@
 						CompanyId: uni.getStorageSync("JSUserInfo").CompanyId,
 						CompanyName: uni.getStorageSync("JSUserInfo").CompanyName,
 						PayType: _this.itemData.PayTypeCode,
-						AccountCode: _this.itemData.AccountNumber,
-						Bank: _this.itemData.AcceptingUnit,
+						AccountCode: _this.itemData.AccountCode,
+						Bank: _this.itemData.Bank,
 						AccountName: _this.itemData.AccountName,
 						ReimbursementType: _this.itemData.ReimbursementTypeCode1,
 						InvOrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
@@ -957,7 +958,7 @@
 			bindPickerChange: function(item, e) {
 				//var _this = this;
 				item.itemOptionIndex = parseInt(e.target.value); // _this.resourceArray[i].ReimbursementTypeCode;
-				item.itemOptionText = _this.arrayType[parseInt(e.target.value)];
+				item.itemOptionText = this.arrayType[parseInt(e.target.value)];
 				//item.indexType = e.target.value;
 				/* for (var i in _this.resourceArray) {
 					console.log(_this.arrayType[item.indexType]+'-------'+_this.resourceArray[i].ReimbursementTypeName);
@@ -996,15 +997,18 @@
 				}
 			},
 			bindPickerChange4: function(item, e) {
-				console.log(e)
 				var _this = this;
 				item.indexVatType = e.target.value;
-				for (var i in _this.VatTypeList) {
+				item.VatTypeCode = _this.VatTypeList[item.indexVatType].Code;
+				item.VatTypeName = _this.VatType[item.indexVatType];
+				/* for (var i in _this.VatTypeList) {
+					console.log(_this.VatType[this.indexVatType] + '-----' + _this.VatTypeList[i].Name);
 					if (_this.VatType[this.indexVatType] === _this.VatTypeList[i].Name) {
+						console.log('好了，进来了');
 						item.VatTypeCode = _this.VatTypeList[i].Code;
 						item.VatTypeName = _this.VatType[item.indexVatType];
 					}
-				}
+				} */
 			},
 			getCostType: async function() {
 				var ajaxJSON = {
@@ -1035,7 +1039,6 @@
 							this.CostTypeList.push(item)
 						})
 						this.indexCostType = 1;
-						console.log(this.CostTypeList);
 						this.itemData.CostTypeCode = this.CostTypeList[this.indexCostType - 1].Code;
 						this.itemData.CostTypeName = this.CostType[this.indexCostType];
 					}
@@ -1058,7 +1061,6 @@
 				};
 				this.$mbservices.Request(this.$webapi.getVatRecords, "POST", ajaxJSON, res => {
 					if (res.data.RecordCount > 0) {
-						console.log(res.data.data)
 						res.data.data.forEach(item => {
 							this.VatType.push(item.Name)
 							this.VatTypeList.push(item)
@@ -1291,7 +1293,6 @@
 							return false;
 						}
 						//_this.formList = [];
-						console.log(ret.data.data);
 						_this.editEntitysList = [];
 						_this.editEntitysList = ret.data.data;
 						var _$this = _this;
@@ -1316,8 +1317,6 @@
 							_$this.itemData.Days = item.Days;
 							_$this.itemData.InvCompanyId = item.InvCompanyId;
 							_$this.invCompanys.forEach(item => {
-								console.log(item.ACCode);
-								console.log(_$this.itemData.InvCompanyId);
 								if (item.ACCode === _$this.itemData.InvCompanyId) {
 									_$this.itemData.InvCompanyName = item.ACName;
 								}
@@ -1410,6 +1409,7 @@
 										_item.VatName
 									),
 									Remarks1: _item.Remarks,
+									LineNum: _item.LineNum
 								});
 							});
 						});
@@ -1434,10 +1434,10 @@
 				this.itemData.AccountName = event.detail.value;
 			},
 			inputNum11(event) {
-				this.itemData.AccountNumber = event.detail.value;
+				this.itemData.AccountCode = event.detail.value;
 			},
 			inputNum22(event) {
-				this.itemData.AcceptingUnit = event.detail.value;
+				this.itemData.Bank = event.detail.value;
 			},
 			inputNumDays(event) {
 				this.itemData.Days = event.detail.value;
@@ -1474,10 +1474,6 @@
 				res[0].top; // #the-id节点的上边界坐标
 				res[1].scrollTop; // 显示区域的竖直滚动位置
 				_this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - _this.CustomBar - res[0].height;
-				console.log(uni.getSystemInfoSync());
-				console.log('H:' + uni.getSystemInfoSync().screenHeight);
-				console.log('C:' + _this.CustomBar);
-				console.log('B:' + res[0].height);
 			});
 			//#endif
 		},
