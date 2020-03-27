@@ -144,7 +144,8 @@
 								return true;
 							}
 							let str = "";
-							if (result.data.data.Openid === result.data.data.UserInfo.WechatOpenID_MP&&result.data.data.UserInfo.UserCode.toLowerCase()===this.logininfo.userCode.toLowerCase()) {
+							if (result.data.data.Openid === result.data.data.UserInfo.WechatOpenID_MP && result.data.data.UserInfo.UserCode
+								.toLowerCase() === this.logininfo.userCode.toLowerCase()) {
 								this.Openid = result.data.data.Openid;
 								this.submitLoginAction(code);
 								return true;
@@ -164,13 +165,48 @@
 					fail: err => {}
 				});
 			},
-			submitLoginAction(code) {
+			async ValidateUserInfo(UserId, Pswd, OpenId) {
+				return new Promise((res, err) => {
+					uni.request({
+						url: this.$webapi.ValidateUserInfo,
+						method: "POST",
+						header: {
+							"content-type": "application/x-www-form-urlencoded;charset=utf-8",
+							Authorization: "Basic bWFnaWM6MTIzNA=="
+						},
+						data: {
+							UserId: UserId,
+							Pswd: Pswd,
+							OpenId: OpenId
+						},
+						success: result => {
+							res(result)
+						},
+						fail: fail => {
+							err(fail)
+						}
+					});
+				})
+			},
+			async submitLoginAction(code) {
 				if (this.$mbservices.isEmpty(this.Openid)) {
 					uni.showModal({
 						title: '获取绑定数据异常,请重新尝试!'
 					})
 					return;
 				}
+				let reponse = await this.ValidateUserInfo(this.logininfo.userCode, hex_md5.hxmd5(this.logininfo.password), this.Openid);
+				
+				if (this.$mbservices.isEmpty(reponse) || this.$mbservices.isEmpty(reponse.data) || this.$mbservices.isEmpty(
+						reponse.data.RecordCount) || reponse.data.RecordCount <= 0) {
+					uni.showToast({
+						title: reponse.data.data,
+						icon: 'none'
+					})
+					this.logininfo.loading = false;
+					return false;
+				}
+
 				let __this = this;
 				let OrherInfo = {};
 				OrherInfo.IsFirst = true;
@@ -223,7 +259,6 @@
 								});
 							}
 						);
-
 						__this.logininfo.loading = true;
 					},
 					fail: function(error) {
@@ -256,11 +291,12 @@
 </script>
 
 <style>
-	.message{
+	.message {
 		width: 100%;
-		height:20px;
+		height: 20px;
 		font-size: 12px;
 	}
+
 	/* 本页基本 */
 	@charset "UTF-8";
 

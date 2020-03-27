@@ -99,7 +99,7 @@
 			</form>
 		</view>
 		<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 999;width: 100%;">
-			<view class="action" v-if="edit === false" style="width: 50%;">
+			<view class="action" v-if="edit === false||(itemData.Approve==='N'&&editflag)" style="width: 50%;">
 				<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
 					<text class="icon-upload"></text>提交
 				</button>

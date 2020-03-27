@@ -401,7 +401,7 @@
 					title: '努力加载菜单中...'
 				})
 				uni.request({
-					url: this.$webapi.getAccessToken,
+					url: this.$webapi.getAuthMenus,
 					method: "POST",
 					header: {
 						Authorization: "bearer " +
@@ -419,7 +419,44 @@
 							return;
 						}
 						_this.iconList = [];
-						resultM.data.forEach(item => {
+						resultM.data.data.forEach(__item => {
+							if (__item.Code === "approvallist") {
+								_this.iconList.push({
+									id: __item.Code,
+									icon: __item.Icon,
+									color: __item.Remarks,
+									badge: _this.ApprovalBage,
+									name: __item.Name
+								});
+							} else if (__item.Code === "tasklist") {
+								_this.iconList.push({
+									id: __item.Code,
+									icon: __item.Icon,
+									color: __item.Remarks,
+									badge: _this.BacklogBage,
+									name: __item.Name
+								});
+							} else if (__item.Code === "AlertMessage") {
+								_this.iconList.push({
+									id: __item.Code,
+									icon: __item.Icon,
+									color: __item.Remarks,
+									badge: _this.MessageBage,
+									name: __item.Name
+								});
+							} else {
+								_this.iconList.push({
+									id: __item.Code,
+									icon: __item.Icon,
+									color: __item.Remarks,
+									badge: 0,
+									name: __item.Name
+								});
+							}
+						});
+						
+						
+						/* resultM.data.forEach(item => {
 							item.children.forEach(_item => {
 								_item.children.forEach(__item => {
 									if (_item.isVisible === "Yes") {
@@ -459,7 +496,7 @@
 									}
 								});
 							});
-						});
+						}); */
 						if (!this.$mbservices.isEmpty(e.data)) {
 							if (JSON.parse(e.data).from === "ApprovalNoteList") {
 								uni.navigateTo({

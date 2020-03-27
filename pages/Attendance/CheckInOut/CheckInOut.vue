@@ -4,11 +4,12 @@
 
 		<scroll-view scroll-y class="page" :style="{'height':scrollBarHeight+'px'}">
 			<view class="bg-white">
+				<view class="top">
+					<view class="bg-grey margin-0" style="margin-top: 0px;">当前经纬度:{{latitude}},{{longitude}}</view>
+				</view>
 				<map id="_mapController" :latitude="latitude" @markertap="openMap()" @callouttap="openMap()" :longitude="longitude"
 				 :markers="covers" :circles="circles" :scale="scale">
-					<cover-view class="cu-bar tabbar top flex" style="position: relative;display: flex;">
-						<cover-view class="bg-grey margin-0" style="margin-top: 0px;">当前经纬度:{{latitude}},{{longitude}}</cover-view>
-					</cover-view>
+					<!--  -->
 				</map>
 			</view>
 			<view class="content text-center" v-if="ValidateAAType()===2">
@@ -33,8 +34,9 @@
 					</button>
 				</view>
 			</view>
-			<view class="cu-timeline" style="background-color: rgba(0,0,0,0);" v-for="(item,index) in WorkRecords" :key="index">
-				<view class="cu-time">第{{index+1}}次打卡<text v-if="ScheduleEntity.AttendanceAccording==='Wifi'&&item.RecordIsEffective!=='Yes'"
+			<view class="cu-timeline bg-white" v-for="(item,index) in WorkRecords" :key="index" style="background-color: rgba(0,0,0,0);">
+				<!-- style="background-color: rgba(0,0,0,0);" -->
+				<view class="cu-time cu-tag radius round margin-left">第{{index+1}}次打卡<text v-if="ScheduleEntity.AttendanceAccording==='Wifi'&&item.RecordIsEffective!=='Yes'"
 					 class="cu-tag radius bg-red">无效</text></view>
 				<view class="cu-item">
 					<view class="content">
@@ -52,7 +54,8 @@
 					</view>
 					<view class="content" v-if="item.RecordRemarks.length>0">{{item.RecordRemarks}}</view>
 					<view class="content" v-if="item.PicPaths.length>0">
-						<view class="cu-form-group text-left" style="background-color: rgba(0,0,0,0);">
+						<view class="cu-form-group text-left bg-white" style="background-color: rgba(0,0,0,0);">
+							<!-- style="background-color: rgba(0,0,0,0);" -->
 							<view class="grid col-4 grid-square flex-sub">
 								<view class="padding-xs bg-img" :style="'background-image:url(' + _item +')'" v-for="(_item,_idx) in item.PicPaths"
 								 :key="_idx" @tap="ViewImage1(item.PicPaths,_idx)" :data-url="_item">
@@ -186,11 +189,6 @@
 					BSSID: ''
 				},
 				covers: [{
-					/* callout: {
-						content: '点击图标跳转到导航',
-						display: 'ALWAYS',
-						color:'#FF4500'
-					}, */
 					width: 50,
 					height: 50,
 					id: '_marker_1',
@@ -215,6 +213,17 @@
 			}
 		},
 		async onShow() {
+			let interval = setInterval((item) => {
+				if (!this.$mbservices.isEmpty(this.ScheduleEntity.Latitude)) {
+					clearInterval(interval);
+				}
+			}, 1000);
+			uni.showLoading({
+				title: '请稍后...'
+			})
+			await setTimeout(function() {
+				uni.hideLoading()
+			}, 500);
 			//#ifdef MP-WEIXIN
 			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 53;
 			//#endif
@@ -226,9 +235,6 @@
 			/* 锁定经纬度打卡-开始 */
 			if (this.ScheduleEntity.AttendanceAccording === "LatLng") {
 				var disEntity = await this.calcDistanceCurToAim();
-				console.log('看下计算距离');
-				console.log(disEntity);
-				console.log(this.ScheduleEntity.LimitRadius);
 				if (parseFloat(disEntity.elements[0].distance) > parseFloat(this.ScheduleEntity.LimitRadius)) {
 					this.BtnActionName = "外勤打卡";
 					this.IsOutSideWork = true;
@@ -273,8 +279,6 @@
 			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
 			this.$forceUpdate()
 
-
-
 			//#ifdef MP-WEIXIN
 			// 实例化腾讯地图API核心类
 			this.qqmapsdk = new QQMapWX({
@@ -282,14 +286,11 @@
 			});
 			//#endif
 
-
-
 			//#ifdef MP-WEIXIN
 			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 50 - 40;
 			setInterval(() => {
 				this.TimeShow = this.$mbservices.formatDateTime(new Date(), 'hh:mm:ss')
 			}, 1000);
-
 			uni.$on('GetPhotoImgPath', this.GetPhotoImgPath)
 			// #endif
 		},
@@ -311,11 +312,6 @@
 				this.radio = e.detail.value
 			},
 			GetPhotoImgPath(e) {
-				/* if (this.imgList.length != 0) {
-					this.imgList = this.imgList.concat(e.data)
-				} else {
-					this.imgList = e.data
-				} */
 				this.imgList.push(e.data)
 				uni.uploadFile({
 					url: this.$webapi.uploadFilePath, //仅为示例，非真实的接口地址
@@ -477,7 +473,7 @@
 						this.imgList = [];
 						this.PicPaths = [];
 						this.getWorkRecords();
-						
+
 						let param = {
 							PageIndex: 1,
 							RowsPerPage: "1000",
@@ -486,12 +482,12 @@
 								LoadChildren: "NoLoad",
 								Conditions: []
 							}
-						
+
 						};
 						this.$mbservices.Request(this.$webapi.ValidateIsHaveGooutTripRequest, 'POST', param,
 							ret => {
-								if(ret.data.RecordCount>0){
-									if(ret.data.data==='N'){
+								if (ret.data.RecordCount > 0) {
+									if (ret.data.data === 'N') {
 										this.modalName = 'RelatedRequest';
 									}
 								}
@@ -565,6 +561,7 @@
 							success: (addressRes) => {
 								var address = addressRes.result.formatted_addresses.recommend;
 								this.currentArea.address = address;
+								this.$forceUpdate()
 							}
 
 						})
@@ -733,7 +730,6 @@
 						//根据坐标获取当前位置名称，显示在顶部，腾讯地图逆地址解析
 						this.latitude = res.latitude;
 						this.longitude = res.longitude;
-
 						this.covers[0].latitude = _this.latitude;
 						this.covers[0].longitude = _this.longitude;
 						this.$forceUpdate();
@@ -747,9 +743,10 @@
 								this.latitude = addressRes.result.location.lat;
 								this.longitude = addressRes.result.location.lng;
 								this.currentArea.address = address;
-								console.log('从这里进去');
+								this.$forceUpdate();
 								this.calcDistanceCurToAim();
-							}
+							},
+							fail: function(res) {}
 						})
 					},
 				})
@@ -763,6 +760,9 @@
 						} else {
 							_this.getLocationInfo()
 						}
+					},
+					fail(err) {
+						_this.getAuthorizeInfo()
 					}
 				});
 			},
@@ -772,7 +772,8 @@
 					this.element = {};
 					//调用距离计算接口
 					this.qqmapsdk.calculateDistance({
-						mode: 'straight', //可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填
+						mode: 'straight',
+						//可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填
 						//from参数不填默认当前地址
 						//获取表单提交的经纬度并设置from和to参数（示例为string格式）
 						from: this.latitude + ',' + this.longitude || '', //若起点有数据则采用起点坐标，若为空默认当前地址
@@ -780,19 +781,12 @@
 						success: (res) => {
 							//成功后的回调
 							var res = res.result;
-							/* var dis = [];
-							for (var i = 0; i < res.elements.length; i++) {
-								dis.push(res.elements[i].distance); //将返回数据存入dis数组，
-							} */
 							/* 锁定经纬度打卡-开始 */
 							if (this.ScheduleEntity.AttendanceAccording === "LatLng") {
-								console.log('看下计算距离11111');
-								console.log(res);
-								console.log(this.ScheduleEntity.LimitRadius);
 								if (parseFloat(res.elements[0].distance) > parseFloat(this.ScheduleEntity.LimitRadius)) {
 									this.BtnActionName = "外勤打卡";
 									this.IsOutSideWork = true;
-								}else{
+								} else {
 									this.BtnActionName = "考勤打卡";
 									this.IsOutSideWork = false;
 								}

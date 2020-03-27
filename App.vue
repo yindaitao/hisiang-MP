@@ -20,7 +20,7 @@
 					Vue.prototype.Custom = custom;
 					Vue.prototype.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
 					// #endif
-					
+
 					Vue.prototype.ColorList = [{
 							title: '嫣红',
 							name: 'red',
@@ -161,6 +161,7 @@
 		},
 		onShow: function() {
 			console.log('App Show')
+			Vue.prototype.ScheduleEntity = {};
 			// #ifdef MP-WEIXIN
 			if (this.$store.state.access_token === null) {
 				uni.login({
@@ -294,10 +295,12 @@
 <style>
 	/* uni.css - 通用组件、模板样式库，可以当作一套ui库应用 */
 
-	@import './common/uni.css';
+	/* @import './common/uni.css'; */
+
 
 	@import "./common/icon.css";
 	@import "./common/colorui.css";
+	/* @import "./common/main.css"; */
 
 	/* ColorUI */
 	.nav-list {

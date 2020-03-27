@@ -1,4 +1,4 @@
-var websiteUrl = "https://oa.magicbox.net.cn";
+var websiteUrl = "https://so.magicdata.co";
 /* https://oa.magicbox.net.cn*/
 /* http://localhost:62142 */
 /* http://localhost:51682 */
@@ -15,10 +15,14 @@ module.exports = {
 	getLoginOpenId: websiteUrl + '/api/WeChat/GetMiniProgramOpenId',
 	/* 登录 */
 	login: websiteUrl + '/Token',
+	/* 登陆前验证 */
+	ValidateUserInfo: websiteUrl + '/api/User/ValidateUserInfo',
 	/* 根据用户id获取用户信息 */
 	getUserInfo: websiteUrl + '/api/User/GetUsers',
 	/* 获取AccessToken */
 	getAccessToken: websiteUrl + '/api/Authorization/GetUserAuthorization_Mobile',
+	/* 获取权限菜单 */
+	getAuthMenus: websiteUrl + '/api/Authorization/GetMyAuthorization_Mobile',
 	/* 获取组织架构TreeList */
 	getTreeList: websiteUrl + '/api/Organization/GetOrganizationTreeApp',
 	/* 提交组织架构 */
@@ -190,5 +194,7 @@ module.exports = {
 	/* 获取工资条 */
 	GetMySalaryList: websiteUrl + '/api/Salary/GetPeopleRecords',
 	/* 打卡时验证有没有出差申请或者外出申请 */
-	ValidateIsHaveGooutTripRequest: websiteUrl + '/api/WorkRecord/ValidateIsHaveGooutTripRequest'
+	ValidateIsHaveGooutTripRequest: websiteUrl + '/api/WorkRecord/ValidateIsHaveGooutTripRequest',
+	/* 用户更新工资条阅读次数 */
+	SaveSSReadTimes: websiteUrl + '/api/Salary/SaveReadInfo'
 }

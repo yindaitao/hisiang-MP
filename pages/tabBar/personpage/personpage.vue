@@ -29,31 +29,37 @@
 			</view>
 		</view>
 		<view class="cu-list menu" :class="[menuBorder?'sm-border':'',menuCard?'card-menu margin-top':'']">
+			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToBaseInfo">
+				<view class="content">
+					<text class="icon-card text-grey"></text>
+					<text class="text-grey">基本资料</text>
+				</view>
+			</view>
 			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToAttendance">
 				<view class="content">
 					<text class="icon-timefill text-grey"></text>
 					<text class="text-grey">我的考勤</text>
 				</view>
 			</view>
-			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToMySalary">
+			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToMySalary">
 				<view class="content">
 					<text class="icon-brandfill text-grey"></text>
 					<text class="text-grey">月工资条</text>
 				</view>
 			</view>
-			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToResult">
+			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToResult">
 				<view class="content">
 					<text class="icon-appreciatefill text-grey"></text>
 					<text class="text-grey">业绩绩效</text>
 				</view>
 			</view>
-			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToQuestion">
+			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToQuestion">
 				<view class="content">
 					<text class="icon-commandfill text-grey"></text>
 					<text class="text-grey">问题反馈</text>
 				</view>
 			</view>
-			<view class="cu-item"  style="background-color: rgba(0,0,0,0);" @tap="NavigateToAboutUs">
+			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToAboutUs">
 				<view class="content">
 					<text class="icon-infofill text-grey"></text>
 					<text class="text-grey">关于我们</text>
@@ -98,7 +104,7 @@
 				userbg: this.$webapi.webroot + "/Images/MP/userbg.png",
 				man: this.$webapi.webroot + "/Images/MP/man.png",
 				felame: this.$webapi.webroot + "/Images/MP/felame.png",
-				AboutUs:"",
+				AboutUs: "",
 			};
 		},
 		onLoad() {
@@ -119,57 +125,62 @@
 					url: "/pages/demo/testColorUI/testColorUI"
 				});
 			},
-			NavigateToAttendance(){
+			NavigateToBaseInfo() {
+				return false;
 				uni.navigateTo({
-					url:'/pages/My/AttendanceCollection/AttendanceCollection'
+					url: '/pages/My/MyBaseInfo/MyBaseInfo'
 				})
 			},
-			NavigateToAboutUs(){
+			NavigateToAttendance() {
+				uni.navigateTo({
+					url: '/pages/My/AttendanceCollection/AttendanceCollection'
+				})
+			},
+			NavigateToAboutUs() {
 				var that = this;
 				uni.navigateTo({
-					url:'/pages/My/AboutUs/AboutUs?data='+JSON.stringify(that.AboutUs)
+					url: '/pages/My/AboutUs/AboutUs?data=' + JSON.stringify(that.AboutUs)
 				})
 			},
-			NavigateToMySalary(){
+			NavigateToMySalary() {
 				uni.navigateTo({
 					url: "/pages/My/MySalary/MySalary"
 				});
 			},
-			NavigateToQuestion(){
+			NavigateToQuestion() {
+				return false;
 				uni.navigateTo({
-					url:'/pages/My/Question/Question'
+					url: '/pages/My/Question/Question'
 				})
 			},
-			NavigateToResult(){
+			NavigateToResult() {
+				return false;
 				uni.navigateTo({
-					url:'/pages/My/Result/Result'
+					url: '/pages/My/Result/Result'
 				})
 			},
-			getInitialize:async function(){
-				var ajaxJSON={
+			getInitialize: async function() {
+				var ajaxJSON = {
 					pageIndex: 1,
 					rowsPerPage: "10000",
 					type: "Initialize",
 					Parameter: {
-					  LoadChildren: "NoLoad",
-					  Conditions: [
-					    {
-					      FieldName: "Activated",
-					      Operation: "EQUAL",
-					      ConditionValue: "Y",
-					      Relationship: "AND"
-					    }
-					  ]
+						LoadChildren: "NoLoad",
+						Conditions: [{
+							FieldName: "Activated",
+							Operation: "EQUAL",
+							ConditionValue: "Y",
+							Relationship: "AND"
+						}]
 					}
 				};
-				this.$mbservices.Request(this.$webapi.getInitialize,"POST",ajaxJSON,res=>{
-					if(res.data.RecordCount>0)
-					{
+				this.$mbservices.Request(this.$webapi.getInitialize, "POST", ajaxJSON, res => {
+					if (res.data.RecordCount > 0) {
 						var _this = this;
 						_this.AboutUs = res.data.data[0].AboutUs;
 					}
-					
-				},err=>{})
+
+				}, err => {})
 			},
 			logout() {
 				uni.showModal({
@@ -185,8 +196,7 @@
 									});
 								}
 							});
-						} else if (res.cancel) {
-						}
+						} else if (res.cancel) {}
 					}
 				});
 			}

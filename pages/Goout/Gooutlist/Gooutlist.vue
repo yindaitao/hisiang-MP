@@ -400,8 +400,6 @@
 							});
 							return false;
 						}
-						console.log('aaaaaaaaaaaaaaaaa');
-						console.log(ret.data.data);
 						setTimeout(() => {
 							var _cacheList = [];
 							ret.data.data.forEach(item => {

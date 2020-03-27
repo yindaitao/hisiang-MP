@@ -73,6 +73,10 @@
                     "path" : "Result/Result",
                     "style" : {}
                 }
+                ,{
+                    "path" : "MyBaseInfo/MyBaseInfo",
+                    "style" : {}
+                }
             ]
 		},
 		{

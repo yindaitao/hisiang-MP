@@ -1,24 +1,6 @@
 <template>
 	<view>
 		<custom>外出</custom>
-		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
-			<view class="cu-dialog">
-				<view class="cu-bar bg-white justify-end">
-					<view class="content">操作提示</view>
-					<view class="action" @tap="hideModal">
-						<text class="icon-roundclose text-black"></text>
-					</view>
-				</view>
-				<view class="padding-xl bg-white">
-					<text class="text-black text-bold">确定提交申请?</text>
-				</view>
-				<view class="cu-bar bg-white">
-					<view class="action margin-0 flex-sub text-grey" @tap="onlySave">存草稿</view>
-					<view class="action margin-0 flex-sub text-black solid-left" @tap="hideModal">取消</view>
-					<view class="action margin-0 flex-sub text-green solid-left" @tap="saveAndDoSteps">确定提交</view>
-				</view>
-			</view>
-		</view>
 		<view class="ul-swiper-box">
 			<form>
 				<view class="cu-list menu">
@@ -71,63 +53,37 @@
 						</view>
 					</view>
 					<view class="cu-item">
+						<view class="content">
+							<sunui-textarea ref="textarea" :SelDisabled="modalName!=null" :value="itemData.Cause" :styTextarea="styTextarea" indent="0em" @input="textareaInput"></sunui-textarea>
+						</view>
+					</view>
+					<!-- <view class="cu-item" style="overflow: hidden;">
 						<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
 						 placeholder-class="placeholder" data-placeholder="在此输入外出事由" :value="itemData.Cause"></textarea>
-					</view>
-				</view>
-				<!-- 分界线 -->
-				<!-- <view class="cu-form-group">
-					<view class="title">外出时长单位</view>
-					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexGooutHoursText" :range="GooutHoursTextType">
-						<view class="picker">{{GooutHoursTextType[indexGooutHoursText]}}</view>
-					</picker>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">开始日期</view>
-					<picker :disabled="edit?true:false" mode="date" :value="itemData.BeginDate" :start="startDate" :end="endDate"
-					 @change="bindDateChange(itemData,$event)" v-if='itemData.GooutHoursText==="Day"'>
-						<view class="picker">{{itemData.BeginDate}}</view>
-					</picker>
-					<w-picker mode="dateTime" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal1" :current="true"
-					 @confirm="onConfirm" ref="dateTime1" themeColor="#f00" v-if="itemData.GooutHoursText!=='Day'"></w-picker>
-					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="(!$mbservices.isEmpty(itemData.BeginDate)||itemData.BeginDate!=='请选择')&&itemData.GooutHoursText!=='Day'">{{itemData.BeginDate}}</view>
-					<view :disabled="edit?true:false" @tap="toggleTab('dateTime1')" v-if="($mbservices.isEmpty(itemData.BeginDate)||itemData.BeginDate==='请选择')&&itemData.GooutHoursText!=='Day'">{{$mbservices.isEmpty(resultInfo1.result)?'请选择':resultInfo1.result}}</view>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">结束日期</view>
-					<picker :disabled="edit?true:false" mode="date" :value="itemData.EndDate" :start="startDate" :end="endDate"
-					 @change="bindDateChange1(itemData,$event)" v-if='itemData.GooutHoursText==="Day"'>
-						<view class="picker">{{itemData.EndDate}}</view>
-					</picker>
-					<w-picker mode="dateTime1" :startYear="startYear" :endYear="endYear" step="1" :defaultVal="defaultVal2" :current="true"
-					 @confirm="onConfirm1" ref="dateTime2" themeColor="#f00" v-if="itemData.GooutHoursText!=='Day'"></w-picker>
-					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="(!$mbservices.isEmpty(itemData.EndDate)||itemData.EndDate!=='请选择')&&itemData.GooutHoursText!=='Day'">{{itemData.EndDate}}</view>
-					<view :disabled="edit?true:false" @tap="toggleTab1('dateTime2')" v-if="($mbservices.isEmpty(itemData.EndDate)||itemData.EndDate==='请选择')&&itemData.GooutHoursText!=='Day'">{{$mbservices.isEmpty(resultInfo2.result)?'请选择':resultInfo2.result}}</view>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">外出时长</view>
-					<input disabled="true" placeholder="外出时长" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
-					 :value="itemData.Hours">
-					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
-				<view class="cu-form-group">
-					<view class="title">外出事由</view>
-				</view>
-				<view class="cu-form-group">
-					<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
-					 placeholder-class="placeholder" data-placeholder="在此输入外出事由" :value="itemData.Cause"></textarea>
-				</view> -->
-				<!-- <view class="cu-form-group">
-					<view class="title">备注</view>
-				</view>
-				<view class="cu-form-group">
-					<textarea @input="textareaInput33" :class="itemData.Remarks?'value':''" maxlength="-1" :disabled="modalName!=null"
-					 id="_Remarks" name="_Remarks" placeholder-class="placeholder" data-placeholder="在此输入备注" :value="itemData.Remarks" />
 					</view> -->
+				</view>
 			</form>
 		</view>
+		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">操作提示</view>
+					<view class="action" @tap="hideModal">
+						<text class="icon-roundclose text-black"></text>
+					</view>
+				</view>
+				<view class="padding-xl bg-white">
+					<text class="text-black text-bold">确定提交申请?</text>
+				</view>
+				<view class="cu-bar bg-white">
+					<view class="action margin-0 flex-sub text-grey" @tap="onlySave">存草稿</view>
+					<view class="action margin-0 flex-sub text-black solid-left" @tap="hideModal">取消</view>
+					<view class="action margin-0 flex-sub text-green solid-left" @tap="saveAndDoSteps">提交审批</view>
+				</view>
+			</view>
+		</view>
 		<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 999;width: 100%;">
-			<view class="action" v-if="edit === false" style="width: 50%;">
+			<view class="action" v-if="edit === false||(itemData.Approve==='N'&&editflag)" style="width: 50%;">
 				<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
 					<text class="icon-upload"></text>提交
 				</button>
@@ -142,6 +98,7 @@
 </template>
 
 <script>
+	import sunUiTextarea from "@/components/sunui-textarea/sunui-textarea.vue";
 	import abc from "../../components/uni-datetimepicker.vue";
 	import wPicker from "../../../components/w-picker/w-picker.vue";
 	import MagicDatePicker from "../../../components/MagicDatePicker/MagicDatePicker.vue";
@@ -157,6 +114,7 @@
 	];
 	export default {
 		components: {
+			sunUiTextarea,
 			abc,
 			wPicker,
 			MagicDatePicker
@@ -166,19 +124,20 @@
 		},
 		data() {
 			return {
+				styTextarea: `font-size:0.8em;padding:2%;background-color:rgba(0,0,0,0);`,
 				timeOptions: [],
 				defaultMinDate: new Date("2019/1/1").getTime(),
 				defaultMaxDate: new Date("2050/12/31").getTime(),
-				timeType1: "other",
+				timeType1: "anyTime",
 				time: Date.parse(new Date()),
-				GooutHoursTextType: ["天", "小时"],
+				GooutHoursTextType: ["小时", "天"],
 				indexGooutHoursText: 0,
 				GooutHoursTextList: [{
-					Code: "Day",
-					Name: "天",
-				}, {
 					Code: "Hour",
 					Name: "小时",
+				}, {
+					Code: "Day",
+					Name: "天",
 				}],
 				modalName: null,
 				enddate: "",
@@ -198,8 +157,8 @@
 					EndDate: "",
 					GooutTypeCode: "Goout",
 					Hours: "",
-					GooutHoursText: "Day",
-					GooutHoursTextName: "天",
+					GooutHoursText: "Hour",
+					GooutHoursTextName: "小时",
 					Cause: "",
 					Remarks: "",
 				},
@@ -257,6 +216,24 @@
 			},
 		},
 		methods: {
+			setRefsTextarea() {
+				this.$nextTick(function() {
+					// 是否显示输入输入样式提示,默认false
+					this.$refs.textarea.maxnum = true;
+					// 输入最大数量,传-1代表无限,默认为-1
+					this.$refs.textarea.maxlength = 100;
+					// 弹出键盘高度,默认40
+					this.$refs.textarea.cursor = 100;
+					// 是否禁用输入,默认不禁用
+					this.$refs.textarea.disabled = false;
+					// 是否显示组件,默认显示（控制它显示隐藏textarea）
+					this.$refs.textarea.show = true;
+					// 描述文字,默认简述文字...
+					this.$refs.textarea.placeholder = "在此输入外出事由";
+					//文本内容
+					this.$refs.textarea.valueText = this.itemData.Cause;
+				});
+			},
 			getData(time) {
 				this.resultInfo1 = time;
 				this.itemData.BeginDate = time;
@@ -440,6 +417,7 @@
 				} */
 			},
 			showModal1(e) {
+				this.$refs.textarea.hideShow(false);
 				this.modalName = e.currentTarget.dataset.target;
 			},
 			toList() {
@@ -455,27 +433,30 @@
 					uni.showModal({
 						title: "提示",
 						content: "请选择正确的开始时间和结束时间",
-						showCancel: false,
-
+						showCancel: false
 					});
 					if (this.itemData.GooutHoursText === 'Hour') {
 						this.itemData.BeginDate = "";
 						this.itemData.EndDate = "";
-					} else if (this.itemData.GooutHoursText === 'Day') {
-					}
+					} else if (this.itemData.GooutHoursText === 'Day') {}
 					return false;
 				}
+				this.$refs.textarea.hideShow(false);
+
 				this.modalName = e.currentTarget.dataset.target;
 			},
 			hideModal(e) {
 				this.modalName = null;
+				this.$refs.textarea.hideShow(true);
 			},
 			onlySave() {
+				this.$refs.textarea.hideShow(true);
 				this.modalName = null;
 				this.isDoSteps = false;
 				this.submitForm();
 			},
 			saveAndDoSteps() {
+				this.$refs.textarea.hideShow(true);
 				this.modalName = null;
 				this.isDoSteps = true;
 				this.submitForm();
@@ -653,7 +634,7 @@
 				this.totalJine = _cache.toString();
 			},
 			textareaInput(e) {
-				this.itemData.Cause = e.detail.value;
+				this.itemData.Cause = e;
 			},
 			toggleTab(mode) {
 				this.itemData.BeginDate = "";
@@ -1109,26 +1090,7 @@
 							}
 							_$this.$refs.PstartDate1.refreshAll(_$this.itemData.BeginDate);
 							_$this.$refs.PEndDate1.refreshAll(_$this.itemData.EndDate);
-							// _this.formList = [];
-							//   var _pathArr =
-							//     _item.Imgs != "undefined" &&
-							//     _item.Imgs != null &&
-							//     _item.Imgs != ""
-							//       ? _item.Imgs.split("|")
-							//       : [];
-							//   _item.pathArr = new Array();
-							//   _pathArr.forEach(_item_ => {
-							//     _item.pathArr.push({
-							//       retInfo: {},
-							//       url: _this.$webapi.webroot + "/" + _item_,
-							//       deleteurl: _item_
-							//     });
-							//   });
-							//   _this.formList.push({
-							//     id: parseInt(_indx) + 1,
-							//     imageList: _item.pathArr,
-							//   });
-							// });
+							_$this.$refs.textarea.refresh(item.Cause);
 						});
 						setTimeout(() => {
 							uni.hideLoading();
@@ -1152,6 +1114,7 @@
 			},
 		},
 		onLoad(e) {
+			this.setRefsTextarea();
 			this.from = JSON.parse(e.data).from;
 			/* 修改传递参数 */
 			if (e.flag === "modify") {

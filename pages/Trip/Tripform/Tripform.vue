@@ -1,24 +1,6 @@
 <template>
 	<view>
 		<custom>出差</custom>
-		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
-			<view class="cu-dialog">
-				<view class="cu-bar bg-white justify-end">
-					<view class="content">操作提示</view>
-					<view class="action" @tap="hideModal">
-						<text class="icon-roundclose text-black"></text>
-					</view>
-				</view>
-				<view class="padding-xl bg-white">
-					<text class="text-black text-bold">确定提交申请?</text>
-				</view>
-				<view class="cu-bar bg-white">
-					<view class="action margin-0 flex-sub text-grey" @tap="onlySave">存草稿</view>
-					<view class="action margin-0 flex-sub text-black solid-left" @tap="hideModal">取消</view>
-					<view class="action margin-0 flex-sub text-green solid-left" @tap="saveAndDoSteps">确定提交</view>
-				</view>
-			</view>
-		</view>
 		<view class="cu-modal" :class="modalNameTraffic=='RadioModalTraffic'?'show':''" @tap="hideModalTraffic" v-if="edit === false">
 			<view class="cu-dialog" @tap.stop="">
 				<radio-group class="block" @change="RadioTrafficChange">
@@ -33,44 +15,74 @@
 				</radio-group>
 			</view>
 		</view>
-		<scroll-view scroll-y :style="{'height':scrollBarHeight+'px'}" :scroll-with-animation="true">
-			<view class="ul-swiper-box">
-				<form>
-					<view class="cu-form-group">
-						<view class="title">出发日期</view>
-						<picker :disabled="edit?true:false" mode="date" :value="itemData.BeginDate" :start="startDate" :end="endDate"
-						 @change="bindDateChange(itemData,$event)">
-							<view class="picker">{{itemData.BeginDate}}</view>
-						</picker>
+		<!-- <scroll-view scroll-y :style="{'height':scrollBarHeight+'px'}" :scroll-with-animation="true"> -->
+		<view class="ul-swiper-box">
+			<form>
+				<view class="cu-list menu">
+					<view class="cu-item">
+						<view class="content">出发日期</view>
+						<view class="action">
+							<picker :disabled="edit?true:false" mode="date" :value="itemData.BeginDate" :start="startDate" :end="endDate"
+							 @change="bindDateChange(itemData,$event)">
+								<view class="picker">{{itemData.BeginDate}}</view>
+							</picker>
+						</view>
 					</view>
-					<view class="cu-form-group">
-						<view class="title">到达日期</view>
-						<picker :disabled="edit?true:false" mode="date" :value="itemData.EndDate" :start="startDate" :end="endDate"
-						 @change="bindDateChange1(itemData,$event)">
-							<view class="picker">{{itemData.EndDate}}</view>
-						</picker>
+					<view class="cu-item">
+						<view class="content">到达日期</view>
+						<view class="action">
+							<picker :disabled="edit?true:false" mode="date" :value="itemData.EndDate" :start="startDate" :end="endDate"
+							 @change="bindDateChange1(itemData,$event)">
+								<view class="picker">{{itemData.EndDate}}</view>
+							</picker>
+						</view>
 					</view>
-					<view class="cu-form-group">
-						<view class="title">出差时长</view>
-						<input disabled="true" placeholder="出差时长(单位:天)" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
-						 :value="itemData.TripHours">
-						<text v-if="false" class="icon-roundclosefill text-orange"></text>
+					<view class="cu-item">
+						<view class="content">出差时长</view>
+						<view class="action">
+							<input disabled="true" placeholder="出差时长(单位:天)" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
+							 :value="itemData.TripHours">
+							<text v-if="false" class="icon-roundclosefill text-orange"></text>
+						</view>
 					</view>
-					<view class="cu-form-group">
+					<view class="cu-item">
 						<view class="title">行程及交通工具</view>
 					</view>
-					<view class="cu-form-group">
+					<!-- <view class="cu-item">
+						<view class="content">
+							<input type="text" style="min-height: 100px;word-break: break-all;text-overflow: ellipsis;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 6;overflow: auto;"
+							 :value="itemData.BeginDateAndStartPlace" />
+						</view>
+					</view> -->
+					<view class="cu-item">
+						<view class="content">
+							<editor id="editor" class="ql-container" placeholder="在此输入行程及交通工具" @ready="onEditorReady" @input="BeginDateAStartPlaceInput"></editor>
+						</view>
+					</view>
+					<!-- <view class="cu-item">
 						<textarea @input="BeginDateAStartPlaceInput" :class="itemData.BeginDateAndStartPlace?'value':''" maxlength="-1"
 						 :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入行程及交通工具" :value="itemData.BeginDateAndStartPlace"></textarea>
-					</view>
-					<view class="cu-form-group" style="margin-top: 3px;">
+						<view class="content">
+							<sunui-textarea ref="textarea" :SelDisabled="modalName!=null" :value="itemData.BeginDateAndStartPlace"
+							 :styTextarea="styTextarea" indent="0em" @input="BeginDateAStartPlaceInput"></sunui-textarea>
+						</view>
+					</view> -->
+					<view class="cu-item">
 						<view class="title">出差事由</view>
 					</view>
-					<view class="cu-form-group">
+					<view class="cu-item">
+						<view class="content">
+							<editor id="editor1" class="ql-container" placeholder="在此输入出差事由" @ready="onEditorReady" @input="textareaInput"></editor>
+						</view>
+					</view>
+					<!-- <view class="cu-item">
 						<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
 						 placeholder-class="placeholder" data-placeholder="在此输入出差事由" :value="itemData.Cause"></textarea>
-					</view>
-
+						<view class="content">
+							<sunui-textarea ref="textarea1" :SelDisabled="modalName!=null" :value="itemData.Cause" :styTextarea="styTextarea"
+							 indent="0em" @input="textareaInput"></sunui-textarea>
+						</view>
+					</view> -->
 					<view class="cu-bar bg-gray solid-bottom margin-top">
 						<view class="action">
 							<text class="icon-title text-orange"></text>
@@ -91,17 +103,35 @@
 						</view>
 					</block>
 					<uni-view class="cu-bar bg-gray solid-bottom" style="width: 100%;" v-if="edit === false">
-						<button class="cu-btn round bg-blue shadow" style="margin: 0 auto;" @tap="addOption">
+						<button class="cu-btn round bg-blue shadow sm" style="margin: 0 auto;" @tap="addOption">
 							<text class="icon-add"></text>增加&nbsp;&nbsp;同行人
 						</button>
 					</uni-view>
-
-				</form>
-			</view>
-		</scroll-view>
+				</view>
+			</form>
+		</view>
+		<!-- </scroll-view> -->
 		<view style="width: :100%;height: 50px;"></view>
+		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">操作提示</view>
+					<view class="action" @tap="hideModal">
+						<text class="icon-roundclose text-black"></text>
+					</view>
+				</view>
+				<view class="padding-xl bg-white">
+					<text class="text-black text-bold">确定提交申请?</text>
+				</view>
+				<view class="cu-bar bg-white">
+					<view class="action margin-0 flex-sub text-grey" @tap="onlySave">存草稿</view>
+					<view class="action margin-0 flex-sub text-black solid-left" @tap="hideModal">取消</view>
+					<view class="action margin-0 flex-sub text-green solid-left" @tap="saveAndDoSteps">确定提交</view>
+				</view>
+			</view>
+		</view>
 		<view id="_tabBar" class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 999;width: 100%;">
-			<view class="action" v-if="edit === false" style="width: 50%;">
+			<view class="action" v-if="edit === false||(itemData.Approve==='N'&&editflag)" style="width: 50%;">
 				<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
 					<text class="icon-upload"></text>提交
 				</button>
@@ -116,6 +146,7 @@
 </template>
 
 <script>
+	import sunUiTextarea from "@/components/sunui-textarea/sunui-textarea.vue";
 	import abc from "../../components/uni-datetimepicker.vue";
 	var sourceType = [
 		["camera"],
@@ -129,6 +160,7 @@
 	];
 	export default {
 		components: {
+			sunUiTextarea,
 			abc
 		},
 		watch: {
@@ -136,6 +168,8 @@
 		},
 		data() {
 			return {
+				editorCtx: {},
+				editorCtx1: {},
 				scrollBarHeight: 0,
 				time: Date.parse(new Date()),
 				modalName: null,
@@ -181,6 +215,65 @@
 			}
 		},
 		methods: {
+			onEditorReady() {
+				uni.createSelectorQuery().select('#editor').context((res) => {
+					this.editorCtx = res.context;
+					/* this.editorCtx.setContents({
+						html: this.itemData.BeginDateAndStartPlace,
+						success: (res) => {
+							console.log(res)
+						},
+						fail: (res) => {
+							console.log(res)
+						},
+					}); */
+				}).exec()
+				uni.createSelectorQuery().select('#editor1').context((res) => {
+					this.editorCtx1 = res.context;
+					/* this.editorCtx1.setContents({
+						html: this.itemData.Cause,
+						success: (res) => {
+							console.log(res)
+						},
+						fail: (res) => {
+							console.log(res)
+						},
+					}); */
+				}).exec()
+			},
+			setRefsTextarea() {
+				this.$nextTick(function() {
+					// 是否显示输入输入样式提示,默认false
+					this.$refs.textarea.maxnum = true;
+					// 输入最大数量,传-1代表无限,默认为-1
+					this.$refs.textarea.maxlength = 1000;
+					// 弹出键盘高度,默认40
+					this.$refs.textarea.cursor = 1000;
+					// 是否禁用输入,默认不禁用
+					this.$refs.textarea.disabled = false;
+					// 是否显示组件,默认显示（控制它显示隐藏textarea）
+					this.$refs.textarea.show = true;
+					// 描述文字,默认简述文字...
+					this.$refs.textarea.placeholder = "在此输入行程及交通工具";
+					//文本内容
+					this.$refs.textarea.valueText = this.itemData.BeginDateAndStartPlace;
+
+					// 是否显示输入输入样式提示,默认false
+					this.$refs.textarea1.maxnum = true;
+					// 输入最大数量,传-1代表无限,默认为-1
+					this.$refs.textarea1.maxlength = 1000;
+					// 弹出键盘高度,默认40
+					this.$refs.textarea1.cursor = 1000;
+					// 是否禁用输入,默认不禁用
+					this.$refs.textarea1.disabled = false;
+					// 是否显示组件,默认显示（控制它显示隐藏textarea）
+					this.$refs.textarea1.show = true;
+					// 描述文字,默认简述文字...
+					this.$refs.textarea1.placeholder = "在此输入出差事由";
+					//文本内容
+					this.$refs.textarea1.valueText = this.itemData.Cause;
+				});
+			},
 			//获取当前时间
 			formatDate: function(value) {
 				let date = new Date(value);
@@ -245,6 +338,8 @@
 			},
 			selectOption(e) {},
 			showModal1(e) {
+				//this.$refs.textarea.hideShow(false);
+				//this.$refs.textarea1.hideShow(false);
 				this.modalName = e.currentTarget.dataset.target;
 			},
 			toList() {
@@ -263,10 +358,14 @@
 					});
 					return false;
 				}
+				//this.$refs.textarea.hideShow(false);
+				//this.$refs.textarea1.hideShow(false);
 				this.modalName = e.currentTarget.dataset.target;
 			},
 			hideModal(e) {
 				this.modalName = null;
+				//this.$refs.textarea.hideShow(true);
+				//this.$refs.textarea1.hideShow(true);
 			},
 			computTime() {
 				var endTime = this.itemData.EndDate;
@@ -347,11 +446,15 @@
 				item.UIStatus = "New"
 			},
 			onlySave() {
+				//this.$refs.textarea.hideShow(true);
+				//this.$refs.textarea1.hideShow(true);
 				this.modalName = null;
 				this.isDoSteps = false;
 				this.submitForm();
 			},
 			saveAndDoSteps() {
+				//this.$refs.textarea.hideShow(true);
+				//this.$refs.textarea1.hideShow(true);
 				this.modalName = null;
 				this.isDoSteps = true;
 				this.submitForm();
@@ -454,7 +557,8 @@
 				} else {
 					if (_this.editEntitysList.length > 0 && _this.editEntitysList[0].TripCompanions.length > 0) {
 						_this.editEntitysList[0].TripCompanions.forEach(_item => {
-							if (_this.editEntitysList[0].TripCompanions.length === 1 && _this.editEntitysList[0].TripCompanions[0].UserName === '请选择') {
+							if (_this.editEntitysList[0].TripCompanions.length === 1 && _this.editEntitysList[0].TripCompanions[0].UserName ===
+								'请选择') {
 								_lines = [];
 							} else {
 								_indx = parseInt(_indx) + 1;
@@ -549,10 +653,10 @@
 				this.totalJine = _cache.toString();
 			},
 			textareaInput(e) {
-				this.itemData.Cause = e.detail.value;
+				this.itemData.Cause = e.detail.text;//e; //.detail.value;
 			},
 			BeginDateAStartPlaceInput(e) {
-				this.itemData.BeginDateAndStartPlace = e.detail.value;
+				this.itemData.BeginDateAndStartPlace = e.detail.text;//e; //.detail.value;
 			},
 			bindDateChange: function(itemData, e) {
 				itemData.BeginDate = e.target.value;
@@ -784,19 +888,30 @@
 							_$this.itemData.EndDate = item.EndDate;
 							_$this.itemData.BeginDateAndStartPlace = item.BeginDateAndStartPlace;
 							_$this.itemData.Cause = item.Cause;
+							_$this.editorCtx.setContents(item.Cause);
+							_$this.editorCtx1.setContents({
+								html: item.Cause,
+								success: (res) => {
+									console.log(res)
+								},
+								fail: (res) => {
+									console.log(res)
+								},
+							});
+							_$this.editorCtx.setContents({
+								html: item.BeginDateAndStartPlace,
+								success: (res) => {
+									console.log(res)
+								},
+								fail: (res) => {
+									console.log(res)
+								},
+							});
 							_this.formList = [];
 							item.TripCompanions.forEach((_item, _indx) => {
 								_item.indexType = _this.getUserIndex(
 									_item.UserName
 								)
-								/* _this.formList.push({
-									id: parseInt(_indx) + 1,
-									DocEntry: _item.DocEntry,
-									UserId: _item.UserId,
-									UserName: _item.UserName,
-									,
-									UIStatus: _item.UIStatus
-								}); */
 							});
 						});
 						setTimeout(() => {
@@ -821,6 +936,7 @@
 			},
 		},
 		onLoad(e) {
+			//this.setRefsTextarea();
 			//#ifdef MP-WEIXIN
 			const query = wx.createSelectorQuery().in(this);
 			query.select("#_tabBar").boundingClientRect();

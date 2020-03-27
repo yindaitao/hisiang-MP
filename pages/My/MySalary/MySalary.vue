@@ -2,7 +2,7 @@
 	<view>
 		<custom>我的工资条</custom>
 		<view id="tab-bar" class="cu-bar top">
-			<view class="action">请选择月份</view>
+			<view class="action">请选择年月</view>
 			<view class="action ">
 				<picker mode="date" fields="month" :value="SelectYearMonth" :start="StartYearMonth" :end="EndYearMonth" @change="DateChange">
 					<view class="picker text-center">
@@ -12,21 +12,30 @@
 			</view>
 		</view>
 		<scroll-view scroll-y="true" :style="{'height':scrollBarHeight+'px'}">
-			<view class="cu-list menu sm-border card-menu animation-slide-bottom" :style="[{animationDelay: (0 + 1)*0.1 + 's'}]"
+			<view class="cu-list menu card-menu sm-border animation-slide-bottom margin-top" :style="[{animationDelay: (0 + 1)*0.1 + 's'}]"
 			 v-if="SalaryInfo.SalaryLines.length>0">
-				<view class="cu-item">
+				<!-- <view class="cu-item">
 					<text class="icon-ellipse text-orange"></text>
 					<text class="text-grey">工资条</text>
-				</view>
-				<view class="cu-item padding">
-					<view class="content">
-						<view v-for="(item,index) in SalaryInfo.SalaryLines" :key="index">
-							<text class="icon-title text-grey"></text>
-							<text class="text-grey">{{item.FieldName}}：{{item.Value}}</text>
-						</view>
+				</view> -->
+				<view class="flex bg-blue">
+					<view class="flex-sub padding-sm radius basis-xl">
+						<text class="icon-ellipse text-orange"></text>
+					</view>
+					<view class="flex-sub padding-sm radius basis-xs text-right">
+						<text class="text-orange text-bold">工资条</text>
 					</view>
 				</view>
-				<view class="cu-item padding">
+				<view class="flex" v-for="(item,index) in SalaryInfo.SalaryLines" :key="index" v-if="item.IsShowInClient==='Yes'">
+					<view class="flex-sub padding-sm radius basis-xl">
+						<text class="icon-title text-grey"></text>
+						<text class="text-grey text-left">{{item.FieldName}}</text>
+					</view>
+					<view class="flex-sub padding-sm radius basis-xs text-right">
+						<text class="text-grey text-right badge radius">{{item.Value}}</text>
+					</view>
+				</view>
+				<!-- <view class="cu-item padding">
 					<view class="content">
 						<view>
 							<text class="icon-title text-grey"></text>
@@ -36,7 +45,7 @@
 					<view class="action">
 						<text class="text-green text-right">&nbsp;</text>
 					</view>
-				</view>
+				</view> -->
 			</view>
 			<view style="height: 50px;"></view>
 		</scroll-view>
@@ -59,7 +68,8 @@
 				EndYearMonth: nowDateMonth,
 				SalaryInfo: {
 					SalaryLines: []
-				}
+				},
+				SalaryList: []
 			}
 		},
 		onLoad() {
@@ -79,11 +89,19 @@
 		},
 		methods: {
 			DateChange(e) {
-				console.log(e.target.value);
 				this.SelectYearMonth = e.target.value
 				this.SelectYearMonthText = e.target.value.toString().split('-')[0] + '年' + e.target.value.toString().split('-')[1] +
 					'月';
 				this.GetMySalaryRecord();
+			},
+			UpdateReadLog() {
+				if (this.SalaryList.length > 0) {
+					this.$mbservices.Request(this.$webapi.SaveSSReadTimes, 'POST', this.SalaryList, res => {
+						uni.hideLoading()
+					}, err => {
+						uni.hideLoading()
+					})
+				}
 			},
 			GetMySalaryRecord() {
 				uni.showLoading({
@@ -114,15 +132,19 @@
 				this.$mbservices.Request(this.$webapi.GetMySalaryList, 'POST', ajaxJson, res => {
 					if (res.data.RecordCount > 0) {
 						this.SalaryInfo.SalaryLines = [];
+						this.SalaryList = res.data.data;
 						res.data.data.forEach((item, index) => {
 							item.SalaryLines.forEach((_item, _index) => {
-								if (_item.IsShowInClient==='Yes') {
+								if (_item.IsShowInClient === 'Yes') {
+									_item.Value = parseFloat(_item.Value).toFixed(2);
 									this.SalaryInfo.SalaryLines.push(_item);
 								}
 							})
 						});
+						this.UpdateReadLog();
 						//this.SalaryInfo = res.data.data[0];
 					} else {
+						this.SalaryInfo.SalaryLines = [];
 						uni.showToast({
 							title: '查无数据',
 							icon: 'none'

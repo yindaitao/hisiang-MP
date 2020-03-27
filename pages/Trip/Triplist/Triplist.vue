@@ -460,8 +460,8 @@
 			},
 			addWorkOrder() {
 				uni.navigateTo({
-					url: "/pages/Goout/Gooutform/Gooutform?data="+JSON.stringify({
-						from:"Gooutlist"
+					url: "/pages/Trip/Tripform/Tripform?data="+JSON.stringify({
+						from:"Triplist"
 					})
 				});
 			},
