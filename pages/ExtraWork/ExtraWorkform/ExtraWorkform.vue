@@ -65,11 +65,11 @@
 							<text class="text-grey">加班时长</text>
 						</view>
 						<view class="action">
-							<input disabled="true" placeholder="加班时长" name="input" type="digit" class="margin-left-sm" style="text-align: right;"
-							 @input="inputHours(itemData,$event)" :value="itemData.Hours" />
+							<input placeholder="请输入加班时长" name="input" type="digit" class="margin-left-sm" style="text-align: right;" @input="inputHours(itemData,$event)"
+							 :value="itemData.Hours" />
 						</view>
-						<view class="action">
-							<text class="cu-tag round bg-orange light">
+						<view class="action margin-left-sm">
+							<text class="text-orange">
 								<!-- <input disabled="true" placeholder="加班时长" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
 								 :value="itemData.ExtraWorkHoursTextName" /> -->
 								{{itemData.ExtraWorkHoursTextName}}

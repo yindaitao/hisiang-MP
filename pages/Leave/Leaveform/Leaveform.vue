@@ -36,18 +36,19 @@
 							请假类型
 						</view>
 						<view class="action">
-							<view class="cu-tag round bg-orange light">
+							<text class="cu-tag round bg-orange text-center middle" @tap="selectHolidayType">{{SelectHolidayType.Name}}</text>
+							<!-- <view class="cu-tag round bg-orange light">
 								<picker v-if="!checkbox[0].checked" :disabled="edit?true:false" @change="bindPickerChange2" :value="indexHolidayType"
 								 :range="HolidayType">
 									<view class="picker">{{HolidayType[indexHolidayType]}}</view>
 								</picker>
 								<text v-if="checkbox[0].checked">{{SpeHolidayTypeText}}</text>
-							</view>
+							</view> -->
 						</view>
 					</view>
-					<view class="cu-item" v-if="(itemData.HolidayTypeName === '年假' || itemData.HolidayTypeName === '带薪病假'|| itemData.HolidayTypeName === '亲情假')&&edit===false">
+					<view class="cu-item" v-if="SelectHolidayType.isSalary==='Yes'&&edit===false">
 						<view class="content text-right text-blue">
-							提示：还有{{RestDays?RestDays:0}}天带薪假
+							提示：剩余{{RestDays?RestDays:0}}天&nbsp;&nbsp;&nbsp;&nbsp;{{SelectHolidayType.Name}}
 						</view>
 					</view>
 					<view class="cu-item">
@@ -55,8 +56,9 @@
 							请假时长单位
 						</view>
 						<view class="action">
-							<view class="cu-tag round bg-orange light">
-								<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexLeaveHoursText" :range="LeaveHoursTextType">
+							<view class="cu-tag round bg-orange light" style="min-width: 20px;">
+								<picker :disabled="(edit||SelectHolidayType.isSalary==='Yes'||SpeHolidayType === 'IsChangeShifts')?true:false"
+								 @change="bindPickerChange1" :value="indexLeaveHoursText" :range="LeaveHoursTextType">
 									<view class="picker">{{LeaveHoursTextType[indexLeaveHoursText]}}</view>
 								</picker>
 							</view>
@@ -89,7 +91,7 @@
 							请假时长
 						</view>
 						<view class="content">
-							<input disabled="true" placeholder="请假时长" name="input" type="digit" style="text-align: right;" @input="inputLeaveHours(itemData,$event)"
+							<input placeholder="请输入请假时长" name="input" type="digit" style="text-align: right;" @input="inputLeaveHours(itemData,$event)"
 							 :value="itemData.LeaveHours">
 						</view>
 					</view>
@@ -117,6 +119,8 @@
 				</button>
 			</view>
 		</view>
+		<MagicSelect ref="Sel1" :Title="mgSelTitle" :modalName="testModal" @ChangeSelect="ChangeSelect" :DataList="HolidayTypeList"
+		 :Width="scrollBarHeight/3" :MaxHeight="scrollBarHeight/3" :ShowText="ShowText" :RadioValue="RadioValue"></MagicSelect>
 	</view>
 </template>
 
@@ -124,6 +128,7 @@
 	import abc from "../../components/uni-datetimepicker.vue";
 	import wPicker from "@/components/w-picker/w-picker.vue";
 	import MagicDatePicker from "../../../components/MagicDatePicker/MagicDatePicker.vue";
+	import MagicSelect from "@/components/MagicBoxModalSelect/MagicBoxModalSelect.vue"
 	var sourceType = [
 		["camera"],
 		["album"],
@@ -138,13 +143,21 @@
 		components: {
 			abc,
 			wPicker,
-			MagicDatePicker
+			MagicDatePicker,
+			MagicSelect
 		},
 		watch: {
 			showValue(val) {}
 		},
 		data() {
 			return {
+				SelectHolidayType: {
+					Name: '请选择'
+				},
+				RadioValue: 'Code',
+				ShowText: 'Name',
+				mgSelTitle: '请选择请假类型',
+				testModal: "",
 				timeOptions: [],
 				defaultMinDate: new Date("2019/1/1").getTime(),
 				defaultMaxDate: new Date("2050/12/31").getTime(),
@@ -179,7 +192,7 @@
 				modalName: null,
 				enddate: "",
 				themeColor: "",
-
+				scrollBarHeight: 0,
 				/*图片*/
 				imageList: [],
 				sourceTypeIndex: 2,
@@ -262,6 +275,29 @@
 			},
 		},
 		methods: {
+			selectHolidayType() {
+				if (this.SpeHolidayType === 'IsChangeShifts') {
+					return false;
+				}
+				this.testModal = "show"
+				this.$refs.Sel1.show()
+			},
+			ChangeSelect(e) {
+				if (this.$mbservices.isEmpty(e.detail.value)) {
+					return;
+				}
+				this.SelectHolidayType = this.HolidayTypeList.filter(item => {
+					return item.Code == e.detail.value;
+				})[0]
+				if (this.SelectHolidayType.isSalary === 'Yes') {
+					this.indexLeaveHoursText = 0; //如果带薪，默认单位是天且不允许编辑
+					this.itemData.LeaveHoursText = 'Day'
+					this.resetDateTimePicker();
+					this.getHolidayRestDays(this.SelectHolidayType.Code);
+				}
+				this.itemData.LeaveHours = 0;
+				this.itemData.HolidayTypeCode = e.detail.value;
+			},
 			getData(time) {
 				this.resultInfo1 = time;
 				this.itemData.BeginDate = time;
@@ -333,9 +369,21 @@
 				if (item.checked) {
 					this.SpeHolidayType = "IsChangeShifts";
 					this.SpeHolidayTypeText = "加班倒休";
+
+					this.SelectHolidayType.Code = "IsChangeShifts ";
+					this.SelectHolidayType.Name = "加班倒休";
+
+					this.indexLeaveHoursText = 0; //如果带薪，默认单位是天且不允许编辑
+					this.itemData.LeaveHoursText = 'Day'
+					this.resetDateTimePicker();
+				} else {
+					this.SpeHolidayType = "";
+					this.SpeHolidayTypeText = "";
+
+					this.SelectHolidayType.Code = '';
+					this.SelectHolidayType.Name = "请选择";
 				}
 			},
-			CheckboxChange(e) {},
 			//获取当前时间
 			formatDate: function(value) {
 				let date = new Date(value);
@@ -375,12 +423,8 @@
 				};
 				this.$mbservices.Request(this.$webapi.getHolidayType, "POST", ajaxJSON, res => {
 					if (res.data.RecordCount > 0) {
-						res.data.data.forEach(item => {
-							this.HolidayType.push(item.Name)
-							this.HolidayTypeList.push(item)
-						})
+						this.HolidayTypeList = res.data.data;
 					}
-
 				}, err => {})
 			},
 			getInitialize: async function() {
@@ -491,37 +535,7 @@
 				time2 = time2.getTime();
 				var LeaveHours = time1 - time2;
 				var ajaxJSON = {};
-				/* this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList, "POST", ajaxJSON, res => {
-					if (res.data.RecordCount > 0) {
-						res.data.data.forEach(item => {
-							var d = new Date(item.DataDate);
-							let MM = d.getMonth() + 1;
-							MM = MM < 10 ? ('0' + MM) : MM;
-							let DD = d.getDate();
-							DD = DD < 10 ? ('0' + DD) : DD;
-							var times = d.getFullYear() + '-' + MM + '-' + DD;
-							if (times === this.itemData.BeginDate) {
-								var type = "";
-								if (!this.$mbservices.isEmpty(item.Goout)) {
-									type = "外出";
-								} else if (!this.$mbservices.isEmpty(item.Trip)) {
-									type = "出差";
-								} else if (!this.$mbservices.isEmpty(item.Leave)) {
-									type = "请假";
-								}
-								if (!this.$mbservices.isEmpty(type)) {
-									uni.showModal({
-										title: "提示",
-										content: times + "这天你已经申请了" + type,
-										showCancel: false
-									})
-									this.itemData.LeaveHours = 0;
-								}
-							}
-						})
-					}
 
-				}, err => {}) */
 				if (LeaveHours === 0) {
 					var HTime = this.itemData.EndDate;
 					for (var i in this.HolidayScheduleList) {
@@ -547,7 +561,7 @@
 					this.itemData.LeaveHours = (parseFloat(LeaveHours / (3600 * 1000) / 24) + 1).toFixed(1);
 				}
 			},
-			bindPickerChange1: function(e) {
+			bindPickerChange1(e) {
 				this.indexLeaveHoursText = e.target.value;
 				this.itemData.indexLeaveHoursText = e.target.value;
 				for (var i in this.LeaveHoursTextList) {
@@ -556,6 +570,9 @@
 						this.itemData.LeaveHoursTextName = this.LeaveHoursTextType[this.indexLeaveHoursText];
 					}
 				}
+				this.resetDateTimePicker();
+			},
+			resetDateTimePicker() {
 				if (this.itemData.LeaveHoursText === 'Hour') {
 					this.timeType1 = "anyTime";
 					this.$refs.PstartDate1.resetCmpents();
@@ -567,37 +584,9 @@
 				}
 				this.itemData.BeginDate = '';
 				this.itemData.EndDate = '';
-				/* if (this.itemData.LeaveHoursText === 'Day') {
-					var that = this;
-					that.itemData.BeginDate = '请选择';
-					that.itemData.EndDate = '请选择';
-				}
-				this.itemData.LeaveHours = 0;
-				if (this.itemData.LeaveHoursText !== 'Day' && !this.$mbservices.isEmpty(this.resultInfo1) && !this.$mbservices.isEmpty(
-						this.resultInfo2)) {
-					this.computTime();
-					
-				} */
 			},
 			showModal1(e) {
 				this.modalName = e.currentTarget.dataset.target;
-			},
-			bindPickerChange2: function(e) {
-				this.indexHolidayType = e.target.value;
-				for (var i in this.HolidayTypeList) {
-					if (this.HolidayType[this.indexHolidayType] === this.HolidayTypeList[i].Name) {
-						this.itemData.HolidayTypeCode = this.HolidayTypeList[i].Code;
-						this.itemData.HolidayTypeName = this.HolidayType[this.indexHolidayType];
-						if (this.itemData.HolidayTypeName === '年假') {
-							this.getHolidayRestDays("01");
-						} else if (this.itemData.HolidayTypeName === '带薪病假') {
-							this.getHolidayRestDays("03");
-						} else if (this.itemData.HolidayTypeName === '亲情假') {
-							this.getHolidayRestDays("05");
-						}
-					}
-				}
-				this.itemData.LeaveHours = 0;
 			},
 			showModal(e) {
 				if (this.$mbservices.isEmpty(this.itemData.LeaveHours) || this.$mbservices.isEmpty(this.itemData.BeginDate) || this
@@ -655,20 +644,6 @@
 				uni.showLoading({
 					title: "正在提交..."
 				});
-				// var _indx = 0;
-				// _this.formList.forEach(_item => {
-				//   var path = "";
-				//   _item.imageList.forEach(_item_ => {
-				//     if (_this.editflag) {
-				//       path += _item_.deleteurl + "|";
-				//     } else {
-				//       path += _item_.retInfo[0].filePath + "|";
-				//     }
-				//   });
-				//   if (path.length > 0 && path.lastIndexOf("|") > 0) {
-				//     path = path.substr(0, path.length - 1);
-				//   }
-				// });
 				var ajaxJSON = {};
 				if (_this.editflag) {
 					_this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
@@ -719,18 +694,30 @@
 					"POST",
 					ajaxJSON,
 					function(succ) {
+						console.log(succ);
 						setTimeout(function() {
 							uni.hideLoading();
 						}, 1000);
-						if (
-							succ.data.RecordCount == undefined ||
-							succ.data.RecordCount <= 0
-						) {
-							uni.showToast({
-								title: "" + succ.data.data,
+						if ((succ.data.RecordCount == undefined || succ.data.RecordCount <= 0) && succ.statusCode === 200) {
+							/* uni.showToast({
+								title: "" + succ.data,
 								icon: 'none'
-							});
-							return false;
+							}); */
+							uni.hideLoading()
+							if (typeof(succ.data) === 'string') {
+								uni.showModal({
+									title: '提示',
+									content: "" + succ.data
+								})
+								return false;
+							}
+							if (succ.data) {
+								uni.showModal({
+									title: '提示',
+									content: "" + succ.data.data
+								})
+								return false;
+							}
 						}
 						uni.showToast({
 							title: "提交成功",
@@ -751,7 +738,7 @@
 			inputLeaveHours(itemData, event) {
 				itemData.LeaveHours = event.detail.value;
 			},
-			onKeyInput: function(event) {
+			onKeyInput(event) {
 				this.formList[parseInt(event.target.id) - 1].jine = event.detail.value;
 				var _cache = 0;
 				this.formList.forEach(item => {
@@ -848,37 +835,6 @@
 						leaveDate = "";
 						leaveDate = year1 + '-' + month1 + "-" + day1;
 						var ajaxJSON = {}
-						/* this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList, "POST", ajaxJSON, res => {
-							if (res.data.RecordCount > 0) {
-								res.data.data.forEach(item => {
-									var d = new Date(item.DataDate);
-									let MM = d.getMonth() + 1;
-									MM = MM < 10 ? ('0' + MM) : MM;
-									let DD = d.getDate();
-									DD = DD < 10 ? ('0' + DD) : DD;
-									var times = d.getFullYear() + '-' + MM + '-' + DD;
-									if (times === leaveDate) {
-										var type = "";
-										if (!this.$mbservices.isEmpty(item.Goout)) {
-											type = "外出";
-										} else if (!this.$mbservices.isEmpty(item.Trip)) {
-											type = "出差";
-										} else if (!this.$mbservices.isEmpty(item.Leave)) {
-											type = "请假";
-										}
-										if (!this.$mbservices.isEmpty(type)) {
-											uni.showModal({
-												title: "提示",
-												content: times + "这天你已经申请了" + type,
-												showCancel: false
-											})
-											this.itemData.LeaveHours = 0;
-										}
-									}
-								})
-							}
-
-						}, err => {}) */
 						this.itemData.LeaveHoursText = 'Hour';
 						this.indexLeaveHoursText = 1;
 						this.itemData.LeaveHoursTextName = this.LeaveHoursTextType[this.indexLeaveHoursText] = "小时";
@@ -920,62 +876,7 @@
 							}
 						}
 					} else {
-						/* leaveDate = "";
-						leaveDate = year1 + '-' + month1 + "-" + day1;
-						var type = "";
-						this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList, "POST", "", res => {
-							if (res.data.RecordCount > 0) {
-								res.data.data.forEach(item => {
-									var d = new Date(item.DataDate);
-									let MM = d.getMonth() + 1;
-									MM = MM < 10 ? ('0' + MM) : MM;
-									let DD = d.getDate();
-									DD = DD < 10 ? ('0' + DD) : DD;
-									var times = d.getFullYear() + '-' + MM + '-' + DD;
-									if (times === leaveDate) {
-										if (!this.$mbservices.isEmpty(item.Goout)) {
-											type = "外出";
-										} else if (!this.$mbservices.isEmpty(item.Trip)) {
-											type = "出差";
-										} else if (!this.$mbservices.isEmpty(item.Leave)) {
-											type = "请假";
-										}
-										if (!this.$mbservices.isEmpty(type)) {
-											uni.showModal({
-												title: "提示",
-												content: times + "这天你已经申请了" + type,
-												showCancel: false
-											})
-											this.itemData.LeaveHours = 0;
-										}
-									}
-								})
-							}
 
-						}, err => {})
-						if (hour1 === hour2) {
-							this.itemData.LeaveHours = ((time2 - time1) / 1000 / 24 / 3600 * this.InitializeDay).toFixed(2);
-							return;
-						}
-						var hour = Math.floor((time2 - time1) / 1000 / 24 / 3600 - 1 * 1000 / 24 / 3600);
-						if (hour1 <= beginHour) {
-							if (hour2 <= beginHour) {
-								this.itemData.LeaveHours = (hour * this.InitializeDay).toFixed(2);
-							} else if (hour2 > beginHour && hour2 < endHour) {
-								this.itemData.LeaveHours = (hour * this.InitializeDay + everyDay - (Etime - time2) / 1000 / 3600).toFixed(2);
-							} else if (hour2 >= endHour) {
-								this.itemData.LeaveHours = (hour * this.InitializeDay + everyDay).toFixed(2);
-							}
-						} else if (hour1 > beginHour) {
-							if (hour1 >= endHour) {
-								this.itemData.LeaveHours = (hour * this.InitializeDay).toFixed(2);
-							} else if (hour2 < endHour) {
-								this.itemData.LeaveHours = (hour * this.InitializeDay - (time1 - Btime) / 1000 / 3600 - (Etime - time2) / 1000 /
-									3600).toFixed(2);
-							} else if (hour2 >= endHour) {
-								this.itemData.LeaveHours = (hour * this.InitializeDay + everyDay - (time1 - Btime) / 1000 / 3600).toFixed(2);
-							}
-						} */
 					}
 				}
 				if (this.itemData.LeaveHoursText === 'Hour') {
@@ -1000,7 +901,6 @@
 					this.itemData.LeaveHours = Math.floor(hours / (24 * 3600 * 1000 * 7)).toFixed(1);
 				}
 			},
-			onSelected(data) {},
 			sourceTypeChange: function(e) {
 				this.sourceTypeIndex = e.target.value;
 			},
@@ -1150,7 +1050,7 @@
 						}
 					})
 			},
-			getDetailData: function() {
+			getDetailData() {
 				this.pageIndex = parseInt(this.pageIndex) + 1;
 				var ajaxJSON = {
 					pageIndex: this.pageIndex,
@@ -1198,10 +1098,11 @@
 							_$this.itemData.Remarks = item.Remarks;
 							_$this.itemData.HolidayTypeCode = item.HolidayType;
 							_$this.itemData.HolidayTypeName = item.HolidayTypeName;
-							_$this.HolidayType.forEach((__item, __index) => {
-								if (__item === _$this.itemData.HolidayTypeName) {
+							_$this.HolidayTypeList.forEach((__item, __index) => {
+								if (__item.Code === _$this.itemData.HolidayTypeCode) {
 									_$this.itemData.indexHolidayType = __index;
 									_$this.indexHolidayType = __index;
+									_$this.SelectHolidayType = __item;
 								}
 							});
 							if (item.LeaveHoursText === 'Day') {
@@ -1229,6 +1130,9 @@
 								_$this.checkbox[0].checked = true;
 								_$this.SpeHolidayType = "IsChangeShifts";
 								_$this.SpeHolidayTypeText = "加班倒休";
+
+								_$this.SelectHolidayType.Code = "IsChangeShifts";
+								_$this.SelectHolidayType.Name = "加班倒休";
 							}
 							if (item.IsChangeShifts === 'No') {
 								_$this.checkbox[0].checked = false;
@@ -1238,28 +1142,6 @@
 							_$this.itemData.InvCompanyName = item.InvCompanyName;
 							_$this.$refs.PstartDate1.refreshAll(_$this.itemData.BeginDate);
 							_$this.$refs.PEndDate1.refreshAll(_$this.itemData.EndDate);
-							// _this.formList = [];
-							// item.ReimbursementRequestLines.forEach((_item, _indx) => {
-
-							//   var _pathArr =
-							//     _item.Imgs != "undefined" &&
-							//     _item.Imgs != null &&
-							//     _item.Imgs != ""
-							//       ? _item.Imgs.split("|")
-							//       : [];
-							//   _item.pathArr = new Array();
-							//   _pathArr.forEach(_item_ => {
-							//     _item.pathArr.push({
-							//       retInfo: {},
-							//       url: _this.$webapi.webroot + "/" + _item_,
-							//       deleteurl: _item_
-							//     });
-							//   });
-							//   _this.formList.push({
-							//     id: parseInt(_indx) + 1,
-							//     imageList: _item.pathArr,
-							//   });
-							// });
 						});
 						setTimeout(() => {
 							uni.hideLoading();
@@ -1283,6 +1165,9 @@
 			},
 		},
 		onLoad(e) {
+			//#ifdef MP-WEIXIN
+			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar;
+			//#endif
 			this.from = JSON.parse(e.data).from;
 			this.getInitialize();
 			/* 修改传递参数 */

@@ -3171,6 +3171,10 @@ scroll-view.cu-steps .cu-item {
 	margin-top: 50upx;
 }
 
+.margin-right-0 {
+	margin-right: 0upx;
+}
+
 .margin-right-xs {
 	margin-right: 10upx;
 }
@@ -3323,6 +3327,10 @@ scroll-view.cu-steps .cu-item {
 
 .padding-top-xl {
 	padding-top: 50upx;
+}
+
+.padding-right-0 {
+	padding-right: 0upx;
 }
 
 .padding-right-xs {
@@ -3920,6 +3928,7 @@ scroll-view.cu-steps .cu-item {
 .text-right {
 	text-align: right;
 }
+
 
 .text-red,
 .line-red,

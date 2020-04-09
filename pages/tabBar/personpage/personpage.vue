@@ -29,6 +29,12 @@
 			</view>
 		</view>
 		<view class="cu-list menu" :class="[menuBorder?'sm-border':'',menuCard?'card-menu margin-top':'']">
+			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToSystemSet">
+				<view class="content">
+					<text class="icon-settingsfill text-grey"></text>
+					<text class="text-grey">系统设置</text>
+				</view>
+			</view>
 			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToBaseInfo">
 				<view class="content">
 					<text class="icon-card text-grey"></text>
@@ -125,8 +131,11 @@
 					url: "/pages/demo/testColorUI/testColorUI"
 				});
 			},
+			NavigateToSystemSet(){
+				
+			},
 			NavigateToBaseInfo() {
-				return false;
+				//return false;
 				uni.navigateTo({
 					url: '/pages/My/MyBaseInfo/MyBaseInfo'
 				})

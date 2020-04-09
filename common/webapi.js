@@ -196,5 +196,7 @@ module.exports = {
 	/* 打卡时验证有没有出差申请或者外出申请 */
 	ValidateIsHaveGooutTripRequest: websiteUrl + '/api/WorkRecord/ValidateIsHaveGooutTripRequest',
 	/* 用户更新工资条阅读次数 */
-	SaveSSReadTimes: websiteUrl + '/api/Salary/SaveReadInfo'
+	SaveSSReadTimes: websiteUrl + '/api/Salary/SaveReadInfo',
+	/* 获取Employee */
+	GetEmployee: websiteUrl + '/api/Employee/GetRecords'
 }

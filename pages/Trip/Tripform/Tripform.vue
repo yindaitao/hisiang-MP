@@ -72,7 +72,8 @@
 					</view>
 					<view class="cu-item">
 						<view class="content">
-							<editor id="editor1" class="ql-container" placeholder="在此输入出差事由" @ready="onEditorReady" @input="textareaInput"></editor>
+							<editor id="editor1" class="ql-container" placeholder="在此输入出差事由" @ready="onEditorReady"
+							 @input="textareaInput"></editor>
 						</view>
 					</view>
 					<!-- <view class="cu-item">
@@ -168,6 +169,7 @@
 		},
 		data() {
 			return {
+				placeholder: '开始输入...',
 				editorCtx: {},
 				editorCtx1: {},
 				scrollBarHeight: 0,
@@ -653,10 +655,10 @@
 				this.totalJine = _cache.toString();
 			},
 			textareaInput(e) {
-				this.itemData.Cause = e.detail.text;//e; //.detail.value;
+				this.itemData.Cause = e.detail.text; //e; //.detail.value;
 			},
 			BeginDateAStartPlaceInput(e) {
-				this.itemData.BeginDateAndStartPlace = e.detail.text;//e; //.detail.value;
+				this.itemData.BeginDateAndStartPlace = e.detail.text; //e; //.detail.value;
 			},
 			bindDateChange: function(itemData, e) {
 				itemData.BeginDate = e.target.value;
@@ -1024,5 +1026,11 @@
 		flex: 1;
 		width: 100%;
 		height: calc(100% - 100rpx);
+	}
+
+	/*  placeholder*/
+	.placeholder {
+		color: transparent;
+		font-size: 10px;
 	}
 </style>
