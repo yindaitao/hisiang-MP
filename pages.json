@@ -77,6 +77,10 @@
                     "path" : "MyBaseInfo/MyBaseInfo",
                     "style" : {}
                 }
+                ,{
+                    "path" : "SystemSetting/SystemSetting",
+                    "style" : {}
+                }
             ]
 		},
 		{

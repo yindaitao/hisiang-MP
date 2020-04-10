@@ -198,5 +198,13 @@ module.exports = {
 	/* 用户更新工资条阅读次数 */
 	SaveSSReadTimes: websiteUrl + '/api/Salary/SaveReadInfo',
 	/* 获取Employee */
-	GetEmployee: websiteUrl + '/api/Employee/GetRecords'
+	GetEmployee: websiteUrl + '/api/Employee/GetRecords',
+	/* 修改员工资料 */
+	SaveEmployeeEntity: websiteUrl + '/api/Employee/Save',
+	/* 保存系统设置 */
+	SaveSysSetting: websiteUrl + '/api/UsersSystemSettings/Save',
+	/* 获取系统设置 */
+	GetSysSettingRecords: websiteUrl + '/api/UsersSystemSettings/GetRecords',
+	/* 获取业绩绩效 */
+	GetPerformace: websiteUrl + '/api/Performance/GetRecords'
 }

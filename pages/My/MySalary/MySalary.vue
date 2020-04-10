@@ -6,7 +6,7 @@
 			<view class="action ">
 				<picker mode="date" fields="month" :value="SelectYearMonth" :start="StartYearMonth" :end="EndYearMonth" @change="DateChange">
 					<view class="picker text-center">
-						<text class="cu-tag round shadow bg-grey text-center">{{SelectYearMonthText}}</text>
+						<text class="cu-tag round shadow bg-grey text-center light">{{SelectYearMonthText}}</text>
 					</view>
 				</picker>
 			</view>

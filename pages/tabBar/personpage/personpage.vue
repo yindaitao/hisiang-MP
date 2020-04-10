@@ -132,7 +132,9 @@
 				});
 			},
 			NavigateToSystemSet(){
-				
+				uni.navigateTo({
+					url: '/pages/My/SystemSetting/SystemSetting'
+				})
 			},
 			NavigateToBaseInfo() {
 				//return false;
@@ -163,7 +165,6 @@
 				})
 			},
 			NavigateToResult() {
-				return false;
 				uni.navigateTo({
 					url: '/pages/My/Result/Result'
 				})

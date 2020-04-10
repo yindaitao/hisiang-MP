@@ -13,7 +13,7 @@
 						</view>
 					</view>
 					<view class="cu-list menu text-left margin-top" style="overflow: auto;" :style="{'height':Width+'px','max-height':MaxHeight+'px'}">
-						<view class="cu-item" v-for="(item,index) in DataList" :key="index">
+						<view class="cu-item" v-for="(item,index) in DataList" :key="index" :style="{'background-color':Background}">
 							<label class="flex justify-between align-center flex-sub">
 								<view class="flex-sub">{{item[ShowText]}}</view>
 								<radio class="round" :class="radio==item[RadioValue]?'checked':''" :checked="radio==item[RadioValue]?true:false"
@@ -60,13 +60,25 @@
 					return '请选择'
 				}
 			},
-			ShowText:{
+			ShowText: {
 				type: String,
 				default () {
 					return ''
 				}
 			},
-			RadioValue:{
+			RadioValue: {
+				type: String,
+				default () {
+					return ''
+				}
+			},
+			Background: {
+				type: String,
+				default () {
+					return ``
+				}
+			},
+			radio: {
 				type: String,
 				default () {
 					return ''
@@ -75,8 +87,8 @@
 		},
 		data() {
 			return {
-				radio: '',
-				modalName: ''
+				modalName: '',
+				radio1:''
 			};
 		},
 		methods: {
