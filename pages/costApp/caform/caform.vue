@@ -274,7 +274,6 @@ export default {
                     this.itemData.InvCompanyName = item.Name;
                 }
             });
-            console.log(e);
         },
         showModal1(e) {
             this.modalName = e.currentTarget.dataset.target;
@@ -514,7 +513,6 @@ export default {
         bindPickerChange: function(e) {
             this.indexExpentType = e.target.value;
             this.itemData.indexExpentType = e.target.value;
-            console.log("也走了" + this.indexExpentType);
         },
         bindPickerChange1: function(e) {
             this.indexPayType = e.target.value;
@@ -539,7 +537,6 @@ export default {
         chooseImage: async function() {
             if (this.imageList.length === 9) {
                 let isContinue = await this.isFullImg();
-                console.log("是否继续?", isContinue);
                 if (!isContinue) {
                     return;
                 }

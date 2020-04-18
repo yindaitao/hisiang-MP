@@ -14,7 +14,6 @@
 		},
 		onLoad(e) {
 			var that = this;
-			console.log(JSON.parse(e.data));
 			that.AboutUs = JSON.parse(e.data);
 		},
 	}

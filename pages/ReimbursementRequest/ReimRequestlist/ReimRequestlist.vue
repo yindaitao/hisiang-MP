@@ -204,7 +204,6 @@
 				}
 			},
 			editItem(item) {
-				console.log(item);
 				uni.navigateTo({
 					url: "/pages/ReimbursementRequest/ReimRequestform/ReimRequestform?flag=modify&data=" + JSON.stringify(item)
 				});
@@ -318,7 +317,6 @@
 							});
 							return false;
 						}
-						console.log(ret.data.data);
 						var _cacheList = [];
 						ret.data.data.forEach(item => {
 							item.radchecked = false;
@@ -396,8 +394,6 @@
 							});
 							return false;
 						}
-						console.log('aaaaaaaaaaaaaaaaa');
-						console.log(ret.data.data);
 						setTimeout(() => {
 							var _cacheList = [];
 							ret.data.data.forEach(item => {

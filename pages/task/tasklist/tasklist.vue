@@ -105,7 +105,6 @@
 		},
 		methods: {
 			goDetail(item) {
-				console.log(item);
 				item.flag = "tasklist";
 				item.from = "tasklist";
 				switch (item.BaseType) {
@@ -163,7 +162,6 @@
 			},
 			showSinglePicker() {
 				this.mode = 'selector'
-				console.log(this.$refs);
 				this.$refs.mpvuePicker.show()
 			},
 			inpuSearch(e) {
@@ -191,8 +189,6 @@
 						Relationship: "OR"
 					}
 				];
-				console.log("this.searchParams");
-				console.log(this.searchParams);
 			},
 			doSearch(e) {
 				this.makeParams();
@@ -315,8 +311,6 @@
 						});
 						return false;
 					}
-					console.log(ret.data.data)
-					//_this.dataList = [];
 					var _cacheList = [];
 					ret.data.data.forEach((item) => {
 						item.radchecked = false;

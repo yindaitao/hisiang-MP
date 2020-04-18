@@ -694,7 +694,6 @@
 					"POST",
 					ajaxJSON,
 					function(succ) {
-						console.log(succ);
 						setTimeout(function() {
 							uni.hideLoading();
 						}, 1000);

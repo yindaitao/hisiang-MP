@@ -957,16 +957,8 @@
 			},
 			bindPickerChange: function(item, e) {
 				//var _this = this;
-				item.itemOptionIndex = parseInt(e.target.value); // _this.resourceArray[i].ReimbursementTypeCode;
+				item.itemOptionIndex = parseInt(e.target.value); 
 				item.itemOptionText = this.arrayType[parseInt(e.target.value)];
-				//item.indexType = e.target.value;
-				/* for (var i in _this.resourceArray) {
-					console.log(_this.arrayType[item.indexType]+'-------'+_this.resourceArray[i].ReimbursementTypeName);
-					if (_this.arrayType[item.indexType] === _this.resourceArray[i].ReimbursementTypeName) {
-						item.itemOptionIndex = _this.resourceArray[i].ReimbursementTypeCode;
-						item.itemOptionText = _this.arrayType[item.indexType];
-					}
-				} */
 			},
 			bindPickerChange1: function(e) {
 				this.indexPayType = e.target.value;
@@ -1001,14 +993,6 @@
 				item.indexVatType = e.target.value;
 				item.VatTypeCode = _this.VatTypeList[item.indexVatType].Code;
 				item.VatTypeName = _this.VatType[item.indexVatType];
-				/* for (var i in _this.VatTypeList) {
-					console.log(_this.VatType[this.indexVatType] + '-----' + _this.VatTypeList[i].Name);
-					if (_this.VatType[this.indexVatType] === _this.VatTypeList[i].Name) {
-						console.log('好了，进来了');
-						item.VatTypeCode = _this.VatTypeList[i].Code;
-						item.VatTypeName = _this.VatType[item.indexVatType];
-					}
-				} */
 			},
 			getCostType: async function() {
 				var ajaxJSON = {

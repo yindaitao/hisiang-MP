@@ -198,7 +198,6 @@
 				}
 			},
 			editItem(item) {
-				console.log(item);
 				uni.navigateTo({
 					url: "/pages/Goout/Gooutform/Gooutform?flag=modify&data=" + JSON.stringify(item)
 				});
@@ -317,7 +316,6 @@
 							});
 							return false;
 						}
-						console.log(ret.data.data);
 						var _cacheList = [];
 						ret.data.data.forEach(item => {
 							item.radchecked = false;

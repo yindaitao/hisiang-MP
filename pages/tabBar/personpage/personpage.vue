@@ -159,7 +159,6 @@
 				});
 			},
 			NavigateToQuestion() {
-				return false;
 				uni.navigateTo({
 					url: '/pages/My/Question/Question'
 				})

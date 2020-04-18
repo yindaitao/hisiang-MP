@@ -1,4 +1,4 @@
-var websiteUrl = "https://so.magicdata.co";
+var websiteUrl = "https://oa.magicbox.net.cn";
 /* https://oa.magicbox.net.cn*/
 /* http://localhost:62142 */
 /* http://localhost:51682 */
@@ -88,7 +88,7 @@ module.exports = {
 	// 获取收款公司
 	getBusinessPartner: websiteUrl + '/api/BusinessPartner/GetRecords',
 	/* 获取审核步骤 */
-	getStages: websiteUrl + '/api/ApprovalTemplate/GetApprovalStage',
+	getStages: websiteUrl + '/api/ApprovalNote/GetApproveStageFlow',//'/api/ApprovalTemplate/GetApprovalStage',
 	/* 获取待办任务列表 */
 	getTaskList: websiteUrl + '/api/Backlog/GetRecords',
 	/* 提交审批结果 */
@@ -206,5 +206,7 @@ module.exports = {
 	/* 获取系统设置 */
 	GetSysSettingRecords: websiteUrl + '/api/UsersSystemSettings/GetRecords',
 	/* 获取业绩绩效 */
-	GetPerformace: websiteUrl + '/api/Performance/GetRecords'
+	GetPerformace: websiteUrl + '/api/Performance/GetRecords',
+	/* 提交问题记录 */
+	SaveQuestions: websiteUrl + '/api/Question/Save'
 }

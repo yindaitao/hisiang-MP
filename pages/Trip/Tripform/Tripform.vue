@@ -220,27 +220,9 @@
 			onEditorReady() {
 				uni.createSelectorQuery().select('#editor').context((res) => {
 					this.editorCtx = res.context;
-					/* this.editorCtx.setContents({
-						html: this.itemData.BeginDateAndStartPlace,
-						success: (res) => {
-							console.log(res)
-						},
-						fail: (res) => {
-							console.log(res)
-						},
-					}); */
 				}).exec()
 				uni.createSelectorQuery().select('#editor1').context((res) => {
 					this.editorCtx1 = res.context;
-					/* this.editorCtx1.setContents({
-						html: this.itemData.Cause,
-						success: (res) => {
-							console.log(res)
-						},
-						fail: (res) => {
-							console.log(res)
-						},
-					}); */
 				}).exec()
 			},
 			setRefsTextarea() {
@@ -380,40 +362,7 @@
 				time2 = time2.getTime();
 				var TripHours = time1 - time2;
 				var ajaxJSON = {};
-				/* this.$mbservices.Request(this.$webapi.GetCurrentMonthGooutAndTripList,"POST",ajaxJSON,res=>{
-					if(res.data.RecordCount>0)
-					{
-						console.log(res.data.data);
-						res.data.data.forEach(item => {
-							var d = new Date(item.DataDate);
-							let MM = d.getMonth() + 1;
-							MM = MM < 10 ? ('0' + MM) : MM;
-							let DD = d.getDate();
-							DD = DD < 10 ? ('0' + DD) : DD;
-							var times=d.getFullYear() + '-' + MM + '-' + DD;
-							if(times === this.itemData.BeginDate){
-								console.log();
-								var type = "";
-								if(!this.$mbservices.isEmpty(item.Goout)){
-									type = "外出";
-								}else if(!this.$mbservices.isEmpty(item.Trip)){
-									type = "出差";
-								}else if(!this.$mbservices.isEmpty(item.Leave)){
-									type = "请假";
-								}
-								if(!this.$mbservices.isEmpty(type)){
-									uni.showModal({
-										title:"提示",
-										content:times+"这天你已经申请了"+type,
-										showCancel:false
-									})
-									this.itemData.TripHours = 0;
-								}
-							}
-						})
-					}
-					
-				},err=>{}) */
+				
 				if (TripHours === 0) {
 					var HTime = this.itemData.EndDate;
 					this.itemData.TripHours = 1;

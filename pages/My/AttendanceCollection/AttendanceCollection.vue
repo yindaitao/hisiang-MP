@@ -287,9 +287,6 @@
 				this.$mbservices.Request(this.$webapi.GetAttendanceRecords, 'POST', ajaxJson, res => {
 					if (res.data.RecordCount > 0) {
 						this.InitAttendanceEntity()
-						//this.AttendanceRecord = res.data.data[0];
-						//console.log('返回回来了');
-						//console.log(res);
 						this.AttendanceEntity.ActualAttendanceCount = res.data.data[0].ActualAttendanceCount;
 						this.AttendanceEntity.Early = res.data.data[0].Early;
 						this.AttendanceEntity.GExtraWorkHours = res.data.data[0].GExtraWorkHours;

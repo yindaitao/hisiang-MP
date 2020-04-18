@@ -274,7 +274,6 @@
 						this.itemData.InvCompanyName = item.Name;
 					}
 				})
-				console.log(e);
 			},
 			showModal1(e) {
 				this.modalName = e.currentTarget.dataset.target;

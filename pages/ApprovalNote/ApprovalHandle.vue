@@ -198,7 +198,7 @@ export default {
             _this.$mbservices.Request(
                 _this.$webapi.getStages,
                 "POST",
-                { approveNoteEntry: DocEntry },
+                DocEntry,
                 item => {
                     if (item.data.length > 0) {
                         _this.appStages = item.data;
@@ -241,6 +241,7 @@ export default {
         // })
     },
     onLoad(e) {
+		console.log(e);
         try {
 			if(this.$mbservices.isEmpty(JSON.parse(e.data))){
 				uni.showToast({
@@ -253,6 +254,7 @@ export default {
 					this.getApprovalNoteData(e.data);
 					this.from = null;
 				}else{
+					console.log(JSON.parse(e.data));
 					this.getApprovalNoteData(JSON.parse(e.data).DocEntry);
 					this.from = JSON.parse(e.data).from;
 				}

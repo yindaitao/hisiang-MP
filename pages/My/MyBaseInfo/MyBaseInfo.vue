@@ -630,16 +630,13 @@
 			},
 
 			DeleteEEL(idx, item) {
-				console.log(item);
 				item.UIStatus = "Delete";
 			},
 
 			DeleteEWL(idx, item) {
-				console.log(item);
 				item.UIStatus = "Delete";
 			},
 			ToogleBaseInfo(e) {
-				console.log(e);
 				switch (e) {
 					case 'IsBaseInfoShow':
 						this.IsBaseInfoShow = !this.IsBaseInfoShow;
@@ -678,8 +675,6 @@
 				this.$mbservices.Request(this.$webapi.GetEmployee, "POST", ajaxJSON, res => {
 					if (res.data.RecordCount > 0) {
 						this.EmployeeInfo = res.data.data[0];
-						console.log('员工信息');
-						console.log(this.EmployeeInfo);
 					}
 
 				}, err => {})

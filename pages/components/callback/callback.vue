@@ -65,7 +65,6 @@
 		onLoad(e) {
 			if (e.hasOwnProperty("data")) {
 				this.baseEntrys = e.data;
-				console.log(this.baseEntrys)
 			}
 		}
 	};

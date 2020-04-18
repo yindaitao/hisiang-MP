@@ -12,17 +12,19 @@
 			</view>
 		</view>
 		<scroll-view scroll-y="true" :style="{'height':scrollBarHeight+'px'}">
-			<view class="cu-list menu sm-border card-menu animation-slide-bottom" :style="[{animationDelay: (0 + 1)*0.1 + 's'}]">
+			<view class="cu-list menu sm-border card-menu animation-slide-bottom">
 				<view class="cu-item">
-					<text class="icon-ellipse text-orange light"></text>
-					<text class="text-grey">业绩/绩效</text>
-				</view>
-				<view class="cu-item padding" style="min-height: 100px;">
 					<view class="content">
-						<view>
-							<text class="icon-title text-grey"></text>
-							<text class="text-grey">姓名：{{Performance.EmployeeName}}</text>
-						</view>
+						<text class="icon-ellipse text-orange light"></text>
+						{{UserName}}
+					</view>
+					<view class="action">
+						<text class="text-grey">业绩/绩效</text>
+					</view>
+				</view>
+				<view class="cu-item padding" style="min-height: 100px;" v-for="(Performance,index) in PerformanceList" :key="index"
+				 :style="[{animationDelay: (index + 1)*0.1 + 's'}]">
+					<view class="content">
 						<view>
 							<text class="icon-title text-grey"></text>
 							<text class="text-grey">数量：{{Performance.Quantity}}</text>
@@ -44,7 +46,7 @@
 						</view>
 					</view>
 					<view class="action">
-						<text class="text-green text-right"></text>
+						<text class="text-green text-right">合计:{{Total}}</text>
 					</view>
 				</view>
 			</view>
@@ -62,17 +64,45 @@
 				'yyyy-MM-dd')
 			let nowDateMonth = this.$mbservices.formatDateTime(new Date(), 'yyyy-MM-dd')
 			return {
+				UserName: uni.getStorageSync("JSUserInfo").UserName,
 				scrollBarHeight: 0,
 				SelectYearMonth: nowDate,
 				SelectYearMonthText: nowDateText,
 				StartYearMonth: startTime,
 				EndYearMonth: nowDateMonth,
-				Performance: {
+				Performance1: {
 					Quantity: '',
 					Amount: '',
 					EmployeeName: '',
 					Remarks: ''
-				}
+				},
+				PerformanceList: [{
+					Quantity: '',
+					Amount: '',
+					EmployeeName: '',
+					Remarks: ''
+				}, {
+					Quantity: '',
+					Amount: '',
+					EmployeeName: '',
+					Remarks: ''
+				}, {
+					Quantity: '',
+					Amount: '',
+					EmployeeName: '',
+					Remarks: ''
+				}, {
+					Quantity: '',
+					Amount: '',
+					EmployeeName: '',
+					Remarks: ''
+				}, {
+					Quantity: '',
+					Amount: '',
+					EmployeeName: '',
+					Remarks: ''
+				}],
+				Total: 0.00
 			}
 		},
 		onLoad() {
@@ -98,7 +128,7 @@
 				this.Performance.Remarks = '';
 			},
 			DateChange(e) {
-				
+
 				this.SelectYearMonth = e.target.value
 				this.SelectYearMonthText = e.target.value.toString().split('-')[0] + '年' + e.target.value.toString().split('-')[1] +
 					'月';
@@ -160,11 +190,16 @@
 					}
 				};
 				this.$mbservices.Request(this.$webapi.GetPerformace, 'POST', ajaxJson, res => {
-					this.initPerformace();
+					this.PerformanceList = [];
+					this.Total = 0.00;
 					if (res.data.RecordCount > 0) {
-						this.Performance = res.data.data[0];
-						this.Performance.Quantity = parseInt(this.Performance.Quantity);
-						this.Performance.Amount = parseFloat(this.Performance.Amount).toFixed(2);
+						res.data.data.forEach((item) => {
+							item.Quantity = parseInt(item.Quantity);
+							item.Amount = parseFloat(item.Amount).toFixed(2);
+							this.Total = parseFloat(item.Amount) + parseFloat(this.Total);
+							this.PerformanceList.push(item);
+						})
+						this.Total = parseFloat(this.Total).toFixed(2)===0?0.00:parseFloat(this.Total).toFixed(2);
 					} else {
 						uni.showToast({
 							title: '查无数据',

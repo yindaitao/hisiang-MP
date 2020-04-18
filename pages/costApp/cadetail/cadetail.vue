@@ -100,7 +100,6 @@
 				if (item.stageUserList.length <= 0) {
 					return false;
 				}
-				console.log(e);
 				this.modalName = e.currentTarget.dataset.target;
 				this.showcontent.date = this.$mbservices.formatDateTime(item.stageUserList[0].ApproveDatetime,
 					'yyyy-MM-dd hh:mm:ss');
@@ -124,7 +123,6 @@
 					success(res) {
 						if (res.confirm) {
 							_this.$mbservices.Request(_this.$webapi.submitCostForm, 'POST', item, function(succ) {
-								console.log(succ);
 								if (succ.statusCode === 200) {
 									var cache = [];
 								}
@@ -140,7 +138,6 @@
 				var _this = this;
 				this.$mbservices.Request(this.$webapi.getStages, 'POST', ajaxJSON, function(succ) {
 					_this.numList = succ.data;
-					console.log(_this.numList);
 				}, function(err) {
 					console.log('获取步骤错误');
 				})
@@ -177,10 +174,8 @@
 						});
 						return false;
 					}
-					console.log(ret)
 					_this.entitys = [];
 					ret.data.data.forEach((item) => {
-						console.log("可以进来");
 						if (item.ApproveStatus === 'Pending') {
 							item.AApproveStatus = "待审核";
 						}

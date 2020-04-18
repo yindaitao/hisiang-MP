@@ -157,12 +157,9 @@
 			},
 			checkboxChange: function(e) {
 				var checked = e.target.value
-				console.log(checked)
-
 			},
 			radioChange: function(e) {
 				var checked = e.target.value
-				console.log(checked)
 			}
 
 		},

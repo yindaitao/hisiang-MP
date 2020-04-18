@@ -519,7 +519,6 @@
 				this.modalNameSearch = null;
 			},
 			goDetail(item) {
-				console.log(item.BBusinessType);
 				//业务类型
 				switch (item.BusinessType) {
 					case "ReimbursementRequest": //报销申请
@@ -697,13 +696,11 @@
 							this.newsitems[this.TabCur].SearchConditions : cons
 					}
 				};
-				console.log(ajaxJSON);
 				this.$mbservices.Request(
 					this.$webapi.getApprovalNotesList,
 					"POST",
 					ajaxJSON,
 					res => {
-						console.log(res.data.data);
 						if (res.data.RecordCount > 0) {
 							if (
 								this.newsitems[this.TabCur].data.length >=

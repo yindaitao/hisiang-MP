@@ -119,7 +119,6 @@
 				if (item.stageUserList.length <= 0) {
 					return false;
 				}
-				console.log(e);
 				this.modalName = e.currentTarget.dataset.target;
 				this.showcontent.date = this.$mbservices.formatDateTime(item.stageUserList[0].ApproveDatetime,
 					'yyyy-MM-dd hh:mm:ss');

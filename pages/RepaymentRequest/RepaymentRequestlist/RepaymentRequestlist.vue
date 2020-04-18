@@ -165,7 +165,6 @@
 					"POST",
 					ajaxJSON,
 					function(ret) {
-						console.log(ret);
 						if (!ret.data.data) {
 							_this.dataList = [];
 							uni.showToast({
@@ -243,7 +242,6 @@
 					"POST",
 					ajaxJSON,
 					function(ret) {
-						console.log(ret);
 						if (!ret.data.data) {
 							_this.dataList = [];
 							uni.showToast({
@@ -374,7 +372,6 @@
 								"POST",
 								item,
 								function(succ) {
-									console.log(succ);
 									if (succ.statusCode === 200) {
 										var cache = [];
 										_this.dataList.forEach(_item => {

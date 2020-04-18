@@ -21,7 +21,6 @@
 			wx.downloadFile({
 				url: this.showUrl.url,
 				success: function(res) {
-					console.log(res)
 					var Path = res.tempFilePath //返回的文件临时地址，用于后面打开本地预览所用
 					wx.openDocument({
 						filePath: Path,
@@ -35,8 +34,6 @@
 				}
 			})
 			// #endif
-
-			console.log(this.showUrl)
 		}
 	}
 </script>

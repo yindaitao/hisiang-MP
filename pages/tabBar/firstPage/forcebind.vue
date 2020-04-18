@@ -24,27 +24,6 @@
 					current: this.imgUrl, // 当前显示图片的http链接 
 					urls: [this.imgUrl]
 				})
-				/* uni.previewImage({
-					urls: [this.imgUrl],
-					longPressActions: {
-						itemList: ['发送给朋友', '保存图片', '收藏', '长按识别图中二维码'],
-						success: function(data) {
-							console.log('选中了第' + (data.tapIndex + 1) + '个按钮,第' + (data.index + 1) + '张图片');
-						},
-						fail: function(err) {
-							console.log(err.errMsg);
-						}
-					}
-				}); */
-				/* uni.scanCode({
-					onlyFromCamera: false,
-					scanType: ['qrCode', 'barCode'],
-
-					success: function(res) {
-						console.log('条码类型：' + res.scanType);
-						console.log('条码内容：' + res.result);
-					}
-				}); */
 			},
 			loadWifiInfo() {
 				var Context = plus.android.importClass("android.content.Context");
@@ -59,8 +38,6 @@
 			}
 		},
 		onLoad() {
-			//this.imgUrl='https://so.magicdata.co/MiniImgBox/timg.jpg';
-			//src="https://so.magicdata.co/MiniImgBox/forcebind.jpg"
 			this.$mbservices.Request(this.$webapi.getQRCode, 'GET', {}, res => {
 				//this.imgUrl = res.data
 				console.log(res);
@@ -83,7 +60,6 @@
 
 			wx.startWifi({
 				success(res) {
-					console.log(res.errMsg)
 					uni.showModal({
 						title: 'WIFI结果',
 						content: JSON.stringify(res)
@@ -95,25 +71,12 @@
 			})
 			uni.openBluetoothAdapter({
 				success(res) {
-					console.log(res)
 					uni.showModal({
 						title: '蓝牙结果',
 						content: JSON.stringify(res)
 					})
 				}
 			})
-			/* uni.chooseAddress({
-				success(res) {
-					console.log(res.userName)
-					console.log(res.postalCode)
-					console.log(res.provinceName)
-					console.log(res.cityName)
-					console.log(res.countyName)
-					console.log(res.detailInfo)
-					console.log(res.nationalCode)
-					console.log(res.telNumber)
-				}
-			}) */
 		}
 	}
 </script>
