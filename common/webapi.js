@@ -88,7 +88,7 @@ module.exports = {
 	// 获取收款公司
 	getBusinessPartner: websiteUrl + '/api/BusinessPartner/GetRecords',
 	/* 获取审核步骤 */
-	getStages: websiteUrl + '/api/ApprovalTemplate/GetApprovalStage',
+	getStages: websiteUrl + '/api/ApprovalNote/GetApproveStageFlow',
 	/* 获取待办任务列表 */
 	getTaskList: websiteUrl + '/api/Backlog/GetRecords',
 	/* 提交审批结果 */
