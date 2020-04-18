@@ -198,7 +198,7 @@ export default {
             _this.$mbservices.Request(
                 _this.$webapi.getStages,
                 "POST",
-                { approveNoteEntry: DocEntry },
+                DocEntry,
                 item => {
                     if (item.data.length > 0) {
                         _this.appStages = item.data;
