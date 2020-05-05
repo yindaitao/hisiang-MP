@@ -1,4 +1,4 @@
-<template>
+s<template>
 	<view>
 		<custom>请假</custom>
 		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
@@ -36,7 +36,7 @@
 							请假类型
 						</view>
 						<view class="action">
-							<text class="cu-tag round bg-orange text-center middle" @tap="selectHolidayType">{{SelectHolidayType.Name}}</text>
+							<text class="cu-tag round bg-orange text-center middle light" @tap="selectHolidayType">{{SelectHolidayType.Name}}</text>
 							<!-- <view class="cu-tag round bg-orange light">
 								<picker v-if="!checkbox[0].checked" :disabled="edit?true:false" @change="bindPickerChange2" :value="indexHolidayType"
 								 :range="HolidayType">
@@ -47,7 +47,7 @@
 						</view>
 					</view>
 					<view class="cu-item" v-if="SelectHolidayType.isSalary==='Yes'&&edit===false">
-						<view class="content text-right text-blue">
+						<view class="content text-right text-blue light">
 							提示：剩余{{RestDays?RestDays:0}}天&nbsp;&nbsp;&nbsp;&nbsp;{{SelectHolidayType.Name}}
 						</view>
 					</view>
@@ -57,8 +57,8 @@
 						</view>
 						<view class="action">
 							<view class="cu-tag round bg-orange light" style="min-width: 20px;">
-								<picker :disabled="(edit||SelectHolidayType.isSalary==='Yes'||SpeHolidayType === 'IsChangeShifts')?true:false"
-								 @change="bindPickerChange1" :value="indexLeaveHoursText" :range="LeaveHoursTextType">
+								<picker :disabled="(edit||SpeHolidayType === 'IsChangeShifts')?true:false" @change="bindPickerChange1" :value="indexLeaveHoursText"
+								 :range="LeaveHoursTextType">
 									<view class="picker">{{LeaveHoursTextType[indexLeaveHoursText]}}</view>
 								</picker>
 							</view>
@@ -91,8 +91,8 @@
 							请假时长
 						</view>
 						<view class="content">
-							<input placeholder="请输入请假时长" name="input" type="digit" style="text-align: right;" @input="inputLeaveHours(itemData,$event)"
-							 :value="itemData.LeaveHours">
+							<input placeholder="请输入请假时长" disabled="" name="input" type="digit" style="text-align: right;" @input="inputLeaveHours(itemData,$event)"
+							 :value="CalcTimeLength.Num+CalcTimeLength.unitext">
 						</view>
 					</view>
 					<view class="cu-item">
@@ -239,6 +239,11 @@
 				SecondOffTime: "",
 				// 系统初始化表里的每天工作时长
 				InitializeDay: 0,
+				CalcTimeLength:{
+					Num:'',
+					unit:'',
+					unitext:''
+				}
 			};
 		},
 		computed: {
@@ -313,6 +318,8 @@
 				this.CalcDateTime();
 			},
 			CalcDateTime() {
+				this.computTime2();
+				return false;
 				switch (this.itemData.LeaveHoursText) {
 					case 'Hour':
 						if (!this.$mbservices.isEmpty(this.itemData.EndDate)) {
@@ -501,12 +508,12 @@
 				if (this.$mbservices.isEmpty(itemData.EndDate) || itemData.EndDate === '请选择') {
 					return;
 				} else {
-					this.computTime1();
+					this.computTime2();
 				}
 			},
 			bindDateChange1: function(itemData, e) {
 				itemData.EndDate = e.target.value;
-				this.computTime1();
+				this.computTime2();
 			},
 			getDate(type) {
 				const date = new Date();
@@ -523,6 +530,42 @@
 				day = day > 9 ? day : "0" + day;
 
 				return `${year}-${month}-${day}`;
+			},
+			computTime2() {
+				let param = {
+					StartDateTime: this.itemData.BeginDate,
+					EndDateTime: this.itemData.EndDate,
+					OperatorId: uni.getStorageSync("JSUserInfo").UserId,
+					HolidayType: this.SelectHolidayType.Code
+				};
+				this.$mbservices.Request(this.$webapi.CalcDateDiffByStartEndDateTime, 'POST', param, res => {
+					console.log('结果');
+					console.log(res);
+					if(res.data.data.RecordCount>1)
+					{
+						this.CalcTimeLength.Num=res.data.data.RetInfo.Num;
+						this.CalcTimeLength.unit=res.data.data.RetInfo.Unit;
+						this.CalcTimeLength.unitext=res.data.data.RetInfo.UnitText;
+						
+						this.itemData.LeaveHours=parseFloat(res.data.data.RetInfo.Num).toFixed(2);
+						this.itemData.LeaveHoursText=res.data.data.RetInfo.Unit;
+					}
+					else{
+						this.CalcTimeLength.Num='0.00';
+						this.CalcTimeLength.unit='';
+						this.CalcTimeLength.unitext='';
+						
+						this.itemData.LeaveHours=0;
+						this.itemData.LeaveHoursText='';
+					}
+				}, err => {
+					this.CalcTimeLength.Num='0.00';
+					this.CalcTimeLength.unit='';
+					this.CalcTimeLength.unitext='';
+					
+					this.itemData.LeaveHours=0;
+					this.itemData.LeaveHoursText='';
+				});
 			},
 			computTime1() {
 				var endTime = this.itemData.EndDate;

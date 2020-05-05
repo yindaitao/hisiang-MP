@@ -569,6 +569,14 @@
 				})
 			},
 			showModal(e) {
+				if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
+					uni.showToast({
+						title: '查无排班信息',
+						icon: 'none'
+					});
+					return false;
+				}
+
 				this.RefreshWIFIINfo();
 				this.toggleDelay = true;
 				setTimeout(() => {

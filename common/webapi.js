@@ -1,4 +1,4 @@
-var websiteUrl = "https://oa.magicbox.net.cn";
+var websiteUrl = "https://so.magicdata.co";
 /* https://oa.magicbox.net.cn*/
 /* http://localhost:62142 */
 /* http://localhost:51682 */
@@ -208,5 +208,7 @@ module.exports = {
 	/* 获取业绩绩效 */
 	GetPerformace: websiteUrl + '/api/Performance/GetRecords',
 	/* 提交问题记录 */
-	SaveQuestions: websiteUrl + '/api/Question/Save'
+	SaveQuestions: websiteUrl + '/api/Question/Save',
+	/* 计算请假时长 */
+	CalcDateDiffByStartEndDateTime:websiteUrl+'/api/Leave/CalcDateDiffByStartEndDateTime'
 }

@@ -48,13 +48,13 @@
 							<text class="text-grey text-white">无</text>
 						</view>
 						<view>
-							<text>剩余:{{AttendanceEntity.UseNianJia}}天</text><text class="text-grey margin-left-sm">总数:{{AttendanceEntity.SumNianJia}}天</text>
+							<text>剩余:{{AttendanceEntity.LastNianJia}}天</text><text class="text-grey margin-left-sm">总数:{{AttendanceEntity.SumNianJia}}天</text>
 						</view>
 						<view>
-							<text>剩余:{{AttendanceEntity.UseQinQingJia}}天</text><text class="text-grey margin-left-sm">总数:{{AttendanceEntity.SumQinQingJia}}天</text>
+							<text>剩余:{{AttendanceEntity.LastQinQingJia}}天</text><text class="text-grey margin-left-sm">总数:{{AttendanceEntity.SumQinQingJia}}天</text>
 						</view>
 						<view>
-							<text>剩余:{{AttendanceEntity.UseDaiXinBingJia}}天</text><text class="text-grey margin-left-sm">总数:{{AttendanceEntity.SumDaiXinBingJia}}天</text>
+							<text>剩余:{{AttendanceEntity.LastDaiXinBingJia}}天</text><text class="text-grey margin-left-sm">总数:{{AttendanceEntity.SumDaiXinBingJia}}天</text>
 						</view>
 					</view>
 				</view>
@@ -223,10 +223,10 @@
 				if (parseInt(e.target.value.toString().split('-')[1]) === (new Date().getMonth() + 1)) {
 					//选择月份是当前月份
 					this.getCurrentAttendanceRecords();
-				} else{
+				} else {
 					//选择月份小于当前月份
 					this.getLastAttendanceRecords();
-				} 
+				}
 				//(parseInt(e.target.value.toString().split('-')[1]) < (new Date().getMonth() + 1)) 
 				/* else {
 					uni.showToast({
@@ -304,6 +304,12 @@
 							.RExtraWorkHours) + parseFloat(this.AttendanceEntity.HExtraWorkHours);
 						this.AttendanceEntity.MealsTotal = parseInt(this.AttendanceEntity.GExtraWorkMeal) + parseInt(this.AttendanceEntity
 							.HExtraWorkMeal) + parseInt(this.AttendanceEntity.RExtraWorkMeal);
+						/* this.AttendanceEntity.SumNianJia = parseFloat(this.AttendanceEntity.SumNianJia).toFixed(2);
+						this.AttendanceEntity.SumDaiXinBingJia = parseFloat(this.AttendanceEntity.SumDaiXinBingJia).toFixed(2);
+						this.AttendanceEntity.SumQinQingJia = parseFloat(this.AttendanceEntity.SumQinQingJia).toFixed(2);
+						this.AttendanceEntity.LastNianJia = parseFloat(this.AttendanceEntity.LastNianJia).toFixed(2);
+						this.AttendanceEntity.LastDaiXinBingJia = parseFloat(this.AttendanceEntity.LastDaiXinBingJia).toFixed(2);
+						this.AttendanceEntity.LastQinQingJia = parseFloat(this.AttendanceEntity.LastQinQingJia).toFixed(2); */
 						this.calcLeaveWithSalaryDays()
 					} else {
 						uni.showToast({
