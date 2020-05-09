@@ -5,7 +5,7 @@
 		<scroll-view scroll-y class="page" :style="{'height':scrollBarHeight+'px'}">
 			<view class="bg-white">
 				<view class="top">
-					<view class="bg-grey margin-0" style="margin-top: 0px;">当前经纬度:{{latitude}},{{longitude}}</view>
+					<view class="bg-blue margin-0 light" style="margin-top: 0px;">当前经纬度:{{latitude}},{{longitude}}</view>
 				</view>
 				<map id="_mapController" :latitude="latitude" @markertap="openMap()" @callouttap="openMap()" :longitude="longitude"
 				 :markers="covers" :circles="circles" :scale="scale">
@@ -570,10 +570,64 @@
 			},
 			showModal(e) {
 				if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
-					uni.showToast({
-						title: '查无排班信息',
-						icon: 'none'
-					});
+					uni.showLoading({
+						title: '请稍后...'
+					})
+
+					let param = {
+						PageIndex: 1,
+						RowsPerPage: "1000",
+						type: "Initialize",
+						Parameter: {
+							LoadChildren: "Load",
+							Conditions: [{
+								FieldName: "Activated",
+								Operation: "EQUAL",
+								ConditionValue: 'Y',
+								Relationship: "AND"
+							}],
+							ChildCriterias: [{
+								BusinessObjectSearchType: "Search",
+								BusinessObjectTypeName: "ScheduleLine",
+								Conditions: [{
+									FieldName: "UserId",
+									Operation: "EQUAL",
+									ConditionValue: uni.getStorageSync("JSUserInfo").UserId,
+									Relationship: "AND"
+								}]
+							}],
+						}
+
+					};
+					this.$mbservices.Request(this.$webapi.getScheduleList, 'POST', param, res => {
+						if (res.data.RecordCount > 0) {
+							this.ScheduleEntity = res.data.data[0];
+							if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
+								uni.showToast({
+									title: '查无排班',
+									icon: 'none'
+								})
+							}else{
+								this.RefreshWIFIINfo();
+								this.toggleDelay = true;
+								setTimeout(() => {
+									this.toggleDelay = false
+								}, 50)
+								this.modalName = e.currentTarget.dataset.target;
+							}
+						} else {
+							if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
+								uni.showToast({
+									title: '查无排班',
+									icon: 'none'
+								})
+							}
+						}
+						uni.hideLoading()
+					}, err => {
+						uni.hideLoading()
+					})
+
 					return false;
 				}
 

@@ -187,6 +187,9 @@
 			goDetail(item) {
 				item.from = "";
 				item.from = "Leavelist";
+				console.log('看下数据');
+				console.log(item);
+				item.ApproveComments="";
 				if(item.Approve==='No'&&item.ApproveStatus!=='Rejected'){
 					uni.navigateTo({
 						url: "/pages/Leave/Leaveform/Leaveform?flag=modify&data=" + JSON.stringify(item)

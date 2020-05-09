@@ -22,7 +22,7 @@ s<template>
 		<view class="ul-swiper-box">
 			<form>
 				<view class="cu-list menu">
-					<view class="cu-item">
+					<!-- <view class="cu-item">
 						<view class="content">
 							是否加班倒休
 						</view>
@@ -30,7 +30,7 @@ s<template>
 							<checkbox v-for="(itm,idx) in checkbox" :key="idx" class='round' :class="itm.checked?'checked':''" :checked="itm.checked?true:false"
 							 :value="itm.value" @click="ChangeChkBox($event,itm)"></checkbox>
 						</view>
-					</view>
+					</view> -->
 					<view class="cu-item">
 						<view class="content">
 							请假类型
@@ -47,9 +47,11 @@ s<template>
 						</view>
 					</view>
 					<view class="cu-item" v-if="SelectHolidayType.isSalary==='Yes'&&edit===false">
-						<view class="content text-right text-blue light">
-							提示：剩余{{RestDays?RestDays:0}}天&nbsp;&nbsp;&nbsp;&nbsp;{{SelectHolidayType.Name}}
+						<view class="content text-blue light">
+							<text v-if="RestDaysEntity.MinRemark!==''||RestDaysEntity.MaxRemark!==''">提示：</text><text>{{RestDaysEntity.MinRemark}}</text><text>{{RestDaysEntity.MaxRemark}}</text>
 						</view>
+						<view class="action text-blue">剩余{{RestDaysEntity.restDays?RestDaysEntity.restDays:0}}<text v-if="RestDaysEntity.restDaysUnit==='D'">天</text><text
+							 v-if="RestDaysEntity.restDaysUnit==='H'">小时</text></view>
 					</view>
 					<view class="cu-item">
 						<view class="content">
@@ -102,7 +104,7 @@ s<template>
 					</view>
 					<view class="cu-item">
 						<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
-						 placeholder-class="placeholder" data-placeholder="在此输入请假事由" :value="itemData.Cause"></textarea>
+						 placeholder-class="placeholder" data-placeholder="在此输入请假事由" :value="itemData.Cause" style="min-height: 150px;"></textarea>
 					</view>
 				</view>
 			</form>
@@ -239,11 +241,12 @@ s<template>
 				SecondOffTime: "",
 				// 系统初始化表里的每天工作时长
 				InitializeDay: 0,
-				CalcTimeLength:{
-					Num:'',
-					unit:'',
-					unitext:''
-				}
+				CalcTimeLength: {
+					Num: '',
+					unit: '',
+					unitext: ''
+				},
+				RestDaysEntity: {}
 			};
 		},
 		computed: {
@@ -294,6 +297,21 @@ s<template>
 				this.SelectHolidayType = this.HolidayTypeList.filter(item => {
 					return item.Code == e.detail.value;
 				})[0]
+				//加班倒休
+				if (this.SelectHolidayType.Code === 'IsChangeShifts') {
+					this.indexLeaveHoursText = 0; //如果带薪，默认单位是天且不允许编辑
+					this.itemData.LeaveHoursText = 'Day'
+					this.itemData.LeaveHours = 0;
+					this.itemData.HolidayTypeCode = e.detail.value;
+					this.CalcTimeLength = {
+						Num: '',
+						unit: '',
+						unitext: ''
+					};
+					this.resetDateTimePicker();
+					return false;
+				}
+				//带薪假期
 				if (this.SelectHolidayType.isSalary === 'Yes') {
 					this.indexLeaveHoursText = 0; //如果带薪，默认单位是天且不允许编辑
 					this.itemData.LeaveHoursText = 'Day'
@@ -538,33 +556,35 @@ s<template>
 					OperatorId: uni.getStorageSync("JSUserInfo").UserId,
 					HolidayType: this.SelectHolidayType.Code
 				};
+				uni.showLoading({
+					title: ''
+				})
 				this.$mbservices.Request(this.$webapi.CalcDateDiffByStartEndDateTime, 'POST', param, res => {
-					console.log('结果');
-					console.log(res);
-					if(res.data.data.RecordCount>1)
-					{
-						this.CalcTimeLength.Num=res.data.data.RetInfo.Num;
-						this.CalcTimeLength.unit=res.data.data.RetInfo.Unit;
-						this.CalcTimeLength.unitext=res.data.data.RetInfo.UnitText;
-						
-						this.itemData.LeaveHours=parseFloat(res.data.data.RetInfo.Num).toFixed(2);
-						this.itemData.LeaveHoursText=res.data.data.RetInfo.Unit;
+					if (res.data.RecordCount >= 1) {
+						this.CalcTimeLength.Num = res.data.data.Num;
+						this.CalcTimeLength.unit = res.data.data.Unit;
+						this.CalcTimeLength.unitext = res.data.data.UnitText;
+
+						this.itemData.LeaveHours = parseFloat(res.data.data.Num).toFixed(2);
+						this.itemData.LeaveHoursText = res.data.data.Unit;
+					} else {
+						this.CalcTimeLength.Num = '0.00';
+						this.CalcTimeLength.unit = '';
+						this.CalcTimeLength.unitext = '';
+
+						this.itemData.LeaveHours = 0;
+						this.itemData.LeaveHoursText = '';
 					}
-					else{
-						this.CalcTimeLength.Num='0.00';
-						this.CalcTimeLength.unit='';
-						this.CalcTimeLength.unitext='';
-						
-						this.itemData.LeaveHours=0;
-						this.itemData.LeaveHoursText='';
-					}
+					uni.hideLoading()
 				}, err => {
-					this.CalcTimeLength.Num='0.00';
-					this.CalcTimeLength.unit='';
-					this.CalcTimeLength.unitext='';
-					
-					this.itemData.LeaveHours=0;
-					this.itemData.LeaveHoursText='';
+					this.CalcTimeLength.Num = '0.00';
+					this.CalcTimeLength.unit = '';
+					this.CalcTimeLength.unitext = '';
+
+					this.itemData.LeaveHours = 0;
+					this.itemData.LeaveHoursText = '';
+
+					uni.hideLoading()
 				});
 			},
 			computTime1() {
@@ -699,7 +719,7 @@ s<template>
 					_this.editEntitysList[0].HolidayTypeName = _this.itemData.HolidayTypeName;
 					_this.editEntitysList[0].LeaveHours = _this.itemData.LeaveHours;
 					_this.editEntitysList[0].LeaveHoursText = _this.itemData.LeaveHoursText;
-					_this.editEntitysList[0].IsChangeShifts = _this.checkbox[0].checked ? 'Yes' : 'No';
+					_this.editEntitysList[0].IsChangeShifts = _this.itemData.HolidayTypeCode==='IsChangeShifts' ? 'Yes' : 'No';
 					_this.editEntitysList[0].UIStatus = "Modify";
 					ajaxJSON = _this.editEntitysList[0];
 				} else {
@@ -708,7 +728,8 @@ s<template>
 						DocNum: _this.itemData.DocEntry,
 						BeginDate: _this.itemData.BeginDate,
 						EndDate: _this.itemData.EndDate,
-						HolidayType: _this.checkbox[0].checked ? this.SpeHolidayType : _this.itemData.HolidayTypeCode,
+						HolidayType: _this.itemData.HolidayTypeCode,
+						HolidayTypeName: _this.SelectHolidayType.Name,
 						LeaveHours: _this.itemData.LeaveHours,
 						LeaveHoursText: _this.itemData.LeaveHoursText,
 						CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
@@ -720,7 +741,7 @@ s<template>
 						Canceled: "No",
 						Closed: "No",
 						Attachments: "",
-						IsChangeShifts: _this.checkbox[0].checked ? 'Yes' : 'No',
+						IsChangeShifts: _this.itemData.HolidayTypeCode==='IsChangeShifts' ? 'Yes' : 'No',
 						OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 						OrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 						CompanyId: uni.getStorageSync("JSUserInfo").CompanyId,
@@ -1084,12 +1105,18 @@ s<template>
 				});
 			},
 			getHolidayRestDays(type) {
-				var that = this;
+				uni.showLoading({
+					title: ''
+				})
 				this.$mbservices.Request(this.$webapi.getHolidayRestDays, "POST", type,
-					function(res) {
+					res => {
 						if (res.data.RecordCount > 0) {
-							that.RestDays = res.data.data.restDays;
+							this.RestDays = res.data.data.restDays;
+							this.RestDaysEntity = res.data.data;
 						}
+						uni.hideLoading()
+					}, err => {
+						uni.hideLoading()
 					})
 			},
 			getDetailData() {
@@ -1148,8 +1175,8 @@ s<template>
 								}
 							});
 							if (item.LeaveHoursText === 'Day') {
-								_$this.itemData.BeginDate = _$this.$mbservices.formatDateTime(item.BeginDate, 'yyyy-MM-dd');
-								_$this.itemData.EndDate = _$this.$mbservices.formatDateTime(item.EndDate, 'yyyy-MM-dd');
+								_$this.itemData.BeginDate = _$this.$mbservices.formatDateTime(item.BeginDate, 'yyyy-MM-dd hh:mm');
+								_$this.itemData.EndDate = _$this.$mbservices.formatDateTime(item.EndDate, 'yyyy-MM-dd hh:mm');
 							}
 							if (item.LeaveHoursText === 'Hour') {
 								_$this.itemData.BeginDate = _$this.$mbservices.formatDateTime(item.BeginDate, 'yyyy-MM-dd hh:mm');
@@ -1182,6 +1209,11 @@ s<template>
 							_$this.itemData.Cause = item.Cause;
 							_$this.itemData.InvCompanyId = item.InvCompanyId;
 							_$this.itemData.InvCompanyName = item.InvCompanyName;
+
+							_$this.CalcTimeLength.Num = item.LeaveHours;
+							_$this.CalcTimeLength.unit = item.LeaveHoursText;
+							_$this.CalcTimeLength.unitext = item.LeaveHoursText === 'H' ? '小时' : '天'; //item.LeaveHours;
+
 							_$this.$refs.PstartDate1.refreshAll(_$this.itemData.BeginDate);
 							_$this.$refs.PEndDate1.refreshAll(_$this.itemData.EndDate);
 						});
@@ -1210,7 +1242,13 @@ s<template>
 			//#ifdef MP-WEIXIN
 			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar;
 			//#endif
-			this.from = JSON.parse(e.data).from;
+			console.log('看下E');
+			console.log(e);
+			try{
+				this.from = JSON.parse(e.data).from;
+			}catch(e){
+				//TODO handle the exception
+			}
 			this.getInitialize();
 			/* 修改传递参数 */
 			if (e.flag === "modify") {
@@ -1237,6 +1275,7 @@ s<template>
 				setTimeout(function() {
 					_this.getDetailData();
 				}, 1000);
+				return false;
 			}
 			if (!this.editflag) {
 				//最大编号

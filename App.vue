@@ -180,6 +180,8 @@
 							},
 							success: result => {
 								if (result.data.RecordCount > 0) {
+									console.log(result);
+									
 									let OrherInfo = {};
 									if (result.data.data.UserInfo === null) {
 										uni.reLaunch({

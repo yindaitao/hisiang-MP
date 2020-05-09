@@ -34,6 +34,8 @@
 			...mapState(["hasLogin"])
 		},
 		onLoad(e) {
+			console.log('data参数');
+			console.log(e);
 			this.Openid = e.data;
 			uni.getProvider({
 				service: "oauth",
