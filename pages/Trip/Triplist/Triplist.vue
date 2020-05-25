@@ -49,20 +49,27 @@
 						<view class="content padding-tb-sm">
 							<view>
 								<text class="icon-peoplefill text-blue margin-right-xs"></text>
-								出差申请
+								<text class="text-bold">{{list.Creator}}</text><text class="text-grey text-sm margin-left-sm text-sm">({{list.CompanyName}})</text>
 							</view>
 							<view>
 								<text class="icon-title text-orange"></text>
-								编号:{{list.DocEntry}}&nbsp;&nbsp;
+								申请编号:{{list.DocEntry}}
+							</view>
+							<view>
+								<text class="icon-title text-orange"></text>
 								申请时长:{{list.TripHours}}天
+							</view>
+							<view>
+								<text class="icon-title text-orange"></text>
+								审批人员:{{$mbservices.isEmpty(list.Approvers)?'无':list.Approvers }}
 							</view>
 							<view class="nowarp">
 								<text class="icon-title text-orange"></text>
 								出差事由:{{$mbservices.isEmpty(list.Cause)?'无':list.Cause}}
 							</view>
-							<view class="text-gray text-sm">
-								<text class="icon-timefill margin-right-xs"></text>
-								{{list.CreateDate}}
+							<view class="text-right text-sm">
+								<text class="icon-timefill text-sm text-grey"></text>
+								<text class="text-grey">{{list.CreateDate}}</text>
 							</view>
 						</view>
 						<view class="action" v-if="list.Approve!=='No'||list.ApproveStatus==='Rejected'">
@@ -72,7 +79,7 @@
 						</view>
 						<view class="move" v-if="list.Approve==='No'||list.ApproveStatus==='Rejected'">
 							<view class="bg-grey" @click.stop="editItem(list)">编辑</view>
-							<view class="bg-red" @click.stop="deleteItem(list)">删除</view>
+							<!-- <view class="bg-red" @click.stop="deleteItem(list)">删除</view> -->
 						</view>
 					</view>
 				</view>

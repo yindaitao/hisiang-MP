@@ -192,7 +192,7 @@
 							<view class="picker">{{item.DocDateArrive}}</view>
 						</picker>
 					</view>
-					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'">
+					<view class="cu-form-group" v-if="item.DetailType === 'Traffic'"><strong></strong>
 						<view class="title">到达地点</view>
 						<input :disabled="edit?true:false" placeholder="到达地点" name="input" style="text-align: right;" @input="inputNumArrivePlace(item,$event)"
 						 :value="item.ArrivePlace">

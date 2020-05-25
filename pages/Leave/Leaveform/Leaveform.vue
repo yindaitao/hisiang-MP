@@ -106,6 +106,25 @@ s<template>
 						<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
 						 placeholder-class="placeholder" data-placeholder="在此输入请假事由" :value="itemData.Cause" style="min-height: 150px;"></textarea>
 					</view>
+					<!-- 图片开始 -->
+					<view class="cu-bar bg-white">
+						<view class="action">选择图片</view>
+						<view class="action">{{itemData.imageList.length}}/9</view>
+					</view>
+					<view class="cu-form-group">
+						<view class="grid col-4 grid-square flex-sub">
+							<view class="padding-xs bg-img" :style="'background-image:url(' + itemData.imageList[index1].url +')'" v-for="(_item,index1) in itemData.imageList"
+							 :key="index1" @tap="previewImage(itemData,$event)" :data-url="itemData.imageList[index1].url">
+								<view class="cu-tag bg-red" @tap.stop="deleteImage(itemData,_item)" :data-index="index1" v-if="edit === false">
+									<text class="icon-delete"></text>
+								</view>
+							</view>
+							<view class="padding-xs solids" @tap="chooseImage(itemData)" v-if="itemData.imageList.length<9 && edit === false">
+								<text class="icon-cameraadd"></text>
+							</view>
+						</view>
+					</view>
+					<!-- 图片结束 -->
 				</view>
 			</form>
 		</view>
@@ -217,7 +236,8 @@ s<template>
 					LeaveHoursTextName: "天",
 					Cause: "",
 					Remarks: "",
-					IsChangeShifts: "No"
+					IsChangeShifts: "No",
+					imageList: [],
 				},
 				formList: [{
 					id: 1,
@@ -687,6 +707,22 @@ s<template>
 					});
 					return false;
 				}
+				
+				/* 验证是否必传附件 */
+				let opItem = {}
+				this.HolidayTypeList.forEach((__item, __index) => {
+					if (__item.Code === this.itemData.HolidayTypeCode) {
+						opItem = __item;
+					}
+				});
+				if (opItem.IsUploadFiles === 'Yes' && this.itemData.imageList.length <= 0) {
+					uni.showToast({
+						title: '该种类型的假期要求必传附件',
+						icon: 'none'
+					})
+					return false
+				}
+				
 				this.modalName = e.currentTarget.dataset.target;
 			},
 			hideModal(e) {
@@ -707,11 +743,22 @@ s<template>
 				uni.showLoading({
 					title: "正在提交..."
 				});
+				let Attachment = '';
+				let isHave = false;
+				_this.itemData.imageList.forEach(option => {
+					Attachment = Attachment + option.retInfo[0].filePath + ';';
+					isHave = true;
+				})
+				if (isHave) {
+					Attachment = Attachment.substr(0, Attachment.length - 1);
+				}
+
 				var ajaxJSON = {};
 				if (_this.editflag) {
 					_this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
 					_this.editEntitysList[0].ApproveStatus = "Pending";
 					_this.editEntitysList[0].Remarks = _this.itemData.Remarks;
+					_this.editEntitysList[0].Attachment = Attachment;
 					_this.editEntitysList[0].Cause = _this.itemData.Cause;
 					_this.editEntitysList[0].BeginDate = _this.itemData.BeginDate;
 					_this.editEntitysList[0].EndDate = _this.itemData.EndDate;
@@ -719,10 +766,12 @@ s<template>
 					_this.editEntitysList[0].HolidayTypeName = _this.itemData.HolidayTypeName;
 					_this.editEntitysList[0].LeaveHours = _this.itemData.LeaveHours;
 					_this.editEntitysList[0].LeaveHoursText = _this.itemData.LeaveHoursText;
-					_this.editEntitysList[0].IsChangeShifts = _this.itemData.HolidayTypeCode==='IsChangeShifts' ? 'Yes' : 'No';
+					_this.editEntitysList[0].IsChangeShifts = _this.itemData.HolidayTypeCode === 'IsChangeShifts' ? 'Yes' : 'No';
 					_this.editEntitysList[0].UIStatus = "Modify";
 					ajaxJSON = _this.editEntitysList[0];
 				} else {
+
+
 					ajaxJSON = {
 						ObjectType: "Leave",
 						DocNum: _this.itemData.DocEntry,
@@ -740,8 +789,8 @@ s<template>
 						ApproveStatus: "Pending",
 						Canceled: "No",
 						Closed: "No",
-						Attachments: "",
-						IsChangeShifts: _this.itemData.HolidayTypeCode==='IsChangeShifts' ? 'Yes' : 'No',
+						Attachment: Attachment,
+						IsChangeShifts: _this.itemData.HolidayTypeCode === 'IsChangeShifts' ? 'Yes' : 'No',
 						OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 						OrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 						CompanyId: uni.getStorageSync("JSUserInfo").CompanyId,
@@ -990,6 +1039,9 @@ s<template>
 						var imageSrc = res.tempFilePaths[0];
 						res.tempFilePaths.forEach(item => {
 							/* 上传图片开始 */
+							uni.showLoading({
+								title: '请稍后...'
+							})
 							uni.uploadFile({
 								url: _this.$webapi.uploadImages,
 								header: {
@@ -1018,8 +1070,10 @@ s<template>
 										};
 									}
 									_item_.imageList.push(imagePath_);
+									uni.hideLoading()
 								},
 								fail: err => {
+									uni.hideLoading()
 									uni.showModal({
 										content: err.errMsg,
 										showCancel: false
@@ -1061,12 +1115,17 @@ s<template>
 				});
 			},
 			deleteImage(imlist, item) {
+				console.log('删除');
+				console.log(item);
 				var _this = this;
 				uni.showModal({
 					title: "操作提示",
 					content: "确定删除图片?",
 					success: function(ret) {
 						if (ret.confirm) {
+							uni.showLoading({
+								title: '请稍后...'
+							})
 							var ajaxParam = {};
 							if (_this.editflag) {
 								ajaxParam.path = item.deleteurl;
@@ -1097,8 +1156,11 @@ s<template>
 											icon: "none"
 										});
 									}
+									uni.hideLoading()
 								},
-								function(err) {}
+								function(err) {
+									uni.hideLoading()
+								}
 							);
 						}
 					}
@@ -1172,6 +1234,9 @@ s<template>
 									_$this.itemData.indexHolidayType = __index;
 									_$this.indexHolidayType = __index;
 									_$this.SelectHolidayType = __item;
+									if (__item.isSalary === 'Yes') {
+										_$this.getHolidayRestDays(__item.Code)
+									}
 								}
 							});
 							if (item.LeaveHoursText === 'Day') {
@@ -1216,6 +1281,27 @@ s<template>
 
 							_$this.$refs.PstartDate1.refreshAll(_$this.itemData.BeginDate);
 							_$this.$refs.PEndDate1.refreshAll(_$this.itemData.EndDate);
+
+							/* 图片 */
+							let imArr = [];
+							if (!_$this.$mbservices.isEmpty(item.Attachment) && item.Attachment.toString().lastIndexOf(';') > -1) {
+								imArr = item.Attachment.toString().split(';');
+							} else {
+								if (item.Attachment.toString().length > 0) {
+									imArr.push(item.Attachment.toString())
+								}
+							}
+							imArr.forEach(option => {
+								_$this.itemData.imageList.push({
+									retInfo: [{
+										filePath: option,
+										deleteurl: option.substr(option.lastIndexOf('/') + 1, option.length - option.lastIndexOf('/'))
+									}],
+									url: _$this.$webapi.webroot + '/' + option,
+									deleteurl: option.substr(option.lastIndexOf('/') + 1, option.length - option.lastIndexOf('/'))
+								})
+							})
+
 						});
 						setTimeout(() => {
 							uni.hideLoading();
@@ -1244,9 +1330,9 @@ s<template>
 			//#endif
 			console.log('看下E');
 			console.log(e);
-			try{
+			try {
 				this.from = JSON.parse(e.data).from;
-			}catch(e){
+			} catch (e) {
 				//TODO handle the exception
 			}
 			this.getInitialize();

@@ -5,7 +5,7 @@ var websiteUrl = "https://so.magicdata.co";
 /* http://oa.magicbox.net.cn */
 /* http://192.168.0.109:8080 */
 /* https://oa.magicbox.net.cn*/
-/* https://so.magicdata.co */
+/* https://so.magicdata.co */ 
 module.exports = {
 	/* 接口根目录 */
 	webroot: websiteUrl,
@@ -206,7 +206,7 @@ module.exports = {
 	/* 获取系统设置 */
 	GetSysSettingRecords: websiteUrl + '/api/UsersSystemSettings/GetRecords',
 	/* 获取业绩绩效 */
-	GetPerformace: websiteUrl + '/api/Performance/GetRecords',
+	GetPerformace: websiteUrl + '/api/Performance/GetRecordsList',
 	/* 提交问题记录 */
 	SaveQuestions: websiteUrl + '/api/Question/Save',
 	/* 计算请假时长 */

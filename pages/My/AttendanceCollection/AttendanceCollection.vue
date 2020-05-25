@@ -14,7 +14,7 @@
 		<scroll-view scroll-y="true" :style="{'height':scrollBarHeight+'px'}">
 			<view class="cu-list menu sm-border card-menu animation-slide-bottom" :style="[{animationDelay: (0 + 1)*0.1 + 's'}]">
 				<view class="cu-item">
-					<text class="icon-ellipse text-orange"></text>
+					<text class="icon-ellipse text-orange light"></text>
 					<text class="text-grey">请假</text>
 				</view>
 				<view class="cu-item padding">
@@ -29,15 +29,15 @@
 						</view>
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;假：{{AttendanceEntity.LeaveWithSalary}}天</text>
+							<text class="text-grey">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;假：{{AttendanceEntity.UseNianJia}}天</text>
 						</view>
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">亲&nbsp;情&nbsp;&nbsp;假：{{AttendanceEntity.LeaveWithSalary}}天</text>
+							<text class="text-grey">亲&nbsp;情&nbsp;&nbsp;假：{{AttendanceEntity.UseQinQingJia}}天</text>
 						</view>
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">带薪病假：{{AttendanceEntity.LeaveWithSalary}}天</text>
+							<text class="text-grey">带薪病假：{{AttendanceEntity.UseDaiXinBingJia}}天</text>
 						</view>
 					</view>
 					<view class="content">
@@ -72,7 +72,7 @@
 			</view>
 			<view class="cu-list menu sm-border card-menu animation-slide-bottom" :style="[{animationDelay: (1 + 1)*0.1 + 's'}]">
 				<view class="cu-item">
-					<text class="icon-ellipse text-orange"></text>
+					<text class="icon-ellipse text-orange light"></text>
 					<text class="text-grey">考勤</text>
 				</view>
 				<view class="cu-item padding">
@@ -105,7 +105,7 @@
 			</view>
 			<view class="cu-list menu sm-border card-menu animation-slide-bottom" :style="[{animationDelay: (2 + 1)*0.1 + 's'}]">
 				<view class="cu-item">
-					<text class="icon-ellipse text-orange"></text>
+					<text class="icon-ellipse text-orange light"></text>
 					<text class="text-grey">加班</text>
 				</view>
 				<view class="cu-item padding">

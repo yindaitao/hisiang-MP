@@ -135,9 +135,6 @@
 							</view>
 						</view>
 					</radio-group>
-					<!-- <view class="text-content">
-						<text class="text-red text-center">该项打卡没有</text>
-					</view> -->
 				</scroll-view>
 				<view class="cu-bar solid-top">
 					<view class="action"></view>
@@ -152,6 +149,60 @@
 			</view>
 		</view>
 		<!-- 关联申请单-结束 -->
+		<!-- 外勤打卡-开始 -->
+		<view class="cu-modal" :class="modalName==='GooutRecord'?'show':''">
+			<view class="cu-dialog" @tap.stop="" style="width: 280px;max-width: 280px;">
+				<view class="cu-item padding-lr-xl">
+					<view class="action text-bold text-xxl">外勤打卡信息</view>
+					<view class="text-content">
+						<view class="text-left"><text class="text-bold">打卡时间:</text>{{TimeShow}}</view>
+						<view class="text-left" v-if="ValidateAAType()===1"><text class="text-bold">打卡地点:</text><text class="text-sm">{{currentArea.address}}附近</text></view>
+
+						<!-- <view class="text-left">
+							<view class="flex p-xs">
+								<view class="flex-sub"><text class="text-bold">外出时长:</text></view>
+								<view class="flex-sub">
+									<view class="flex">
+										<view class="flex-twice" style="border-bottom: 1rpx solid #ddd;"><input placeholder="外出时长" type="digit" class="text-right"
+											 :value="GooutHours" @input="txtInputHours" /></view>
+										<view class="flex-sub text-right" style="border-bottom: 1rpx solid #ddd;"><text class="cu-tag round bg-orange light sm">小时</text></view>
+									</view>
+								</view>
+							</view>
+						</view> -->
+						<view class="text-left">
+							<text class="text-bold">在此备注:</text>
+							<textarea class="text sm-border placeholder" v-if="modalName==='GooutRecord'" :disabled="modalName===null"
+							 @input="txtInput" style="height: 150px;min-height: 150px;width: 100%;" placeholder="在此输入外勤原因"></textarea>
+						</view>
+					</view>
+				</view>
+				<view class="cu-form-group text-left margin-top" style="background-color: rgba(0,0,0,0);">
+					<view class="grid col-4 grid-square flex-sub">
+						<view class="bg-img" v-for="(item,index) in imgList" :key="index" @tap="ViewImage" :data-url="imgList[index]">
+							<image :src="imgList[index]" mode="aspectFill"></image>
+							<view class="cu-tag bg-red" @tap.stop="DelImg" :data-index="index">
+								<text class='icon-close'></text>
+							</view>
+						</view>
+						<view class="solids" @tap="TakePhotos" v-if="imgList.length<4">
+							<text class='icon-cameraadd'></text>
+						</view>
+					</view>
+				</view>
+				<view class="cu-bar solid-top">
+					<view class="action"></view>
+					<view class="action">
+						<button class="cu-btn round bg-blue" @tap="hideModal()">取消</button>
+					</view>
+					<view class="action">
+						<button class="cu-btn round bg-blue" @tap="submitData">确定</button>
+					</view>
+					<view class="action"></view>
+				</view>
+			</view>
+		</view>
+		<!-- 外勤打卡-结束 -->
 	</view>
 </template>
 
@@ -188,6 +239,7 @@
 					SSID: '',
 					BSSID: ''
 				},
+				GooutHours: 0,
 				covers: [{
 					width: 50,
 					height: 50,
@@ -229,6 +281,30 @@
 			//#endif
 			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
 			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
+			
+			
+			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
+			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
+			this.$forceUpdate()
+			/* ------------------------------------------------------ */
+			//#ifdef MP-WEIXIN
+			// 实例化腾讯地图API核心类
+			this.qqmapsdk = new QQMapWX({
+				key: 'RTGBZ-QCCKU-HWRVD-2BYLK-PGWAT-PLFRG' // 必填
+			});
+			//#endif
+			
+			//#ifdef MP-WEIXIN
+			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 50 - 40;
+			setInterval(() => {
+				this.TimeShow = this.$mbservices.formatDateTime(new Date(), 'hh:mm:ss')
+			}, 1000);
+			uni.$on('GetPhotoImgPath', this.GetPhotoImgPath)
+			// #endif
+			/* ------------------------------------------------------ */
+			
+			
+			
 			this.$forceUpdate();
 			this.isGetLocation();
 			this.getWorkRecords();
@@ -295,6 +371,61 @@
 			// #endif
 		},
 		methods: {
+			ReloadScheduleInfo() {
+
+				uni.showLoading({
+					title: '请稍后...'
+				})
+
+				let param = {
+					PageIndex: 1,
+					RowsPerPage: "1000",
+					type: "Initialize",
+					Parameter: {
+						LoadChildren: "Load",
+						Conditions: [{
+							FieldName: "Activated",
+							Operation: "EQUAL",
+							ConditionValue: 'Y',
+							Relationship: "AND"
+						}],
+						ChildCriterias: [{
+							BusinessObjectSearchType: "Search",
+							BusinessObjectTypeName: "ScheduleLine",
+							Conditions: [{
+								FieldName: "UserId",
+								Operation: "EQUAL",
+								ConditionValue: uni.getStorageSync("JSUserInfo").UserId,
+								Relationship: "AND"
+							}]
+						}],
+					}
+
+				};
+				this.$mbservices.Request(this.$webapi.getScheduleList, 'POST', param, res => {
+					if (res.data.RecordCount > 0) {
+						this.ScheduleEntity = res.data.data[0];
+						if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
+							uni.showToast({
+								title: '查无排班',
+								icon: 'none'
+							})
+						} else {
+							this.RefreshWIFIINfo();
+						}
+					} else {
+						if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
+							uni.showToast({
+								title: '查无排班',
+								icon: 'none'
+							})
+						}
+					}
+					uni.hideLoading()
+				}, err => {
+					uni.hideLoading()
+				})
+			},
 			CreateRequest(e) {
 				if (this.radio === 'radio0') {
 					uni.navigateTo({
@@ -405,7 +536,145 @@
 				}
 				return '未知'
 			},
+			submitDataCommon() {
+				if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
+					uni.showModal({
+						title: '无排班信息,请刷新重试'
+					})
+					this.ReloadScheduleInfo()
+					return false;
+				}
+				if (this.ScheduleEntity.AttendanceAccording === 'LatLng') {
+					if (this.$mbservices.isEmpty(this.currentArea.address) || this.currentArea.address === '位置') {
+						uni.showModal({
+							title: '等待位置信息加载完成后再打卡'
+						})
+						return false;
+					}
+				}
+				if (this.ScheduleEntity.AttendanceAccording === 'Wifi') {
+					if (this.$mbservices.isEmpty(this.WIFIInfo.BSSID.toLocaleLowerCase())) {
+						uni.showModal({
+							title: '连接WIFI后打卡'
+						})
+						return false;
+					}
+				}
+				this.modalName = null;
+				uni.showLoading({
+					title: '正在打卡...'
+				})
+				let data = {
+					DocNum: "1",
+					CreatorId: uni.getStorageSync("JSUserInfo").UserId,
+					CreateDate: new Date(),
+					Version: "1",
+					CompanyId: uni.getStorageSync("JSUserInfo").CompanyId,
+					Canceled: "N",
+					Closed: "N",
+					DocStatus: "O",
+					Remarks: "",
+					UserId: uni.getStorageSync("JSUserInfo").UserId,
+					CheckType: "General",
+					DataFrom: "MiniProgram",
+					RecordAddress: this.currentArea.address,
+					RecordPicPath: '',
+					RecordRemarks: '',
+					AttendanceAccording: this.ScheduleEntity.AttendanceAccording,
+					UIStatus: "New"
+				};
+				if (this.ScheduleEntity.AttendanceAccording === 'Wifi') {
+					data.RecordIsEffective = this.ScheduleEntity.WifiMac.toLocaleLowerCase() === this.WIFIInfo.BSSID.toLocaleLowerCase() ?
+						'Yes' : 'No'
+				}
+				if (this.ScheduleEntity.AttendanceAccording === 'LatLng') {
+					data.ScheduleLat = this.ScheduleEntity.Latitude;
+					data.ScheduleLng = this.ScheduleEntity.Longitude;
+					data.ScheduleLmt = this.ScheduleEntity.LimitRadius; //this.element.elements[0];
+					data.CurentLat = this.latitude;
+					data.CurentLng = this.longitude;
+					if (this.element.elements[0] === undefined || this.element.elements.length <= 0 || this.$mbservices.isEmpty(this.element
+							.elements[0].distance)) {
+						uni.showToast({
+							title: '正在计算距离，请稍后再试...',
+							icon: 'none'
+						})
+						this.modalName = null;
+						return false;
+					}
+					data.DistanceToAim = this.element.elements[0].distance;
+					if (data.DistanceToAim <= 0||this.$mbservices.isEmpty(data.DistanceToAim)) {
+						uni.showToast({
+							title: '距离异常，请刷新重试...'
+						})
+						this.modalName = null;
+						return false;
+					}
+				}
+
+				this.$mbservices.Request(this.$webapi.saveWorkRecord, 'POST', data, res => {
+					uni.hideLoading()
+					if (res.data.RecordCount > 0) {
+						uni.showToast({
+							title: '已打卡',
+							icon: 'none'
+						})
+						this.txtContent = "";
+						this.imgList = [];
+						this.PicPaths = [];
+						this.getWorkRecords();
+
+						/* let param = {
+							PageIndex: 1,
+							RowsPerPage: "1000",
+							type: "Initialize",
+							Parameter: {
+								LoadChildren: "NoLoad",
+								Conditions: []
+							}
+						};
+						this.$mbservices.Request(this.$webapi.ValidateIsHaveGooutTripRequest, 'POST', param,
+							ret => {
+								if (ret.data.RecordCount > 0) {
+									if (ret.data.data === 'N' && (data.DistanceToAim > data.ScheduleLmt || data.RecordIsEffective === 'No')) {
+										this.modalName = 'RelatedRequest';
+									}
+								}
+							},
+							err => {
+								reject(err)
+							}
+						) */
+					}
+				}, err => {
+					uni.showToast({
+						title: err
+					})
+					uni.hideLoading()
+				})
+			},
 			submitData() {
+				/* if (this.$mbservices.isEmpty(this.GooutHours) || this.GooutHours <= 0) {
+					uni.showToast({
+						title: '请输入有效外勤时长',
+						icon: 'none'
+					})
+					return false;
+				} */
+				/* if (this.GooutHours > 8) {
+					uni.showToast({
+						title: '外出时长不得大于8小时',
+						icon: 'none'
+					})
+					return false;
+				} */
+				if (this.$mbservices.isEmpty(this.txtContent)) {
+					uni.showToast({
+						title: '请输入外勤原因',
+						icon: 'none'
+					})
+					return false;
+				}
 				if (this.IsOutSideWork && this.PicPaths.length <= 0) {
 					uni.showToast({
 						title: '外勤打卡必须上传图片',
@@ -437,6 +706,8 @@
 					DataFrom: "MiniProgram",
 					RecordAddress: this.currentArea.address,
 					RecordPicPath: pathurls,
+					IsGooutWRecord: 'Yes',
+					Hours: this.GooutHours,
 					RecordRemarks: this.txtContent,
 					AttendanceAccording: this.ScheduleEntity.AttendanceAccording,
 					UIStatus: "New"
@@ -457,9 +728,17 @@
 							title: '正在计算距离，请稍后再试...',
 							icon: 'none'
 						})
+						this.modalName = null;
 						return false;
 					}
 					data.DistanceToAim = this.element.elements[0].distance;
+					if (data.DistanceToAim <= 0||this.$mbservices.isEmpty(data.DistanceToAim)) {
+						uni.showToast({
+							title: '距离异常，请刷新重试...'
+						})
+						this.modalName = null;
+						return false;
+					}
 				}
 
 				this.$mbservices.Request(this.$webapi.saveWorkRecord, 'POST', data, res => {
@@ -482,12 +761,11 @@
 								LoadChildren: "NoLoad",
 								Conditions: []
 							}
-
 						};
-						this.$mbservices.Request(this.$webapi.ValidateIsHaveGooutTripRequest, 'POST', param,
+						/* this.$mbservices.Request(this.$webapi.ValidateIsHaveGooutTripRequest, 'POST', param,
 							ret => {
 								if (ret.data.RecordCount > 0) {
-									if (ret.data.data === 'N') {
+									if (ret.data.data === 'N' && (data.DistanceToAim > data.ScheduleLmt || data.RecordIsEffective === 'No')) {
 										this.modalName = 'RelatedRequest';
 									}
 								}
@@ -495,9 +773,16 @@
 							err => {
 								reject(err)
 							}
-						)
+						) */
+					} else {
+						uni.showModal({
+							title: res.data
+						})
 					}
 				}, err => {
+					uni.showModal({
+						title: err
+					})
 					uni.hideLoading()
 				})
 			},
@@ -538,6 +823,9 @@
 			},
 			txtInput(e) {
 				this.txtContent = e.detail.value;
+			},
+			txtInputHours(e) {
+				this.GooutHours = e.detail.value;
 			},
 			RefreshAddress(e) {
 				this.isGetLocation()
@@ -607,13 +895,18 @@
 									title: '查无排班',
 									icon: 'none'
 								})
-							}else{
+							} else {
 								this.RefreshWIFIINfo();
 								this.toggleDelay = true;
 								setTimeout(() => {
 									this.toggleDelay = false
 								}, 50)
-								this.modalName = e.currentTarget.dataset.target;
+								if (this.IsOutSideWork) {
+									this.modalName = "GooutRecord";
+								} else {
+									//this.modalName = e.currentTarget.dataset.target;
+									this.submitDataCommon()
+								}
 							}
 						} else {
 							if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
@@ -636,7 +929,12 @@
 				setTimeout(() => {
 					this.toggleDelay = false
 				}, 50)
-				this.modalName = e.currentTarget.dataset.target;
+				if (this.IsOutSideWork) {
+					this.modalName = "GooutRecord";
+				} else {
+					//this.modalName = e.currentTarget.dataset.target;
+					this.submitDataCommon()
+				}
 			},
 			hideModal(e) {
 				this.modalName = null

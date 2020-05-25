@@ -25,7 +25,7 @@
 					<view class="cu-item">
 						<view class="content">
 							<text class="icon-sort margin-right-xs"></text>
-							<text class="text-grey">补偿方式</text>
+							<text class="text-grey">置换方式</text>
 						</view>
 						<view class="action">
 							<view class="cu-tag round bg-orange light">
@@ -92,7 +92,7 @@
 						</view>
 					</view>
 					<view class="cu-form-group">
-						<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
+						<textarea style="min-height: 200px;" @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="300" :disabled="modalName!=null"
 						 placeholder-class="placeholder" data-placeholder="在此输入加班事由" :value="itemData.Cause"></textarea>
 					</view>
 				</view>
