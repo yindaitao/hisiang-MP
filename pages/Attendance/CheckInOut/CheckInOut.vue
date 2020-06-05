@@ -1,14 +1,13 @@
 <template>
 	<view>
 		<custom :isBack="false">打卡</custom>
-
 		<scroll-view scroll-y class="page" :style="{'height':scrollBarHeight+'px'}">
 			<view class="bg-white">
 				<view class="top">
 					<view class="bg-blue margin-0 light" style="margin-top: 0px;">当前经纬度:{{latitude}},{{longitude}}</view>
 				</view>
-				<map id="_mapController" :latitude="latitude" @markertap="openMap()" @callouttap="openMap()" :longitude="longitude"
-				 :markers="covers" :circles="circles" :scale="scale">
+				<map id="_mapController" ref="_mapController" :latitude="latitude" @markertap="openMap()" @callouttap="openMap()"
+				 :longitude="longitude" :markers="covers" :circles="circles" :scale="scale">
 					<!--  -->
 				</map>
 			</view>
@@ -16,10 +15,17 @@
 				<text>当前连接WIFI:{{WIFIInfo.SSID}}</text>
 			</view>
 			<view class="flex padding justify-center">
-				<view @tap="showModal" data-target="ConfirmModal" :class="[toggleDelay?'animation-scale-up':'',IsOutSideWork?'bg-gradual-orange':'bg-gradual-blue']"
+				<view v-if="Loaded" @tap="showModal" data-target="ConfirmModal" :class="[toggleDelay?'animation-scale-up':'',IsOutSideWork?'bg-gradual-orange':'bg-gradual-blue']"
 				 class="animation-reverse padding-xl justify-center text-white text-center margin-top-xs" style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
 					<view class="margin-top">
 						<text class="text-bold">{{BtnActionName}}</text><br />
+						<text>{{TimeShow}}</text>
+					</view>
+				</view>
+				<view v-if="!Loaded" data-target="ConfirmModal" class="animation-reverse padding-xl justify-center text-white text-center margin-top-xs bg-grey"
+				 style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
+					<view class="margin-top">
+						<text class="text-bold">考勤打卡</text><br />
 						<text>{{TimeShow}}</text>
 					</view>
 				</view>
@@ -212,6 +218,7 @@
 		data() {
 			let _timeShow = this.$mbservices.formatDateTime(new Date(), 'hh:mm:ss')
 			return {
+				Loaded: false,
 				txtContent: '',
 				TimeShow: _timeShow,
 				scrollBarHeight: 0,
@@ -265,46 +272,56 @@
 			}
 		},
 		async onShow() {
-			let interval = setInterval((item) => {
+			this.Loaded = false;
+			/* let interval = setInterval((item) => {
 				if (!this.$mbservices.isEmpty(this.ScheduleEntity.Latitude)) {
 					clearInterval(interval);
 				}
-			}, 1000);
+			}, 1000); */
 			uni.showLoading({
 				title: '请稍后...'
 			})
 			await setTimeout(function() {
 				uni.hideLoading()
 			}, 500);
+
+			setTimeout(() => {
+				this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
+				this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
+				this.$forceUpdate()
+			}, 2000);
+			//#ifdef MP-WEIXIN
+			// 实例化腾讯地图API核心类
+			/* this.qqmapsdk = new QQMapWX({
+				key: 'RTGBZ-QCCKU-HWRVD-2BYLK-PGWAT-PLFRG' // 必填
+			}); */
+			let mapTX = uni.createMapContext("_mapController", this);
+			console.log('看MAP对象');
+			console.log(mapTX);
+			//#endif
+
 			//#ifdef MP-WEIXIN
 			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 53;
 			//#endif
-			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
-			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
-			
-			
-			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
-			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
-			this.$forceUpdate()
+			//this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
+			//this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
+
+
+
 			/* ------------------------------------------------------ */
-			//#ifdef MP-WEIXIN
-			// 实例化腾讯地图API核心类
-			this.qqmapsdk = new QQMapWX({
-				key: 'RTGBZ-QCCKU-HWRVD-2BYLK-PGWAT-PLFRG' // 必填
-			});
-			//#endif
-			
+
+
 			//#ifdef MP-WEIXIN
 			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 50 - 40;
 			setInterval(() => {
 				this.TimeShow = this.$mbservices.formatDateTime(new Date(), 'hh:mm:ss')
 			}, 1000);
-			uni.$on('GetPhotoImgPath', this.GetPhotoImgPath)
+			//uni.$on('GetPhotoImgPath', this.GetPhotoImgPath)
 			// #endif
 			/* ------------------------------------------------------ */
-			
-			
-			
+
+
+
 			this.$forceUpdate();
 			this.isGetLocation();
 			this.getWorkRecords();
@@ -372,7 +389,6 @@
 		},
 		methods: {
 			ReloadScheduleInfo() {
-
 				uni.showLoading({
 					title: '请稍后...'
 				})
@@ -561,9 +577,7 @@
 					}
 				}
 				this.modalName = null;
-				uni.showLoading({
-					title: '正在打卡...'
-				})
+
 				let data = {
 					DocNum: "1",
 					CreatorId: uni.getStorageSync("JSUserInfo").UserId,
@@ -602,16 +616,22 @@
 						this.modalName = null;
 						return false;
 					}
+					console.log('距离的');
+					console.log(this.element);
 					data.DistanceToAim = this.element.elements[0].distance;
-					if (data.DistanceToAim <= 0||this.$mbservices.isEmpty(data.DistanceToAim)) {
+					if (data.DistanceToAim <= 0 || this.$mbservices.isEmpty(data.DistanceToAim) || data.DistanceToAim.toString() ===
+						'NaN') {
 						uni.showToast({
-							title: '距离异常，请刷新重试...'
+							title: '距离异常，请刷新重试...',
+							icon: 'none'
 						})
 						this.modalName = null;
 						return false;
 					}
 				}
-
+				uni.showLoading({
+					title: '正在打卡...'
+				})
 				this.$mbservices.Request(this.$webapi.saveWorkRecord, 'POST', data, res => {
 					uni.hideLoading()
 					if (res.data.RecordCount > 0) {
@@ -683,9 +703,7 @@
 					return false;
 				}
 				this.modalName = null;
-				uni.showLoading({
-					title: '正在打卡...'
-				})
+
 				let pathurls = '';
 				this.PicPaths.forEach(item => {
 					pathurls += item + ','
@@ -732,15 +750,19 @@
 						return false;
 					}
 					data.DistanceToAim = this.element.elements[0].distance;
-					if (data.DistanceToAim <= 0||this.$mbservices.isEmpty(data.DistanceToAim)) {
+					if (data.DistanceToAim <= 0 || this.$mbservices.isEmpty(data.DistanceToAim) || data.DistanceToAim.toString() ===
+						'NaN') {
 						uni.showToast({
-							title: '距离异常，请刷新重试...'
+							title: '距离异常，请刷新重试...',
+							icon: 'none'
 						})
 						this.modalName = null;
 						return false;
 					}
 				}
-
+				uni.showLoading({
+					title: '正在打卡...'
+				})
 				this.$mbservices.Request(this.$webapi.saveWorkRecord, 'POST', data, res => {
 					uni.hideLoading()
 					if (res.data.RecordCount > 0) {
@@ -828,35 +850,15 @@
 				this.GooutHours = e.detail.value;
 			},
 			RefreshAddress(e) {
+				this.Loaded = false;
 				this.isGetLocation()
 				this.getWorkRecords();
 				this.calcDistanceCurToAim();
 			},
-			RefreshAddress1() {
-				//获取当前位置
-				let _this = this;
-				wx.getLocation({
-					type: 'gcj02',
-					success: (res) => {
-						//根据坐标获取当前位置名称，显示在顶部，腾讯地图逆地址解析
-						this.latitude = res.latitude;
-						this.longitude = res.longitude;
-						this.qqmapsdk.reverseGeocoder({
-							location: {
-								latitude: res.latitude,
-								longitude: res.longitude
-							},
-							success: (addressRes) => {
-								var address = addressRes.result.formatted_addresses.recommend;
-								this.currentArea.address = address;
-								this.$forceUpdate()
-							}
-
-						})
-					},
-				})
-			},
 			showModal(e) {
+				if (!this.Loaded) {
+					return;
+				}
 				if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
 					uni.showLoading({
 						title: '请稍后...'
@@ -1040,35 +1042,6 @@
 					}
 				})
 			},
-			getAddressBylatLong() {
-				let Params = {
-					Latitude: this.latitude,
-					Longitude: this.longitude
-				};
-				uni.request({
-					url: this.$webapi.getAddressByLatLong,
-					method: "POST",
-					header: {
-						"content-type": "application/x-www-form-urlencoded;charset=utf-8",
-						Authorization: "Basic bWFnaWM6MTIzNA=="
-					},
-					data: {
-						Latitude: this.latitude,
-						Longitude: this.longitude
-					},
-					success: res => {
-						if (res.data.RecordCount > 0) {
-							var re = JSON.parse(res.data.data);
-							this.currentArea = {
-								code: re.result.ad_info.adcode,
-								name: re.result.ad_info.district,
-								address: re.result.address
-							}
-						}
-					},
-					fail: err => {}
-				});
-			},
 			getAuthorizeInfo(a = "scope.userLocation") { //1. uniapp弹窗弹出获取授权（地理，个人微信信息等授权信息）弹窗
 				var _this = this;
 				uni.authorize({
@@ -1130,6 +1103,8 @@
 				return new Promise((resolve, reject) => {
 					var _this = this;
 					this.element = {};
+					console.log('计算距离');
+					console.log(this.ScheduleEntity);
 					//调用距离计算接口
 					this.qqmapsdk.calculateDistance({
 						mode: 'straight',
@@ -1151,8 +1126,11 @@
 									this.IsOutSideWork = false;
 								}
 							}
+							console.log('计算距离结果');
+							console.log(res);
 							/* 锁定经纬度打卡-结束 */
 							this.element = res;
+							this.Loaded = true;
 							resolve(res);
 						},
 						fail: function(error) {
