@@ -1,4 +1,4 @@
-<template>
+ss<template>
 	<view>
 		<custom :isBack="false">打卡</custom>
 		<scroll-view scroll-y class="page" :style="{'height':scrollBarHeight+'px'}">
@@ -235,11 +235,11 @@
 				BtnActionName: "考勤打卡",
 				radio: 'radio1',
 				circles: [{
-					latitude: 36.658565,
-					longitude: 116.893201,
+					latitude: null,
+					longitude: null,
 					color: '#32CD324D',
 					fillColor: '#32CD324D',
-					radius: this.ScheduleEntity.LimitRadius > 0 ? this.ScheduleEntity.LimitRadius : 500.0,
+					radius: 0,
 					strokeWidth: 0
 				}],
 				WIFIInfo: {
@@ -273,105 +273,39 @@
 		},
 		async onShow() {
 			this.Loaded = false;
-			/* let interval = setInterval((item) => {
-				if (!this.$mbservices.isEmpty(this.ScheduleEntity.Latitude)) {
-					clearInterval(interval);
-				}
-			}, 1000); */
-			uni.showLoading({
-				title: '请稍后...'
-			})
-			await setTimeout(function() {
-				uni.hideLoading()
-			}, 500);
 
-			setTimeout(() => {
-				this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
-				this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
-				this.$forceUpdate()
-			}, 2000);
+
 			//#ifdef MP-WEIXIN
 			// 实例化腾讯地图API核心类
-			/* this.qqmapsdk = new QQMapWX({
-				key: 'RTGBZ-QCCKU-HWRVD-2BYLK-PGWAT-PLFRG' // 必填
-			}); */
 			let mapTX = uni.createMapContext("_mapController", this);
-			console.log('看MAP对象');
-			console.log(mapTX);
 			//#endif
 
 			//#ifdef MP-WEIXIN
 			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 53;
 			//#endif
-			//this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
-			//this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
-
-
-
-			/* ------------------------------------------------------ */
-
-
+			this.circles[0].latitude = null; //parseFloat(this.ScheduleEntity.Latitude);
+			this.circles[0].longitude = null; // parseFloat(this.ScheduleEntity.Longitude);
+			var arr = [];
+			this.circles.forEach((item, index) => {
+				if (index === 0) {
+					arr.push(item)
+				}
+			})
+			this.circles = [];
+			arr.forEach((item, index) => {
+				this.circles.push(item);
+			})
+			this.$forceUpdate()
 			//#ifdef MP-WEIXIN
 			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 50 - 40;
 			setInterval(() => {
 				this.TimeShow = this.$mbservices.formatDateTime(new Date(), 'hh:mm:ss')
 			}, 1000);
-			//uni.$on('GetPhotoImgPath', this.GetPhotoImgPath)
 			// #endif
-			/* ------------------------------------------------------ */
-
-
-
-			this.$forceUpdate();
-			this.isGetLocation();
+			this._New_isGetLocation();
 			this.getWorkRecords();
-			/* 锁定经纬度打卡-开始 */
-			if (this.ScheduleEntity.AttendanceAccording === "LatLng") {
-				var disEntity = await this.calcDistanceCurToAim();
-				if (parseFloat(disEntity.elements[0].distance) > parseFloat(this.ScheduleEntity.LimitRadius)) {
-					this.BtnActionName = "外勤打卡";
-					this.IsOutSideWork = true;
-				}
-			}
-			/* 锁定经纬度打卡-结束 */
-			/* 锁定WIFI打卡-开始 */
-			if (this.ScheduleEntity.AttendanceAccording === "Wifi") {
-				// #ifdef MP-WEIXIN
-				this.WIFIInfo.SSID = "";
-				this.WIFIInfo.BSSID = "";
-				wx.startWifi({
-					success: (res) => {},
-					fail: (err) => {},
-					complete: (cmp1) => {
-						wx.getConnectedWifi({
-							success: (res) => {
-								this.WIFIInfo.SSID = res.wifi.SSID
-								this.WIFIInfo.BSSID = res.wifi.BSSID
-								if (!(this.WIFIInfo.BSSID.toLocaleLowerCase().indexOf(this.ScheduleEntity.WifiMac.toLocaleLowerCase()) ===
-										-1)) {
-									this.BtnActionName = "外勤打卡";
-									this.IsOutSideWork = true;
-								}
-							},
-							fail: (err) => {
-								uni.showToast({
-									title: '获取不到WIFI信息',
-									icon: 'none'
-								})
-							},
-							complete: (cmp) => {}
-						})
-					}
-				})
-				//#endif
-			}
-			/* 锁定WIFI打卡-结束 */
 		},
 		onLoad(e) {
-			this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
-			this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
-			this.$forceUpdate()
-
 			//#ifdef MP-WEIXIN
 			// 实例化腾讯地图API核心类
 			this.qqmapsdk = new QQMapWX({
@@ -380,14 +314,316 @@
 			//#endif
 
 			//#ifdef MP-WEIXIN
-			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 50 - 40;
+			/* this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar - 50 - 40;
 			setInterval(() => {
 				this.TimeShow = this.$mbservices.formatDateTime(new Date(), 'hh:mm:ss')
-			}, 1000);
+			}, 1000); */
 			uni.$on('GetPhotoImgPath', this.GetPhotoImgPath)
 			// #endif
 		},
 		methods: {
+			/* 新流程-开始 */
+			_New_isGetLocation(a = "scope.userLocation") { // 3. 检查当前是否已经授权访问scope属性，参考下截图
+				var _this = this;
+				uni.getSetting({
+					success(res) {
+						if (!res.authSetting[a]) { //3.1 每次进入程序判断当前是否获得授权，如果没有就去获得授权，如果获得授权，就直接获取当前地理位置
+							_this._New_getAuthorizeInfo()
+						} else {
+							_this._New_ReloadScheduleInfo()
+						}
+					},
+					fail(err) {
+						_this._New_getAuthorizeInfo()
+					}
+				});
+			},
+			_New_ReloadScheduleInfo() {
+				uni.showLoading({
+					title: '请稍后...'
+				})
+				let param = {
+					PageIndex: 1,
+					RowsPerPage: "1000",
+					type: "Initialize",
+					Parameter: {
+						LoadChildren: "Load",
+						Conditions: [{
+							FieldName: "Activated",
+							Operation: "EQUAL",
+							ConditionValue: 'Y',
+							Relationship: "AND"
+						}],
+						ChildCriterias: [{
+							BusinessObjectSearchType: "Search",
+							BusinessObjectTypeName: "ScheduleLine",
+							Conditions: [{
+								FieldName: "UserId",
+								Operation: "EQUAL",
+								ConditionValue: uni.getStorageSync("JSUserInfo").UserId,
+								Relationship: "AND"
+							}]
+						}],
+					}
+
+				};
+				this.$mbservices.Request(this.$webapi.getScheduleList, 'POST', param, res => {
+					if (res.data.RecordCount > 0) {
+						this.ScheduleEntity = res.data.data[0];
+						if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
+							uni.showToast({
+								title: '查无排班',
+								icon: 'none'
+							})
+						} else {
+							this.RefreshWIFIINfo();
+
+							/* 是否是多打卡地点 */
+
+
+
+							this._New_getLocationInfo();
+						}
+					} else {
+						if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
+							uni.showToast({
+								title: '查无排班',
+								icon: 'none'
+							})
+						}
+					}
+				}, err => {
+					uni.hideLoading()
+				})
+			},
+
+			_New_getAuthorizeInfo(a = "scope.userLocation") { //1. uniapp弹窗弹出获取授权（地理，个人微信信息等授权信息）弹窗
+				var _this = this;
+				uni.authorize({
+					scope: a,
+					success() { //1.1 允许授权
+						_this._New_ReloadScheduleInfo();
+					},
+					fail() { //1.2 拒绝授权
+						console.log("你拒绝了授权，无法获得周边信息")
+					}
+				})
+			},
+			_New_getLocationInfo() {
+				//2. 获取地理位置
+				let _this = this;
+				wx.getLocation({
+					type: 'gcj02',
+					success: (res) => {
+						//根据坐标获取当前位置名称，显示在顶部，腾讯地图逆地址解析
+						this.latitude = res.latitude;
+						this.longitude = res.longitude;
+						this.covers[0].latitude = _this.latitude;
+						this.covers[0].longitude = _this.longitude;
+						this.$forceUpdate();
+						this.qqmapsdk.reverseGeocoder({
+							location: {
+								latitude: res.latitude,
+								longitude: res.longitude
+							},
+							success: (addressRes) => {
+								var address = addressRes.result.formatted_addresses.recommend;
+								this.latitude = addressRes.result.location.lat;
+								this.longitude = addressRes.result.location.lng;
+								this.currentArea.address = address;
+								this.$forceUpdate();
+								this._New_calcDistanceCurToAim();
+							},
+							fail: function(res) {}
+						})
+					},
+				})
+			},
+			_New_calcDistanceCurToAim() {
+				var _this = this;
+				this.element = {};
+				//调用距离计算接口
+				this.qqmapsdk.calculateDistance({
+					mode: 'straight',
+					//可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填
+					//from参数不填默认当前地址
+					//获取表单提交的经纬度并设置from和to参数（示例为string格式）
+					from: this.latitude + ',' + this.longitude || '', //若起点有数据则采用起点坐标，若为空默认当前地址
+					to: this.ScheduleEntity.Latitude + ',' + this.ScheduleEntity.Longitude, //终点坐标
+					success: (res) => {
+						//成功后的回调
+						var res = res.result;
+						this.element = res;
+						this._New_ValidateWorkRecordType(res);
+					},
+					fail: function(error) {
+						console.log(error);
+					},
+					complete: function(res) {
+						console.log(res);
+					}
+				});
+			},
+			_New_ValidateWorkRecordType(value) {
+				/* 锁定经纬度打卡-开始 */
+				if (this.ScheduleEntity.AttendanceAccording === "LatLng") {
+					var disEntity = value //await this.calcDistanceCurToAim();
+					this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
+					this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
+					this.circles[0].radius = parseFloat(this.ScheduleEntity.LimitRadius) > 0 ? parseFloat(this.ScheduleEntity.LimitRadius) :
+						0;
+					if (parseFloat(disEntity.elements[0].distance) > parseFloat(this.ScheduleEntity.LimitRadius)) {
+						if (this.ScheduleEntity.IsExtraLongLat === 'Yes') { //多个打卡地
+							var _To = "";
+							this.ScheduleEntity.ExtraLongLatLines.forEach((item, index) => {
+								this.circles.push({
+									latitude: parseFloat(item.Latitude),
+									longitude: parseFloat(item.Longitude),
+									color: '#32CD324D',
+									fillColor: '#32CD324D',
+									radius: parseFloat(item.LimitRadius) > 0 ? parseFloat(item.LimitRadius) : 500.0,
+									strokeWidth: 0
+								})
+								_To += item.Latitude + "," + item.Longitude + ";";
+							})
+							_To = _To.toString().substr(0, _To.toString().length - 1);
+							//一对多计算距离
+							this.qqmapsdk.calculateDistance({
+								mode: 'straight',
+								//可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填
+								//from参数不填默认当前地址
+								//获取表单提交的经纬度并设置from和to参数（示例为string格式）
+								from: this.latitude + ',' + this.longitude || '', //若起点有数据则采用起点坐标，若为空默认当前地址
+								to: _To, //终点坐标
+								success: (res) => {
+									//成功后的回调
+									var isHave = false;
+									var option = {};
+									var aimIndex = 0;
+									res.result.elements.forEach((opt, idx) => {
+										this.ScheduleEntity.ExtraLongLatLines.forEach((_opt, _idx) => {
+											if (parseFloat(opt.to.lat) === parseFloat(_opt.Latitude) && parseFloat(opt.to.lng) === parseFloat(
+													_opt.Longitude)) {
+												if (parseFloat(opt.distance) <= parseFloat(_opt.LimitRadius)) {
+													isHave = true;
+													option = opt;
+													aimIndex = idx;
+												}
+											}
+										})
+									})
+									if (isHave) {
+										this.BtnActionName = "考勤打卡";
+										this.IsOutSideWork = false;
+
+										this.element = {
+											elements: []
+										};
+										this.element.elements.push(option);
+
+										this.ScheduleEntity.Latitude = option.Latitude;
+										this.ScheduleEntity.Longitude = option.Longitude;
+										this.ScheduleEntity.LimitRadius = option.LimitRadius; //this.element.elements[0];
+
+										this.Loaded = true;
+										this.$forceUpdate()
+										uni.hideLoading()
+									} else {
+										this.BtnActionName = "外勤打卡";
+										this.IsOutSideWork = true;
+
+										this.Loaded = true;
+										this.$forceUpdate()
+										uni.hideLoading()
+									}
+								},
+								fail: function(error) {
+									console.log(error);
+								},
+								complete: function(ress) {
+									console.log(ress);
+								}
+							});
+
+
+						} else { //确实是外勤
+							this.BtnActionName = "外勤打卡";
+							this.IsOutSideWork = true;
+
+							this.Loaded = true;
+							this.$forceUpdate()
+							uni.hideLoading()
+						}
+					} else { //正常打卡
+						this.BtnActionName = "考勤打卡";
+						this.IsOutSideWork = false;
+
+						this.Loaded = true;
+						this.$forceUpdate()
+						uni.hideLoading()
+					}
+				}
+				/* 锁定经纬度打卡-结束 */
+				/* 锁定WIFI打卡-开始 */
+				if (this.ScheduleEntity.AttendanceAccording === "Wifi") {
+					// #ifdef MP-WEIXIN
+					this.WIFIInfo.SSID = "";
+					this.WIFIInfo.BSSID = "";
+					wx.startWifi({
+						success: (res) => {},
+						fail: (err) => {},
+						complete: (cmp1) => {
+							wx.getConnectedWifi({
+								success: (res) => {
+									this.WIFIInfo.SSID = res.wifi.SSID
+									this.WIFIInfo.BSSID = res.wifi.BSSID
+									if (!(this.WIFIInfo.BSSID.toLocaleLowerCase().indexOf(this.ScheduleEntity.WifiMac.toLocaleLowerCase()) ===
+											-1)) {
+										this.BtnActionName = "外勤打卡";
+										this.IsOutSideWork = true;
+									}
+									this.Loaded = true;
+									uni.hideLoading()
+								},
+								fail: (err) => {
+									uni.showToast({
+										title: '获取不到WIFI信息',
+										icon: 'none'
+									})
+								},
+								complete: (cmp) => {
+									uni.hideLoading()
+								}
+							})
+						}
+					})
+					//#endif
+				}
+				/* 锁定WIFI打卡-结束 */
+			},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			/* 新流程-结束 */
 			ReloadScheduleInfo() {
 				uni.showLoading({
 					title: '请稍后...'
@@ -616,8 +852,6 @@
 						this.modalName = null;
 						return false;
 					}
-					console.log('距离的');
-					console.log(this.element);
 					data.DistanceToAim = this.element.elements[0].distance;
 					if (data.DistanceToAim <= 0 || this.$mbservices.isEmpty(data.DistanceToAim) || data.DistanceToAim.toString() ===
 						'NaN') {
@@ -850,10 +1084,23 @@
 				this.GooutHours = e.detail.value;
 			},
 			RefreshAddress(e) {
+				this.circles[0].latitude = null; //parseFloat(this.ScheduleEntity.Latitude);
+				this.circles[0].longitude = null; // parseFloat(this.ScheduleEntity.Longitude);
+				var arr = [];
+				this.circles.forEach((item, index) => {
+					if (index === 0) {
+						arr.push(item)
+					}
+				})
+				this.circles = [];
+				arr.forEach((item, index) => {
+					this.circles.push(item);
+				})
+				this.$forceUpdate();
 				this.Loaded = false;
-				this.isGetLocation()
+				this._New_isGetLocation();
 				this.getWorkRecords();
-				this.calcDistanceCurToAim();
+				//this.calcDistanceCurToAim();
 			},
 			showModal(e) {
 				if (!this.Loaded) {
@@ -1103,8 +1350,6 @@
 				return new Promise((resolve, reject) => {
 					var _this = this;
 					this.element = {};
-					console.log('计算距离');
-					console.log(this.ScheduleEntity);
 					//调用距离计算接口
 					this.qqmapsdk.calculateDistance({
 						mode: 'straight',
@@ -1126,8 +1371,6 @@
 									this.IsOutSideWork = false;
 								}
 							}
-							console.log('计算距离结果');
-							console.log(res);
 							/* 锁定经纬度打卡-结束 */
 							this.element = res;
 							this.Loaded = true;

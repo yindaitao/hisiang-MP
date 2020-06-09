@@ -1,11 +1,11 @@
-var websiteUrl = "http://localhost:62142";
+var websiteUrl = "https://so.magicdata.co";
 /* https://oa.magicbox.net.cn*/
 /* http://localhost:62142 */
 /* http://localhost:51682 */
 /* http://oa.magicbox.net.cn */
 /* http://192.168.0.109:8080 */
 /* https://oa.magicbox.net.cn*/
-/* https://so.magicdata.co */ 
+/* https://so.magicdata.co */
 module.exports = {
 	/* 接口根目录 */
 	webroot: websiteUrl,
@@ -88,7 +88,7 @@ module.exports = {
 	// 获取收款公司
 	getBusinessPartner: websiteUrl + '/api/BusinessPartner/GetRecords',
 	/* 获取审核步骤 */
-	getStages: websiteUrl + '/api/ApprovalNote/GetApproveStageFlow',//'/api/ApprovalTemplate/GetApprovalStage',
+	getStages: websiteUrl + '/api/ApprovalNote/GetApproveStageFlow', //'/api/ApprovalTemplate/GetApprovalStage',
 	/* 获取待办任务列表 */
 	getTaskList: websiteUrl + '/api/Backlog/GetRecords',
 	/* 提交审批结果 */
@@ -159,6 +159,8 @@ module.exports = {
 	getBacklog: websiteUrl + "/api/Backlog/GetRecords",
 	/* 腾讯地图逆地址 */
 	getAddressByLatLong: websiteUrl + '/api/WorkRecord/GetAddressByLatLong',
+	/* 计算距离 */
+	getDistanceToAim: websiteUrl + '/api/WorkRecord/GetDistanceToAim',
 	/* 保存打卡记录 */
 	saveWorkRecord: websiteUrl + '/api/WorkRecord/SaveEntity',
 	/* 获取今天的打卡记录 */
@@ -210,5 +212,5 @@ module.exports = {
 	/* 提交问题记录 */
 	SaveQuestions: websiteUrl + '/api/Question/Save',
 	/* 计算请假时长 */
-	CalcDateDiffByStartEndDateTime:websiteUrl+'/api/Leave/CalcDateDiffByStartEndDateTime'
+	CalcDateDiffByStartEndDateTime: websiteUrl + '/api/Leave/CalcDateDiffByStartEndDateTime'
 }

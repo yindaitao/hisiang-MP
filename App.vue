@@ -180,8 +180,6 @@
 							},
 							success: result => {
 								if (result.data.RecordCount > 0) {
-									console.log(result);
-									
 									let OrherInfo = {};
 									if (result.data.data.UserInfo === null) {
 										uni.reLaunch({
@@ -254,7 +252,7 @@
 			}
 			// #endif
 			// #ifdef MP-WEIXIN
-			let param = {
+			/* let param = {
 				PageIndex: 1,
 				RowsPerPage: "1000",
 				type: "Initialize",
@@ -285,7 +283,7 @@
 				}
 			}, err => {
 				console.log(err);
-			})
+			}) */
 			//#endif
 		},
 		onHide: function() {
