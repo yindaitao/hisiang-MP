@@ -483,6 +483,8 @@
 						UIStatus: "New"
 					};
 				}
+				console.log(ajaxJSON);
+				return false;
 				var requestUrl = _this.editflag ?
 					_this.$webapi.saveExtraWork :
 					_this.$webapi.saveExtraWork;
