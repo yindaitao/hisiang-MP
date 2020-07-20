@@ -1,4 +1,4 @@
-var websiteUrl = "https://so.magicdata.co";
+var websiteUrl = "http://localhost:49157/";
 /* https://oa.magicbox.net.cn*/
 /* http://localhost:62142 */
 /* http://localhost:51682 */

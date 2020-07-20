@@ -217,6 +217,15 @@
 			]
 		},
 		{
+			"root": "pages/CheckRecord",
+			"pages": [{
+				"path": "CheckRecord",
+				"style": {
+					"navigationBarTitleText": "打卡记录"
+				}
+			}]
+		},
+		{
 			"root": "pages/ApprovalNote",
 			"pages": [{
 					"path": "ApprovalNoteList",

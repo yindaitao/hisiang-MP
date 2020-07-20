@@ -40,6 +40,13 @@ ss<template>
 					</button>
 				</view>
 			</view>
+			<view class="flex padding justify-center" style="position: relative;">
+				<view>
+					<button class="cu-btn bg-white shadow round-dot" style="background-color: rgba(0,0,0,0);" @tap="ToCheckRecord">
+						打卡记录
+					</button>
+				</view>
+			</view>
 			<view class="cu-timeline bg-white" v-for="(item,index) in WorkRecords" :key="index" style="background-color: rgba(0,0,0,0);">
 				<!-- style="background-color: rgba(0,0,0,0);" -->
 				<view class="cu-time cu-tag radius round margin-left">第{{index+1}}次打卡<text v-if="ScheduleEntity.AttendanceAccording==='Wifi'&&item.RecordIsEffective!=='Yes'"
@@ -1101,6 +1108,13 @@ ss<template>
 				this._New_isGetLocation();
 				this.getWorkRecords();
 				//this.calcDistanceCurToAim();
+			},
+			//点击按钮进入打卡记录页面
+			ToCheckRecord() {
+				uni.navigateTo({
+					url: "/pages/CheckRecord/CheckRecord",
+					title: "打卡记录"
+				});
 			},
 			showModal(e) {
 				if (!this.Loaded) {

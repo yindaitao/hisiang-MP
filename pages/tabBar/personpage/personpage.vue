@@ -47,6 +47,12 @@
 					<text class="text-grey">我的考勤</text>
 				</view>
 			</view>
+			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToCheckRecord">
+				<view class="content">
+					<text class="icon-circlefill text-grey"></text>
+					<text class="text-grey">打卡记录</text>
+				</view>
+			</view>
 			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToMySalary">
 				<view class="content">
 					<text class="icon-brandfill text-grey"></text>
@@ -151,6 +157,12 @@
 				var that = this;
 				uni.navigateTo({
 					url: '/pages/My/AboutUs/AboutUs?data=' + JSON.stringify(that.AboutUs)
+				})
+			},
+			NavigateToCheckRecord() {
+				var that = this;
+				uni.navigateTo({
+					url: '/pages/CheckRecord/CheckRecord'
 				})
 			},
 			NavigateToMySalary() {
