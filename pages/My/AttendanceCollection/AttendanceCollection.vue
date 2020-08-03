@@ -19,6 +19,10 @@
 				</view>
 				<view class="cu-item padding">
 					<view class="content">
+						<view v-for="(item,index) in SalaryHolidayList">
+							<text class="icon-title text-grey"></text>
+							<text class="text-grey">{{item.HolidayTypeName}}</text>
+						</view>
 						<view>
 							<text class="icon-title text-grey"></text>
 							<text class="text-grey">病&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;假：{{AttendanceEntity.SickLeave}}天</text>
@@ -169,6 +173,7 @@
 				SelectYearMonthText: nowDateText,
 				StartYearMonth: startTime,
 				EndYearMonth: nowDateMonth,
+				SalaryHolidayList: [],
 				AttendanceEntity: {
 					SickLeave: 0,
 					PersonLeave: 0,
@@ -213,7 +218,7 @@
 				_this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - _this.CustomBar - res[0].height;
 			});
 			//#endif
-			this.getCurrentAttendanceRecords()
+			this.getCurrentAttendanceRecords();
 		},
 		methods: {
 			DateChange(e) {

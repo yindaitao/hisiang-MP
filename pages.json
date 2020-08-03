@@ -65,7 +65,10 @@
 			}, {
 				"path": "MySalary/MySalary",
 				"style": {}
-			}    ,{
+			} , {
+				"path": "RemainSalaryHoliday/RemainSalaryHoliday",
+				"style": {}
+			}   ,{
                     "path" : "Question/Question",
                     "style" : {}
                 }

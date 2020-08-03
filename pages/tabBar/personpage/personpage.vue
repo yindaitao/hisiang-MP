@@ -47,6 +47,12 @@
 					<text class="text-grey">我的考勤</text>
 				</view>
 			</view>
+			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToRemainSalaryHoliday">
+				<view class="content">
+					<text class="icon-formfill text-grey"></text>
+					<text class="text-grey">剩余假期</text>
+				</view>
+			</view>
 			<view class="cu-item" style="background-color: rgba(0,0,0,0);" @tap="NavigateToCheckRecord">
 				<view class="content">
 					<text class="icon-circlefill text-grey"></text>
@@ -151,6 +157,11 @@
 			NavigateToAttendance() {
 				uni.navigateTo({
 					url: '/pages/My/AttendanceCollection/AttendanceCollection'
+				})
+			},
+			NavigateToRemainSalaryHoliday() {
+				uni.navigateTo({
+					url: '/pages/My/RemainSalaryHoliday/RemainSalaryHoliday'
 				})
 			},
 			NavigateToAboutUs() {

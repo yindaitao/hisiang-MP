@@ -212,5 +212,7 @@ module.exports = {
 	/* 提交问题记录 */
 	SaveQuestions: websiteUrl + '/api/Question/Save',
 	/* 计算请假时长 */
-	CalcDateDiffByStartEndDateTime: websiteUrl + '/api/Leave/CalcDateDiffByStartEndDateTime'
+	CalcDateDiffByStartEndDateTime: websiteUrl + '/api/Leave/CalcDateDiffByStartEndDateTime',
+	// 获取当前登录人的假期类型
+	RemainSalaryHolidayLog: websiteUrl + '/api/RemainSalaryHolidayLog/GetRecordsWechat'
 }
