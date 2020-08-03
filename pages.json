@@ -65,7 +65,10 @@
 			}, {
 				"path": "MySalary/MySalary",
 				"style": {}
-			}    ,{
+			} , {
+				"path": "RemainSalaryHoliday/RemainSalaryHoliday",
+				"style": {}
+			}   ,{
                     "path" : "Question/Question",
                     "style" : {}
                 }
@@ -215,6 +218,15 @@
 					}
 				}
 			]
+		},
+		{
+			"root": "pages/CheckRecord",
+			"pages": [{
+				"path": "CheckRecord",
+				"style": {
+					"navigationBarTitleText": "打卡记录"
+				}
+			}]
 		},
 		{
 			"root": "pages/ApprovalNote",

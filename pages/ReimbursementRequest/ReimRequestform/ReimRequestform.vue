@@ -61,6 +61,12 @@
 		<view class="ul-swiper-box margin-top" style="margin-top: 50px;">
 			<form>
 				<view class="cu-form-group">
+					<view class="title">报销日期</view>
+					<view class="action">
+						<view class="cu-tag round bg-blue light">{{itemData.DocDate}}</view>
+					</view>
+				</view>
+				<view class="cu-form-group">
 					<view class="title">支付方式</view>
 					<picker :disabled="edit?true:false" @change="bindPickerChange1" :value="indexPayType" :range="PayType">
 						<view class="picker">{{PayType[indexPayType]}}</view>
@@ -103,7 +109,7 @@
 						</view>
 					</view>
 					<view class="cu-form-group">
-						<view class="title">报销日期</view>
+						<view class="title">开票日期</view>
 						<picker :disabled="edit?true:false" v-bind:id="item.id" v-bind:name="item.id" mode="date" :value="item.itemDate"
 						 :start="startDate" :end="endDate" @change="bindDateChange(item,$event)">
 							<view class="picker">{{item.itemDate}}</view>
@@ -164,7 +170,7 @@
 					</button>
 				</uni-view>
 				<view class="cu-form-group" :disabled="edit">
-					<view class="title">所属公司</view>
+					<view class="title">记账公司</view>
 					<text class="cu-tag round bg-blue light" data-target="RadioModal" @tap="showModal1">{{itemData.InvCompanyName}}</text>
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
@@ -333,6 +339,7 @@
 					ReimbursementTypeName1: "请选择",
 					indexReimbursementType: 0,
 					ShareType: "",
+					DocDate: this.getDate()
 				},
 				formList: [{
 					id: 1,
@@ -544,7 +551,7 @@
 						Amount: parseFloat(_item.jine).toFixed(2),
 						Count: _item.Count1,
 						Imgs: path,
-						DocDate: _this.getDate(),
+						InvoiceDate: _item.itemDate,
 						ReimbursementTypeCode: _this.resourceArray[_item.itemOptionIndex].ReimbursementTypeCode,
 						ReimbursementTypeName: _this.arrayType[_item.itemOptionIndex],
 						VatCode: _item.VatTypeCode,
@@ -575,7 +582,7 @@
 										__option.ReimbursementTypeName;
 									(_calcuItem.Remarks = __option.Remarks),
 									(_calcuItem.Imgs = __option.Imgs);
-									_calcuItem.DocDate = __option.DocDate;
+									_calcuItem.InvoiceDate = __option.InvoiceDate;
 									_ishave = true;
 								}
 							});
@@ -862,6 +869,7 @@
 			},
 			bindDateChange: function(item, e) {
 				item.itemDate = e.target.value;
+				console.log(item.itemDate);
 			},
 			getDate(type) {
 				const date = new Date();
@@ -1076,6 +1084,7 @@
 								item.AApproveStatus = "已拒绝";
 							}
 							item.Amount = parseFloat(item.Amount).toFixed(2);
+							_$this.itemData.DocDate = item.DocDate;
 							_$this.itemData.PayTypeCode = item.PayType;
 							_$this.itemData.AccountCode = item.AccountCode;
 							_$this.itemData.Bank = item.Bank;
@@ -1154,7 +1163,7 @@
 									jine: parseFloat(_item.Amount)
 										.toFixed(2)
 										.toString(),
-									itemDate: _item.DocDate,
+									itemDate: _this.getDate(_item.InvoiceDate),
 									itemOptionIndex: _this.getArrayIndex(
 										_item.ReimbursementTypeName
 									),

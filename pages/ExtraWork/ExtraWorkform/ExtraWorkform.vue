@@ -92,8 +92,8 @@
 						</view>
 					</view>
 					<view class="cu-form-group">
-						<textarea style="min-height: 200px;" @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="300" :disabled="modalName!=null"
-						 placeholder-class="placeholder" data-placeholder="在此输入加班事由" :value="itemData.Cause"></textarea>
+						<textarea style="min-height: 200px;" @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="300"
+						 :disabled="modalName!=null" placeholder-class="placeholder" data-placeholder="在此输入加班事由" :value="itemData.Cause"></textarea>
 					</view>
 				</view>
 			</form>
@@ -138,6 +138,16 @@
 			return {
 				Compensate: ["加班费", "倒休"],
 				indexComp: 0,
+				CompensateList: [{
+						Code: "Overtime",
+						Name: "加班费"
+					},
+					{
+						Code: "Rest",
+						Name: "倒休"
+					}
+				],
+				CompensateCode:"",
 				defaultMinDate: new Date("2019/1/1").getTime(),
 				defaultMaxDate: new Date("2050/12/31").getTime(),
 				indexExtraWorkType: 0,
@@ -224,7 +234,13 @@
 		},
 		methods: {
 			PickerChange(e) {
-				this.indexComp = e.detail.value
+				var _this = this;
+				_this.indexComp = e.detail.value;
+				_this.CompensateList.forEach(item => {
+					if(item.Name === _this.Compensate[_this.indexComp]){
+						_this.CompensateCode = item.Code;
+					}
+				})
 			},
 			getData(time) {
 				this.resultInfo1 = time;
@@ -450,7 +466,7 @@
 					_this.editEntitysList[0].Cause = _this.itemData.Cause;
 					_this.editEntitysList[0].BeginDate = _this.itemData.BeginDate;
 					_this.editEntitysList[0].EndDate = _this.itemData.EndDate;
-					_this.editEntitysList[0].Compensate = _this.indexComp === 0 ? 'Overtime' : 'Rest';
+					_this.editEntitysList[0].Compensate = _this.CompensateCode;
 					_this.editEntitysList[0].ExtraWorkType =
 						_this.itemData.ExtraWorkTypeCode;
 					_this.editEntitysList[0].ExtraWorkHoursText =
@@ -465,7 +481,7 @@
 						EndDate: _this.itemData.EndDate,
 						ExtraWorkType: _this.itemData.ExtraWorkTypeCode,
 						Hours: _this.itemData.Hours,
-						Compensate: _this.indexComp === 0 ? 'Overtime' : 'Rest',
+						Compensate: _this.CompensateCode,
 						ExtraWorkHoursText: _this.itemData.ExtraWorkHoursText,
 						CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
 						Creator: uni.getStorageSync("JSUserInfo").UserName,
