@@ -14,7 +14,7 @@ ss<template>
 			<view class="content text-center" v-if="ValidateAAType()===2">
 				<text>当前连接WIFI:{{WIFIInfo.SSID}}</text>
 			</view>
-			<view class="flex padding justify-center">
+			<view class="flex padding justify-center" style="position: relative;">
 				<view v-if="Loaded" @tap="showModal" data-target="ConfirmModal" :class="[toggleDelay?'animation-scale-up':'',IsOutSideWork?'bg-gradual-orange':'bg-gradual-blue']"
 				 class="animation-reverse padding-xl justify-center text-white text-center margin-top-xs" style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
 					<view class="margin-top">
@@ -30,6 +30,7 @@ ss<template>
 					</view>
 				</view>
 				<!-- <text class="text-white" style="position: absolute;margin-top: 75px;">{{TimeShow}}</text> -->
+				<text class="top text-blue text-sm" style="position: absolute;top:15px;right: 15px;" @tap="ToCheckRecord">历史打卡记录</text>
 			</view>
 			<view class="flex solid-bottom padding justify-center" style="position: relative;">
 				<view>
@@ -40,13 +41,14 @@ ss<template>
 					</button>
 				</view>
 			</view>
-			<view class="flex padding justify-center" style="position: relative;">
+			
+			<!-- <view class="flex padding justify-center" style="position: relative;">
 				<view>
 					<button class="cu-btn bg-white shadow round-dot" style="background-color: rgba(0,0,0,0);" @tap="ToCheckRecord">
 						打卡记录
 					</button>
 				</view>
-			</view>
+			</view> -->
 			<view class="cu-timeline bg-white" v-for="(item,index) in WorkRecords" :key="index" style="background-color: rgba(0,0,0,0);">
 				<!-- style="background-color: rgba(0,0,0,0);" -->
 				<view class="cu-time cu-tag radius round margin-left">第{{index+1}}次打卡<text v-if="ScheduleEntity.AttendanceAccording==='Wifi'&&item.RecordIsEffective!=='Yes'"

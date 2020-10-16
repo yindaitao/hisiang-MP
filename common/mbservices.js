@@ -192,6 +192,26 @@ module.exports = {
 		return head + s.replace(/(零.)*零元/, '元').replace(/(零.)+/g, '零').replace(/^整$/, '零元整');
 	},
 	/**
+	 * 指定日期加、减天数 
+	 * date:基准日期
+	 * days:加减天数
+	 * type:1、加日期	2、减日期
+	 */
+	"calcJiaJianDays": function(date, days, type) {
+		var d = new Date(date);
+		if (date.toString().lastIndexOf('-') > 0) {
+			d = new Date(date.toString().replace(/\-/g, "/"));
+		}
+		d = d.valueOf();
+		if (type === 1) {
+			d = d + (days * 24 * 60 * 60 * 1000);
+		}
+		if (type === 2) {
+			d = d - (days * 24 * 60 * 60 * 1000);
+		}
+		return this.formatDateTime(new Date(d), 'yyyy-MM-dd');
+	},
+	/**
 	 * 计算两个时间的时间差
 	 */
 	"calcuDateLong": function(sdate, edate, callback) {

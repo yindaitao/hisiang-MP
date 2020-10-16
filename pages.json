@@ -226,7 +226,12 @@
 				"style": {
 					"navigationBarTitleText": "打卡记录"
 				}
-			}]
+			}   
+			 /* ,{
+                    "path" : "CheckRecord",
+                    "style" : {}
+                } */
+            ]
 		},
 		{
 			"root": "pages/ApprovalNote",

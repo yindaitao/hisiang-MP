@@ -107,12 +107,12 @@
 					 :value="itemData.Days">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
 				</view>
-				<view class="cu-form-group">
+				<!-- <view class="cu-form-group">
 					<view class="title">出差补贴金额</view>
 					<input :disabled="edit?true:false" placeholder="出差补贴金额" name="input" style="text-align: right;" @input="inputNumAllowanceAmount($event)"
 					 :value="itemData.AllowanceAmount">
 					<text v-if="false" class="icon-roundclosefill text-orange"></text>
-				</view>
+				</view> -->
 				<view class="cu-form-group">
 					<view class="title">出差事由</view>
 				</view>

@@ -21,6 +21,12 @@
 						</view>
 					</view>
 				</view>
+				<view class=" flex justify-center ">
+					<view class="text-gray">
+						<text>{{currYear}}年度您享有假期类型，剩余量及总量</text>
+					</view>
+					<!-- <text class="text-grey">&nbsp;</text> -->
+				</view>
 			</view>
 			<view style="height: 50px;"></view>
 		</scroll-view>
@@ -36,6 +42,7 @@
 				'yyyy-MM-dd')
 			let nowDateMonth = this.$mbservices.formatDateTime(new Date(), 'yyyy-MM-dd')
 			return {
+				currYear:(new Date()).getFullYear(),
 				scrollBarHeight: 0,
 				SelectYearMonth: nowDate,
 				SelectYearMonthText: nowDateText,

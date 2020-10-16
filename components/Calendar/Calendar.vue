@@ -22,7 +22,7 @@
 		<view class="week" v-else>
 			<view v-for="(item,index) in weeks_en" :key="index">{{item}}</view>
 		</view>
-		<view  class="myDateTable">
+		<view class="myDateTable">
 			<view v-for="(item,j) in days" :key="j" class='dateCell'>
 				<view v-if="item.date==undefined||item.date == null" class='cell'>
 					<text :decode="true">&nbsp;&nbsp;</text>
@@ -33,14 +33,18 @@
 						<text>{{item.date}}</text>
 					</view>
 					<!-- 之前已签到日期 -->
-					<view @click="clickSignUp(item.date)" class='cell greenColor bgWhite' v-else-if="item.isSign == true">
+					<view @click="clickSignUp(item.date)" class='cell bg-gradual-green' v-else-if="item.isSign == true">
 						<text>{{item.date}}</text>
 					</view>
 					<!-- 之前未签到 -->
-					<view @click="clickSignUp(item.date)" class="cell redColor bgGray" 
-					v-else-if="cur_year<toYear||(cur_year==toYear&&cur_month<toMonth)||(cur_year==toYear&&cur_month==toMonth&&item.date<today)">
+					<view @click="clickSignUp(item.date)" class="cell redColor bgGray" v-else-if="(!item.isGongXiu)&&(cur_year<toYear||(cur_year==toYear&&cur_month<toMonth)||(cur_year==toYear&&cur_month==toMonth&&item.date<today))">
 						<!-- 小程序不兼容这个 v-else-if="(new Date(cur_year+'-'+cur_month+'-'+item.date))<(new Date())"> -->
-						<text>{{item.date}}</text>
+						<text class="text-bold">{{item.date}}</text>
+					</view>
+					<view @click="clickSignUp(item.date)" style="position: relative;" class="cell text-black" v-else-if="(item.isGongXiu)&&(cur_year<toYear||(cur_year==toYear&&cur_month<toMonth)||(cur_year==toYear&&cur_month==toMonth&&item.date<today))">
+						<!-- 小程序不兼容这个 v-else-if="(new Date(cur_year+'-'+cur_month+'-'+item.date))<(new Date())"> -->
+						<text class="text-black">{{item.date}}</text>
+						<text class="cu-tag badge bg-mauve">{{item.text}}</text>
 					</view>
 					<!-- 当前日期之后 -->
 					<view class="whiteColor cell" v-else>
@@ -69,7 +73,8 @@
 				toMonth: parseInt(new Date().getMonth() + 1), //本月
 				toYear: parseInt(new Date().getFullYear()), //本年
 				weeks_ch: ['日', '一', '二', '三', '四', '五', '六'],
-				weeks_en: ['Sun', 'Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat']
+				weeks_en: ['Sun', 'Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat'],
+				HolidayScheduleList: []
 			};
 		},
 		props: {
@@ -92,10 +97,12 @@
 				default: "ch"
 			},
 		},
-		created() {
+		async created() {
 			this.cur_year = this.sendYear;
 			this.cur_month = this.sendMonth;
 			this.SignUp = this.dataSource;
+
+			this.HolidayScheduleList = await this.getHolidaySchedule();
 
 			this.calculateEmptyGrids(this.cur_year, this.cur_month);
 			this.calculateDays(this.cur_year, this.cur_month);
@@ -105,6 +112,32 @@
 			dataSource: 'onResChange',
 		},
 		methods: {
+			getHolidaySchedule() {
+				return new Promise((resolve) => {
+					let param = {
+						PageIndex: 1,
+						RowsPerPage: "1000",
+						type: "Initialize",
+						Parameter: {
+							LoadChildren: "NoLoad",
+							Conditions: [{
+								FieldName: "Year",
+								Operation: "EQUAL",
+								ConditionValue: new Date().getFullYear(),
+								Relationship: "AND"
+							}],
+						}
+					};
+					this.$mbservices.Request(this.$webapi.getHolidaySchedule, 'POST', param, res => {
+						if (res.data.RecordCount > 0) {
+							resolve(res.data.data);
+						}
+					}, err => {
+						resolve([]);
+					});
+				});
+
+			},
 			// 获取当月共多少天
 			getThisMonthDays(year, month) {
 				return new Date(year, month, 0).getDate()
@@ -124,6 +157,8 @@
 							date: null,
 							isSign: false,
 							isSelcet: false,
+							isGongXiu: false,
+							text:''
 						}
 						this.days.push(obj);
 					}
@@ -132,7 +167,9 @@
 
 			// 绘制当月天数占的格子，并把它放到days数组中
 			calculateDays(year, month) {
-
+				uni.showLoading({
+					title: '请稍后...'
+				})
 				const thisMonthDays = this.getThisMonthDays(year, month);
 				// this.columnsLen=Math.ceil(thisMonthDays/7);
 				// console.log(this.columnsLen);
@@ -141,11 +178,30 @@
 						date: i,
 						isSign: false,
 						isSelcet: false,
+						isGongXiu: false,
+						text:''
 					}
+					let thiscurrday = this.$mbservices.formatDateTime(new Date(year + '-' + month + '-' + i), 'yyyy-MM-dd');
+					let result = this.HolidayScheduleList.filter(item => this.$mbservices.formatDateTime(item.Date, 'yyyy-MM-dd') ===
+						thiscurrday);
+					if (result.length > 0) {
+						obj.isGongXiu = true;
+						obj.text = result[0].Name;
+					}
+					/* this.HolidayScheduleList.forEach((itm, idx) => {
+						if (this.$mbservices.formatDateTime(itm.Date, 'yyyy-MM-dd') === this.$mbservices.formatDateTime(new Date(year +
+								'-' + month + '-' + i), 'yyyy-MM-dd')) {
+							console.log('进来了-----')
+							obj.isGongXiu = true;
+							console.log(obj)
+						} else {
+							obj.isGongXiu = false;
+						}
+					}) */
 					this.days.push(obj);
 				}
 				//console.log(this.days);
-
+				uni.hideLoading()
 			},
 
 			onResChange(newD, oldD) {
@@ -199,13 +255,13 @@
 				this.cur_month = newMonth;
 
 				this.SignUp = []; //先清空
-				this.$emit('dateChange', this.cur_year+"-"+this.cur_month); //传给调用模板页面去拿新数据				
+				this.$emit('dateChange', this.cur_year + "-" + this.cur_month); //传给调用模板页面去拿新数据				
 			},
 
 			clickSignUp(date) {
-				this.days.forEach(item =>{
+				this.days.forEach(item => {
 					item.isSelcet = false;
-					if(item.date === date){
+					if (item.date === date) {
 						item.isSelcet = true;
 					}
 				});
@@ -220,8 +276,6 @@
 </script>
 
 <style>
-	
-
 	.all {
 		margin-top: 20rpx;
 	}
@@ -251,28 +305,31 @@
 		border-radius: 10px;
 		background-color: #fff;
 	}
+
 	.myDateTable {
 		margin: 2.5vw;
 		padding: 2vw;
 		border-radius: 10px;
-		background: linear-gradient(#74AADA, #94db98);
+		background: #eee;
+		/* linear-gradient(#74AADA, #94db98); */
 	}
+
 	.myDateTable .dateCell {
-			width: 11vw;
-			padding: 1vw;
-			display: inline-block;
-			text-align: center;
-			font-size: 16px;
-		}
+		width: 13vw;
+		padding: 1vw;
+		display: inline-block;
+		text-align: center;
+		font-size: 16px;
+	}
 
 	.dateCell .cell {
-			display: flex;
-			border-radius: 50%;
-			height: 11vw;
-			justify-content: center;
-			align-items: center;
-		}
-	
+		display: flex;
+		border-radius: 50%;
+		height: 11vw;
+		justify-content: center;
+		align-items: center;
+	}
+
 
 	.whiteColor {
 		color: #fff;
@@ -299,15 +356,16 @@
 	.redColor {
 		color: #ff0000;
 	}
-	
-	.TipArea{
-		word-break:break-all;
-		word-wrap:break-word;
-		
+
+	.TipArea {
+		word-break: break-all;
+		word-wrap: break-word;
+
 		font-size: 14px;
 		padding: 10px;
 	}
-	.impTip{
+
+	.impTip {
 		display: inline-block;
 		color: #ff0000;
 	}

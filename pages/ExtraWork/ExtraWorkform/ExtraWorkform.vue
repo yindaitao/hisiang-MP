@@ -29,9 +29,9 @@
 						</view>
 						<view class="action">
 							<view class="cu-tag round bg-orange light">
-								<picker @change="PickerChange" :value="indexComp" :range="Compensate">
+								<picker @change="PickerChange" :value="indexComp" :range="Compensate" range-key="Text">
 									<view class="picker">
-										{{indexComp>-1?Compensate[indexComp]:'禁止换行，超出容器部分会以 ... 方式截断'}}
+										{{indexComp>-1?Compensate[indexComp].Text:'禁止换行，超出容器部分会以 ... 方式截断'}}
 									</view>
 								</picker>
 							</view>
@@ -136,9 +136,17 @@
 		},
 		data() {
 			return {
-				Compensate: ["加班费", "倒休"],
+				Compensate: [{
+						Key: 'Overtime',
+						Text: '加班费'
+					},
+					{
+						Key: 'Rest',
+						Text: '倒休'
+					},
+				],
 				indexComp: 0,
-				CompensateList: [{
+				/* CompensateList: [{
 						Code: "Overtime",
 						Name: "加班费"
 					},
@@ -147,7 +155,7 @@
 						Name: "倒休"
 					}
 				],
-				CompensateCode:"",
+				CompensateCode:"", */
 				defaultMinDate: new Date("2019/1/1").getTime(),
 				defaultMaxDate: new Date("2050/12/31").getTime(),
 				indexExtraWorkType: 0,
@@ -236,11 +244,7 @@
 			PickerChange(e) {
 				var _this = this;
 				_this.indexComp = e.detail.value;
-				_this.CompensateList.forEach(item => {
-					if(item.Name === _this.Compensate[_this.indexComp]){
-						_this.CompensateCode = item.Code;
-					}
-				})
+				this.itemData.Compensate=this.Compensate[this.indexComp].Key;
 			},
 			getData(time) {
 				this.resultInfo1 = time;
@@ -466,11 +470,9 @@
 					_this.editEntitysList[0].Cause = _this.itemData.Cause;
 					_this.editEntitysList[0].BeginDate = _this.itemData.BeginDate;
 					_this.editEntitysList[0].EndDate = _this.itemData.EndDate;
-					_this.editEntitysList[0].Compensate = _this.CompensateCode;
-					_this.editEntitysList[0].ExtraWorkType =
-						_this.itemData.ExtraWorkTypeCode;
-					_this.editEntitysList[0].ExtraWorkHoursText =
-						_this.itemData.ExtraWorkHoursText;
+					_this.editEntitysList[0].Compensate = _this.itemData.Compensate;
+					_this.editEntitysList[0].ExtraWorkType = _this.itemData.ExtraWorkTypeCode;
+					_this.editEntitysList[0].ExtraWorkHoursText = _this.itemData.ExtraWorkHoursText;
 					_this.editEntitysList[0].UIStatus = "Modify";
 					ajaxJSON = _this.editEntitysList[0];
 				} else {
@@ -481,7 +483,7 @@
 						EndDate: _this.itemData.EndDate,
 						ExtraWorkType: _this.itemData.ExtraWorkTypeCode,
 						Hours: _this.itemData.Hours,
-						Compensate: _this.CompensateCode,
+						Compensate: _this.itemData.Compensate,
 						ExtraWorkHoursText: _this.itemData.ExtraWorkHoursText,
 						CreatorId: parseInt(uni.getStorageSync("JSUserInfo").UserId),
 						Creator: uni.getStorageSync("JSUserInfo").UserName,
@@ -499,8 +501,6 @@
 						UIStatus: "New"
 					};
 				}
-				console.log(ajaxJSON);
-				return false;
 				var requestUrl = _this.editflag ?
 					_this.$webapi.saveExtraWork :
 					_this.$webapi.saveExtraWork;

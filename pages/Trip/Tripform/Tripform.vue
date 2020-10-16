@@ -20,6 +20,18 @@
 			<form>
 				<view class="cu-list menu">
 					<view class="cu-item">
+						<view class="content">出差类型</view>
+						<view class="action">
+							<view class="cu-tag round bg-orange light">
+								<picker @change="PickerChange" :value="indexTripType" :range="TripTypes" range-key="Text">
+									<view class="picker">
+										{{indexTripType>-1?TripTypes[indexTripType].Text:'禁止换行，超出容器部分会以 ... 方式截断'}}
+									</view>
+								</picker>
+							</view>
+						</view>
+					</view>
+					<view class="cu-item">
 						<view class="content">出发日期</view>
 						<view class="action">
 							<picker :disabled="edit?true:false" mode="date" :value="itemData.BeginDate" :start="startDate" :end="endDate"
@@ -42,6 +54,14 @@
 						<view class="action">
 							<input disabled="true" placeholder="出差时长(单位:天)" name="input" type="digit" style="text-align: right;" @input="inputHours(itemData,$event)"
 							 :value="itemData.TripHours">
+							<text v-if="false" class="icon-roundclosefill text-orange"></text>
+						</view>
+					</view>
+					<view class="cu-item">
+						<view class="content">出差补贴</view>
+						<view class="action">
+							<input disabled="true" name="input" type="digit" style="text-align: right;" @input="inputButie(itemData,$event)"
+							 :value="itemData.Allowance">
 							<text v-if="false" class="icon-roundclosefill text-orange"></text>
 						</view>
 					</view>
@@ -72,8 +92,7 @@
 					</view>
 					<view class="cu-item">
 						<view class="content">
-							<editor id="editor1" class="ql-container" placeholder="在此输入出差事由" @ready="onEditorReady"
-							 @input="textareaInput"></editor>
+							<editor id="editor1" class="ql-container" placeholder="在此输入出差事由" @ready="onEditorReady" @input="textareaInput"></editor>
 						</view>
 					</view>
 					<!-- <view class="cu-item">
@@ -169,6 +188,16 @@
 		},
 		data() {
 			return {
+				TripTypes: [{
+						Key: 'Internal',
+						Text: '国内出差'
+					},
+					{
+						Key: 'External',
+						Text: '国外出差'
+					}
+				],
+				indexTripType: 0,
 				placeholder: '开始输入...',
 				editorCtx: {},
 				editorCtx1: {},
@@ -217,6 +246,21 @@
 			}
 		},
 		methods: {
+			async PickerChange(e) {
+				this.indexTripType = e.detail.value;
+				this.itemData.TripType = this.TripTypes[this.indexTripType].Key;
+				let ret = await this.computTime1();
+				if (ret.data.RecordCount > 0) {
+					this.itemData.TripHours = ret.data.data.DayDiff;
+					this.itemData.Allowance = ret.data.data.Allowance;
+					this.$forceUpdate();
+				} else {
+					uni.showToast({
+						title: ret.data.data,
+						icon: 'none'
+					})
+				}
+			},
 			onEditorReady() {
 				uni.createSelectorQuery().select('#editor').context((res) => {
 					this.editorCtx = res.context;
@@ -322,8 +366,6 @@
 			},
 			selectOption(e) {},
 			showModal1(e) {
-				//this.$refs.textarea.hideShow(false);
-				//this.$refs.textarea1.hideShow(false);
 				this.modalName = e.currentTarget.dataset.target;
 			},
 			toList() {
@@ -342,14 +384,10 @@
 					});
 					return false;
 				}
-				//this.$refs.textarea.hideShow(false);
-				//this.$refs.textarea1.hideShow(false);
 				this.modalName = e.currentTarget.dataset.target;
 			},
 			hideModal(e) {
 				this.modalName = null;
-				//this.$refs.textarea.hideShow(true);
-				//this.$refs.textarea1.hideShow(true);
 			},
 			computTime() {
 				var endTime = this.itemData.EndDate;
@@ -362,7 +400,7 @@
 				time2 = time2.getTime();
 				var TripHours = time1 - time2;
 				var ajaxJSON = {};
-				
+
 				if (TripHours === 0) {
 					var HTime = this.itemData.EndDate;
 					this.itemData.TripHours = 1;
@@ -388,6 +426,29 @@
 					this.itemData.TripHours = (parseFloat(TripHours / (3600 * 1000) / 24) + 1).toFixed(1);
 				}
 			},
+			computTime1() {
+				if (this.$mbservices.isEmpty(this.itemData.BeginDate)) {
+					return;
+				}
+				if (this.$mbservices.isEmpty(this.itemData.EndDate)) {
+					return;
+				}
+				return new Promise((resolve) => {
+					let ajaxJSON = {
+						BeginDate: this.itemData.BeginDate,
+						EndDate: this.itemData.EndDate,
+						TripType: this.TripTypes[this.indexTripType].Key,
+						UIStatus: "New"
+					};
+					this.$mbservices.Request(this.$webapi.CalcTripDateDiffAndAllowance, "POST", ajaxJSON, res => {
+						if (res.data.RecordCount > 0) {
+							resolve(res);
+						}
+					}, err => {
+						resolve(err);
+					})
+				});
+			},
 			bindPickerChange4(item, e) {
 				var _this = this;
 				_this.indexType = e.target.value;
@@ -397,27 +458,16 @@
 				item.UIStatus = "New"
 			},
 			onlySave() {
-				//this.$refs.textarea.hideShow(true);
-				//this.$refs.textarea1.hideShow(true);
 				this.modalName = null;
 				this.isDoSteps = false;
 				this.submitForm();
 			},
 			saveAndDoSteps() {
-				//this.$refs.textarea.hideShow(true);
-				//this.$refs.textarea1.hideShow(true);
 				this.modalName = null;
 				this.isDoSteps = true;
 				this.submitForm();
 			},
 			addOption(e) {
-				/* this.formList.push({
-					id: this.formList.length + 1,
-					UserId: "0",
-					UserName: "请选择",
-					indexType: 0,
-					UIStatus: ""
-				}); */
 				if (this.editEntitysList.length <= 0) {
 					this.editEntitysList.push({
 						TripCompanions: []
@@ -443,13 +493,6 @@
 						e.UIStatus = "Delete"
 					}
 				});
-				/* this.formList = [];
-				var index = 1;
-				cache.forEach(item => {
-					item.id = index;
-					this.formList.push(item);
-					index++;
-				}); */
 			},
 			submitForm() {
 				var _this = this;
@@ -458,44 +501,8 @@
 				});
 				var _lines = new Array();
 				var _indx = 0;
-				/* _this.formList.forEach(_item => {
-					if (_this.formList.length === 1 && _this.formList[0].UserName === '请选择') {
-						_lines = [];
-					} else {
-						_indx = parseInt(_indx) + 1;
-						var lineItem = {
-							DocEntry: _this.itemData.DocEntry,
-							LineNum: _indx,
-							ObjectType: "Trip",
-							UserId: _item.UserId,
-							UserName: _item.UserName,
-							Canceled: "N",
-							Closed: "N",
-							LineStatus: "O",
-							UIStatus: _item.UIStatus,
-						};
-						_lines.push(lineItem);
-					}
-				}) */
 				var ajaxJSON = {};
 				if (_this.editflag) {
-					/* _this.editEntitysList[0].TripCompanions.forEach(
-						_calcuItem => {
-							var _ishave = false;
-							_lines.forEach(__option => {
-								if (_calcuItem.DocEntry === __option.DocEntry) {
-									_calcuItem.UIStatus = "Modify";
-									_calcuItem.UserId = __option.UserId;
-									_calcuItem.UserName = __option.UserName;
-									_ishave = true;
-								}
-							});
-							if (!_ishave) {
-								_calcuItem.UIStatus = "Delete";
-							}
-						}
-					); */
-					//_this.editEntitysList[0].TripCompanions=_lines;
 					_this.editEntitysList[0].Approve = _this.isDoSteps ? "Yes" : "No";
 					(_this.editEntitysList[0].ApproveStatus = "Pending"),
 					_this.editEntitysList[0].Remarks = _this.itemData.Remarks;
@@ -503,6 +510,8 @@
 					_this.editEntitysList[0].BeginDate = _this.itemData.BeginDate;
 					_this.editEntitysList[0].EndDate = _this.itemData.EndDate;
 					_this.editEntitysList[0].BeginDateAndStartPlace = _this.itemData.BeginDateAndStartPlace;
+					_this.editEntitysList[0].TripType = _this.TripTypes[_this.indexTripType].Key;
+					_this.editEntitysList[0].Allowance = _this.itemData.Allowance;
 					_this.editEntitysList[0].UIStatus = "Modify";
 					ajaxJSON = _this.editEntitysList[0];
 				} else {
@@ -547,6 +556,8 @@
 						Canceled: "No",
 						Closed: "No",
 						Attachments: "",
+						TripType: _this.itemData.TripType,
+						Allowance: _this.itemData.Allowance,
 						OrganizationCode: uni.getStorageSync("JSUserInfo").OrganizationCode,
 						OrganizationName: uni.getStorageSync("JSUserInfo").OrganizationName,
 						CompanyId: uni.getStorageSync("JSUserInfo").CompanyId,
@@ -595,7 +606,7 @@
 			inputHours(itemData, event) {
 				itemData.TripHours = event.detail.value;
 			},
-			onKeyInput: function(event) {
+			onKeyInput(event) {
 				this.formList[parseInt(event.target.id) - 1].jine = event.detail.value;
 				var _cache = 0;
 				this.formList.forEach(item => {
@@ -609,18 +620,38 @@
 			BeginDateAStartPlaceInput(e) {
 				this.itemData.BeginDateAndStartPlace = e.detail.text; //e; //.detail.value;
 			},
-			bindDateChange: function(itemData, e) {
+			async bindDateChange(itemData, e) {
 				itemData.BeginDate = e.target.value;
 				itemData.EndDate = "请选择";
 				if (this.$mbservices.isEmpty(itemData.EndDate) || itemData.EndDate === '请选择') {
 					return;
 				} else {
-					this.computTime();
+					//this.computTime();
+					let ret = await this.computTime1();
+					if (ret.data.RecordCount > 0) {
+						this.itemData.TripHours = ret.data.data.DayDiff;
+						this.itemData.Allowance = ret.data.data.Allowance;
+					} else {
+						uni.showToast({
+							title: ret.data.data,
+							icon: 'none'
+						})
+					}
 				}
 			},
-			bindDateChange1: function(itemData, e) {
+			async bindDateChange1(itemData, e) {
 				itemData.EndDate = e.target.value;
-				this.computTime();
+				//this.computTime();
+				let ret = await this.computTime1();
+				if (ret.data.RecordCount > 0) {
+					this.itemData.TripHours = ret.data.data.DayDiff;
+					this.itemData.Allowance = ret.data.data.Allowance;
+				} else {
+					uni.showToast({
+						title: ret.data.data,
+						icon: 'none'
+					})
+				}
 			},
 			getDate(type) {
 				const date = new Date();
@@ -788,7 +819,7 @@
 				});
 				return index;
 			},
-			getDetailData: function() {
+			getDetailData() {
 				this.pageIndex = parseInt(this.pageIndex) + 1;
 				var ajaxJSON = {
 					pageIndex: this.pageIndex,
@@ -835,6 +866,14 @@
 							}
 							_$this.itemData.Remarks = item.Remarks;
 							_$this.itemData.TripHours = item.TripHours;
+							_$this.itemData.TripType = item.TripType;
+							if (item.TripType === 'Internal') {
+								_$this.indexTripType = 0;
+							}
+							if (item.TripType === 'External') {
+								_$this.indexTripType = 1;
+							}
+							_$this.itemData.Allowance = parseFloat(item.Allowance).toFixed(2);
 							_$this.itemData.BeginDate = item.BeginDate;
 							_$this.itemData.EndDate = item.EndDate;
 							_$this.itemData.BeginDateAndStartPlace = item.BeginDateAndStartPlace;

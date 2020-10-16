@@ -1,4 +1,4 @@
-var websiteUrl = "http://localhost:49157/";
+var websiteUrl = "https://so.magicdata.co";
 /* https://oa.magicbox.net.cn*/
 /* http://localhost:62142 */
 /* http://localhost:51682 */
@@ -179,6 +179,12 @@ module.exports = {
 	AttendanceSave: websiteUrl + '/api/AttendanceRecord/Save',
 	/* 获取考勤 */
 	GetAttendanceRecords: websiteUrl + '/api/AttendanceRecord/GetRecordsArr',
+	/* 获取考勤明细 */
+	GetUserAttendanceRecordDetailBySdateEdate: websiteUrl +
+		'/api/AttendanceRecord/GetUserAttendanceRecordDetailBySdateEdate',
+	/* 获取考勤明细（当前月） */
+	GetUserAttendanceRecordDetailBySdateEdateCurrMonth: websiteUrl +
+		'/api/AttendanceRecord/GetUserAttendanceRecordDetailBySdateEdateCurrMonth',
 	/* 获取当月考勤汇总 */
 	GetCurrentMonthAttendanceRecord: websiteUrl + '/api/AttendanceRecord/GetAttendanceRecordsBySelectMonth',
 	/* 警报提醒 */
@@ -214,5 +220,7 @@ module.exports = {
 	/* 计算请假时长 */
 	CalcDateDiffByStartEndDateTime: websiteUrl + '/api/Leave/CalcDateDiffByStartEndDateTime',
 	// 获取当前登录人的假期类型
-	RemainSalaryHolidayLog: websiteUrl + '/api/RemainSalaryHolidayLog/GetRecordsWechat'
+	RemainSalaryHolidayLog: websiteUrl + '/api/RemainSalaryHolidayLog/GetRecordsWechat',
+	/* 计算出差时长及补贴金额 */
+	CalcTripDateDiffAndAllowance: websiteUrl + '/api/Trip/CalcTripDateDiffAndAllowanceByStartEndDateTime'
 }

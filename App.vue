@@ -302,6 +302,10 @@
 	@import "./common/colorui.css";
 	/* @import "./common/main.css"; */
 
+	::-webkit-scrollbar {
+	  display: none;
+	}
+
 	/* ColorUI */
 	.nav-list {
 		display: flex;

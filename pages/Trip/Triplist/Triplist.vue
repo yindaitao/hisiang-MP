@@ -78,7 +78,7 @@
 							<view v-if="list.ApproveStatus==='Rejected'" class="cu-tag round bg-red light">{{list.AApproveStatus}}</view>
 						</view>
 						<view class="move" v-if="list.Approve==='No'||list.ApproveStatus==='Rejected'">
-							<view class="bg-grey" @click.stop="editItem(list)">编辑</view>
+							<view class="bg-grey" @click.stop="goDetail(list)">编辑</view>
 							<!-- <view class="bg-red" @click.stop="deleteItem(list)">删除</view> -->
 						</view>
 					</view>

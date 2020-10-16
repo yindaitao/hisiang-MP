@@ -19,19 +19,23 @@
 				</view>
 				<view class="cu-item padding">
 					<view class="content">
-						<view v-for="(item,index) in SalaryHolidayList">
+						<!-- <view v-for="(item,index) in SalaryHolidayList">
 							<text class="icon-title text-grey"></text>
 							<text class="text-grey">{{item.HolidayTypeName}}</text>
+						</view> -->
+						<view>
+							<text class="icon-title text-grey"></text>
+							<text class="text-grey">病假：{{AttendanceEntity.SickLeave}}天</text>
 						</view>
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">病&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;假：{{AttendanceEntity.SickLeave}}天</text>
+							<text class="text-grey">事假：{{AttendanceEntity.PersonLeave}}天</text>
 						</view>
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">事&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;假：{{AttendanceEntity.PersonLeave}}天</text>
+							<text class="text-grey">带薪假：{{AttendanceEntity.LeaveWithSalary}}天</text>
 						</view>
-						<view>
+						<!-- <view>
 							<text class="icon-title text-grey"></text>
 							<text class="text-grey">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;假：{{AttendanceEntity.UseNianJia}}天</text>
 						</view>
@@ -42,9 +46,9 @@
 						<view>
 							<text class="icon-title text-grey"></text>
 							<text class="text-grey">带薪病假：{{AttendanceEntity.UseDaiXinBingJia}}天</text>
-						</view>
+						</view> -->
 					</view>
-					<view class="content">
+					<!-- <view class="content">
 						<view>
 							<text class="text-grey text-white">无</text>
 						</view>
@@ -60,18 +64,18 @@
 						<view>
 							<text>剩余:{{AttendanceEntity.LastDaiXinBingJia}}天</text><text class="text-grey margin-left-sm">总数:{{AttendanceEntity.SumDaiXinBingJia}}天</text>
 						</view>
-					</view>
+					</view> -->
 				</view>
 				<view class="cu-item padding">
-					<view class="content">
+					<view class="action">
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">请假合计：{{AttendanceEntity.LeaveWithSalaryLast}}天</text>
+							<text class="text-grey">请假合计：{{AttendanceEntity.SickLeave}}天</text>
 						</view>
 					</view>
-					<view class="action">
+					<!-- <view class="action">
 						<text class="text-green text-right">带薪假总数：{{AttendanceEntity.LeaveWithSalaryTotal}}天</text>
-					</view>
+					</view> -->
 				</view>
 			</view>
 			<view class="cu-list menu sm-border card-menu animation-slide-bottom" :style="[{animationDelay: (1 + 1)*0.1 + 's'}]">
@@ -151,6 +155,32 @@
 					</view>
 					<view class="action">
 						<text class="text-green text-right">餐补合计：{{AttendanceEntity.MealsTotal}}次</text>
+					</view>
+				</view>
+			</view>
+			<view class="cu-list menu sm-border card-menu animation-slide-bottom" :style="[{animationDelay: (3 + 1)*0.1 + 's'}]">
+				<view class="cu-item">
+					<text class="icon-ellipse text-orange light"></text>
+					<text class="text-grey">出差</text>
+				</view>
+				<view class="cu-item padding">
+					<view class="content">
+						<view>
+							<text class="icon-title text-grey"></text>
+							<text class="text-grey">国内出差：{{AttendanceEntity.GExtraWorkHours}}天</text>
+						</view>
+						<view>
+							<text class="icon-title text-grey"></text>
+							<text class="text-grey">国外出差：{{AttendanceEntity.GExtraWorkHours}}天</text>
+						</view>
+					</view>
+				</view>
+				<view class="cu-item padding">
+					<view class="content">
+						<view>
+							<text class="icon-title text-grey"></text>
+							<text class="text-grey">出差合计：{{AttendanceEntity.GooutDays}}天</text>
+						</view>
 					</view>
 				</view>
 			</view>
