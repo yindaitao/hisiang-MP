@@ -101,7 +101,7 @@
 				this.modalName = 'show'
 			},
 			RadioChange(e) {
-				this.radio = e.detail.value
+				//this.radio = e.detail.value
 				this.$emit('ChangeSelect', e)
 				this.modalName = null
 			},

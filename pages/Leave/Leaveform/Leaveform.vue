@@ -1,148 +1,132 @@
-s<template>
-	<view>
-		<custom>请假</custom>
-		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
-			<view class="cu-dialog">
-				<view class="cu-bar bg-white justify-end">
-					<view class="content">操作提示</view>
-					<view class="action" @tap="hideModal">
-						<text class="icon-roundclose text-black"></text>
-					</view>
-				</view>
-				<view class="padding-xl bg-white">
-					<text class="text-black text-bold">确定提交申请?</text>
-				</view>
-				<view class="cu-bar bg-white">
-					<view class="action margin-0 flex-sub text-grey" @tap="onlySave">存草稿</view>
-					<view class="action margin-0 flex-sub text-black solid-left" @tap="hideModal">取消</view>
-					<view class="action margin-0 flex-sub text-green solid-left" @tap="saveAndDoSteps">确定提交</view>
+<template>
+<view>
+	<custom>请假</custom>
+	<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
+		<view class="cu-dialog">
+			<view class="cu-bar bg-white justify-end">
+				<view class="content">操作提示</view>
+				<view class="action" @tap="hideModal">
+					<text class="icon-roundclose text-black"></text>
 				</view>
 			</view>
-		</view>
-		<view class="ul-swiper-box">
-			<form>
-				<view class="cu-list menu">
-					<!-- <view class="cu-item">
-						<view class="content">
-							是否加班倒休
-						</view>
-						<view class="action">
-							<checkbox v-for="(itm,idx) in checkbox" :key="idx" class='round' :class="itm.checked?'checked':''" :checked="itm.checked?true:false"
-							 :value="itm.value" @click="ChangeChkBox($event,itm)"></checkbox>
-						</view>
-					</view> -->
-					<view class="cu-item">
-						<view class="content">
-							请假类型
-						</view>
-						<view class="action">
-							<text class="cu-tag round bg-orange text-center middle light" @tap="selectHolidayType">{{SelectHolidayType.Name}}</text>
-							<!-- <view class="cu-tag round bg-orange light">
-								<picker v-if="!checkbox[0].checked" :disabled="edit?true:false" @change="bindPickerChange2" :value="indexHolidayType"
-								 :range="HolidayType">
-									<view class="picker">{{HolidayType[indexHolidayType]}}</view>
-								</picker>
-								<text v-if="checkbox[0].checked">{{SpeHolidayTypeText}}</text>
-							</view> -->
-						</view>
-					</view>
-					<view class="cu-item" v-if="SelectHolidayType.isSalary==='Yes'&&edit===false">
-						<view class="content text-blue light">
-							<text v-if="RestDaysEntity.MinRemark!==''||RestDaysEntity.MaxRemark!==''">提示：</text><text>{{RestDaysEntity.MinRemark}}</text><text>{{RestDaysEntity.MaxRemark}}</text>
-						</view>
-						<view class="action text-blue">剩余{{RestDaysEntity.restDays?RestDaysEntity.restDays:0}}<text v-if="RestDaysEntity.restDaysUnit==='D'">天</text><text
-							 v-if="RestDaysEntity.restDaysUnit==='H'">小时</text></view>
-					</view>
-					<view class="cu-item">
-						<view class="content">
-							请假时长单位
-						</view>
-						<view class="action">
-							<view class="cu-tag round bg-orange light" style="min-width: 20px;">
-								<picker :disabled="(edit||SpeHolidayType === 'IsChangeShifts')?true:false" @change="bindPickerChange1" :value="indexLeaveHoursText"
-								 :range="LeaveHoursTextType">
-									<view class="picker">{{LeaveHoursTextType[indexLeaveHoursText]}}</view>
-								</picker>
-							</view>
-						</view>
-					</view>
-					<view class="cu-item">
-						<view class="content">
-							开始日期
-						</view>
-						<view class="action">
-							<view class="cu-tag round bg-orange light">
-								<MagicDatePicker ref="PstartDate1" placeholder="请选择" :timeType="timeType1" :timeOptions="timeOptions" :maxDate="defaultMaxDate"
-								 @getData="getData" :value="itemData.BeginDate"></MagicDatePicker>
-							</view>
-						</view>
-					</view>
-					<view class="cu-item">
-						<view class="content">
-							结束日期
-						</view>
-						<view class="action">
-							<view class="cu-tag round bg-orange light">
-								<MagicDatePicker ref="PEndDate1" placeholder="请选择" :timeType="timeType1" :timeOptions="timeOptions" :maxDate="defaultMaxDate"
-								 @getData="getData1" :value="itemData.EndDate"></MagicDatePicker>
-							</view>
-						</view>
-					</view>
-					<view class="cu-item">
-						<view class="content">
-							请假时长
-						</view>
-						<view class="content">
-							<input placeholder="请输入请假时长" disabled="" name="input" type="digit" style="text-align: right;" @input="inputLeaveHours(itemData,$event)"
-							 :value="CalcTimeLength.Num+CalcTimeLength.unitext">
-						</view>
-					</view>
-					<view class="cu-item">
-						<view class="content">
-							请假事由
-						</view>
-					</view>
-					<view class="cu-item">
-						<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
-						 placeholder-class="placeholder" data-placeholder="在此输入请假事由" :value="itemData.Cause" style="min-height: 150px;"></textarea>
-					</view>
-					<!-- 图片开始 -->
-					<view class="cu-bar bg-white">
-						<view class="action">选择图片</view>
-						<view class="action">{{itemData.imageList.length}}/9</view>
-					</view>
-					<view class="cu-form-group">
-						<view class="grid col-4 grid-square flex-sub">
-							<view class="padding-xs bg-img" :style="'background-image:url(' + itemData.imageList[index1].url +')'" v-for="(_item,index1) in itemData.imageList"
-							 :key="index1" @tap="previewImage(itemData,$event)" :data-url="itemData.imageList[index1].url">
-								<view class="cu-tag bg-red" @tap.stop="deleteImage(itemData,_item)" :data-index="index1" v-if="edit === false">
-									<text class="icon-delete"></text>
-								</view>
-							</view>
-							<view class="padding-xs solids" @tap="chooseImage(itemData)" v-if="itemData.imageList.length<9 && edit === false">
-								<text class="icon-cameraadd"></text>
-							</view>
-						</view>
-					</view>
-					<!-- 图片结束 -->
-				</view>
-			</form>
-		</view>
-		<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 1000;width: 100%;">
-			<view class="action" v-if="edit === false||(itemData.Approve==='N'&&editflag)" style="width: 50%;">
-				<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
-					<text class="icon-upload"></text>提交
-				</button>
+			<view class="padding-xl bg-white">
+				<text class="text-black text-bold">确定提交申请?</text>
 			</view>
-			<view class="action" style="width: 50%;" v-if="from === 'firstPage'">
-				<button class="cu-btn round bg-blue shadow" @tap="toList">
-					请假记录
-				</button>
+			<view class="cu-bar bg-white">
+				<view class="action margin-0 flex-sub text-grey" @tap="onlySave">存草稿</view>
+				<view class="action margin-0 flex-sub text-black solid-left" @tap="hideModal">取消</view>
+				<view class="action margin-0 flex-sub text-green solid-left" @tap="saveAndDoSteps">确定提交</view>
 			</view>
 		</view>
-		<MagicSelect ref="Sel1" :Title="mgSelTitle" :modalName="testModal" @ChangeSelect="ChangeSelect" :DataList="HolidayTypeList"
-		 :Width="scrollBarHeight/3" :MaxHeight="scrollBarHeight/3" :ShowText="ShowText" :RadioValue="RadioValue"></MagicSelect>
 	</view>
+	<view class="ul-swiper-box">
+		<form>
+			<view class="cu-list menu">
+				<view class="cu-item">
+					<view class="content">
+						请假类型
+					</view>
+					<view class="action">
+						<text class="cu-tag round bg-orange text-center middle light" @tap="selectHolidayType">{{SelectHolidayType.Name}}</text>
+					</view>
+				</view>
+				<view class="cu-item" v-if="SelectHolidayType.isSalary==='Yes'&&edit===false">
+					<view class="content text-blue light">
+						<text v-if="RestDaysEntity.MinRemark!==''||RestDaysEntity.MaxRemark!==''">提示：</text><text>{{RestDaysEntity.MinRemark}}</text><text>{{RestDaysEntity.MaxRemark}}</text>
+					</view>
+					<view class="action text-blue">剩余{{RestDaysEntity.restDays?RestDaysEntity.restDays:0}}<text v-if="RestDaysEntity.restDaysUnit==='D'">天</text><text
+						 v-if="RestDaysEntity.restDaysUnit==='H'">小时</text></view>
+				</view>
+				<view class="cu-item">
+					<view class="content">
+						请假时长单位
+					</view>
+					<view class="action">
+						<view class="cu-tag round bg-orange light" style="min-width: 20px;">
+							<picker :disabled="(edit||SpeHolidayType === 'IsChangeShifts')?true:false" @change="bindPickerChange1" :value="indexLeaveHoursText"
+							 :range="LeaveHoursTextType">
+								<view class="picker">{{LeaveHoursTextType[indexLeaveHoursText]}}</view>
+							</picker>
+						</view>
+					</view>
+				</view>
+				<view class="cu-item">
+					<view class="content">
+						开始日期
+					</view>
+					<view class="action">
+						<view class="cu-tag round bg-orange light">
+							<MagicDatePicker ref="PstartDate1" placeholder="请选择" :timeType="timeType1" :timeOptions="timeOptions" :maxDate="defaultMaxDate"
+							 @getData="getData" :value="itemData.BeginDate"></MagicDatePicker>
+						</view>
+					</view>
+				</view>
+				<view class="cu-item">
+					<view class="content">
+						结束日期
+					</view>
+					<view class="action">
+						<view class="cu-tag round bg-orange light">
+							<MagicDatePicker ref="PEndDate1" placeholder="请选择" :timeType="timeType1" :timeOptions="timeOptions" :maxDate="defaultMaxDate"
+							 @getData="getData1" :value="itemData.EndDate"></MagicDatePicker>
+						</view>
+					</view>
+				</view>
+				<view class="cu-item">
+					<view class="content">
+						请假时长
+					</view>
+					<view class="content">
+						<input placeholder="请输入请假时长" disabled="" name="input" type="digit" style="text-align: right;" @input="inputLeaveHours(itemData,$event)"
+						 :value="CalcTimeLength.Num+CalcTimeLength.unitext">
+					</view>
+				</view>
+				<view class="cu-item">
+					<view class="content">
+						请假事由
+					</view>
+				</view>
+				<view class="cu-item">
+					<textarea @input="textareaInput" :class="itemData.Cause?'value':''" maxlength="-1" :disabled="modalName!=null"
+					 placeholder-class="placeholder" data-placeholder="在此输入请假事由" :value="itemData.Cause" style="min-height: 150px;"></textarea>
+				</view>
+				<!-- 图片开始 -->
+				<view class="cu-bar bg-white">
+					<view class="action">选择图片</view>
+					<view class="action">{{itemData.imageList.length}}/9</view>
+				</view>
+				<view class="cu-form-group">
+					<view class="grid col-4 grid-square flex-sub">
+						<view class="padding-xs bg-img" :style="'background-image:url(' + itemData.imageList[index1].url +')'" v-for="(_item,index1) in itemData.imageList"
+						 :key="index1" @tap="previewImage(itemData,$event)" :data-url="itemData.imageList[index1].url">
+							<view class="cu-tag bg-red" @tap.stop="deleteImage(itemData,_item)" :data-index="index1" v-if="edit === false">
+								<text class="icon-delete"></text>
+							</view>
+						</view>
+						<view class="padding-xs solids" @tap="chooseImage(itemData)" v-if="itemData.imageList.length<9 && edit === false">
+							<text class="icon-cameraadd"></text>
+						</view>
+					</view>
+				</view>
+				<!-- 图片结束 -->
+			</view>
+		</form>
+	</view>
+	<view class="cu-bar bg-white solid-bottom" style="position: fixed;bottom:0upx;display: flex;justify-content: space-around;z-index: 2;z-index: 1000;width: 100%;">
+		<view class="action" v-if="edit === false||(itemData.Approve==='N'&&editflag)" style="width: 50%;">
+			<button class="cu-btn round bg-blue shadow" data-target="DialogModal2" @tap="showModal">
+				<text class="icon-upload"></text>提交
+			</button>
+		</view>
+		<view class="action" style="width: 50%;" v-if="from === 'firstPage'">
+			<button class="cu-btn round bg-blue shadow" @tap="toList">
+				请假记录
+			</button>
+		</view>
+	</view>
+	<MagicSelect ref="Sel1" :Title="mgSelTitle" :modalName="testModal" @ChangeSelect="ChangeSelect" :DataList="HolidayTypeList"
+	 :Width="scrollBarHeight/3" :MaxHeight="scrollBarHeight/3" :ShowText="ShowText" :RadioValue="RadioValue"></MagicSelect>
+</view>
 </template>
 
 <script>
@@ -316,7 +300,7 @@ s<template>
 				}
 				this.SelectHolidayType = this.HolidayTypeList.filter(item => {
 					return item.Code == e.detail.value;
-				})[0]
+				})[0];
 				//加班倒休
 				if (this.SelectHolidayType.Code === 'IsChangeShifts') {
 					this.indexLeaveHoursText = 0; //如果带薪，默认单位是天且不允许编辑
@@ -707,7 +691,7 @@ s<template>
 					});
 					return false;
 				}
-				
+
 				/* 验证是否必传附件 */
 				let opItem = {}
 				this.HolidayTypeList.forEach((__item, __index) => {
@@ -722,7 +706,7 @@ s<template>
 					})
 					return false
 				}
-				
+
 				this.modalName = e.currentTarget.dataset.target;
 			},
 			hideModal(e) {
@@ -770,8 +754,6 @@ s<template>
 					_this.editEntitysList[0].UIStatus = "Modify";
 					ajaxJSON = _this.editEntitysList[0];
 				} else {
-
-
 					ajaxJSON = {
 						ObjectType: "Leave",
 						DocNum: _this.itemData.DocEntry,
@@ -1168,9 +1150,11 @@ s<template>
 			},
 			getHolidayRestDays(type) {
 				uni.showLoading({
-					title: ''
+					title: '请稍后...'
 				})
-				this.$mbservices.Request(this.$webapi.getHolidayRestDays, "POST", type,
+				this.$mbservices.Request(this.$webapi.getHolidayRestDays, "POST", {
+						HolidayType: type.toString()
+					},
 					res => {
 						if (res.data.RecordCount > 0) {
 							this.RestDays = res.data.data.restDays;
@@ -1328,8 +1312,6 @@ s<template>
 			//#ifdef MP-WEIXIN
 			this.scrollBarHeight = uni.getSystemInfoSync().screenHeight - this.CustomBar;
 			//#endif
-			console.log('看下E');
-			console.log(e);
 			try {
 				this.from = JSON.parse(e.data).from;
 			} catch (e) {
