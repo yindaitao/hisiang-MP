@@ -112,6 +112,11 @@
 							Operation: "EQUAL",
 							ConditionValue: uni.getStorageSync("JSUserInfo").UserName,
 							Relationship: "AND"
+						},{
+							FieldName: "Year",
+							Operation: "EQUAL",
+							ConditionValue: this.currYear,
+							Relationship: "AND"
 						}],
 						Sorts: [{
 								FieldName: "UserName",
