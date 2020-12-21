@@ -237,7 +237,7 @@
 			},
 			getLastNianJia() {
 				let param = {
-					HolidayCode: this.Annualeave
+					HolidayType: this.Annualeave
 				}
 				this.$mbservices.Request(this.$webapi.GetLastLeaveDays, 'POST', {
 					HolidayType: this.Annualeave
