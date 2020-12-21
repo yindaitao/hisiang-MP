@@ -4,50 +4,56 @@
 		<view id="tab-bar" class="cu-bar top">
 			<view class="action">截至目前您当前剩余年假</view>
 			<view class="action ">
-				<text class="text-red bottom-border">{{HolidayDelay.Days}}天</text>
+				<text class="text-red bottom-border text-bold">{{HolidayDelay.Days}}天</text>
 			</view>
 		</view>
 		<view class="cu-list menu sm-border card-menu animation-slide-bottom margin-top-xs" :style="[{animationDelay: (10 + 1)*0.1 + 's'}]">
 			<view class="cu-item">
-				<text class="icon-ellipse text-orange"></text>
-				<text class="text-grey">年假延期申请信息</text>
+				<text class="icon-ellipse text-black light"></text>
+				<text class="text-black">年假延期申请信息</text>
 			</view>
 			<view class="cu-item padding">
+
 				<view class="content">
+					<view class="margin-top " style="height: 20px;"></view>
 					<view>
-						<text class="icon-title text-grey"></text>
-						<text class="text-grey">单据编号：{{HolidayDelay.DocEntry}}</text>
+						<text class="icon-title text-black"></text>
+						<text class="text-black">单据编号：{{HolidayDelay.DocEntry}}</text>
 					</view>
 					<view>
-						<text class="icon-title text-grey"></text>
-						<text class="text-grey">延期天数：{{HolidayDelay.Days}}天</text>
+						<text class="icon-title text-black"></text>
+						<text class="text-black">延期天数：{{HolidayDelay.Days}}天</text>
 					</view>
 					<view>
-						<text class="icon-title text-grey"></text>
-						<text class="text-grey">延期日期：{{HolidayDelay.StopDate}}</text><text class="text-orange margin-left-sm">[前]</text>
+						<text class="icon-title text-black"></text>
+						<text class="text-black">延期日期：{{HolidayDelay.StopDate}}</text><text class="text-orange margin-left-sm">[前]</text>
 					</view>
+					<view class="margin-top" style="height: 20px;"></view>
 				</view>
+
 			</view>
-			<view class="cu-item padding">
+			<view class="cu-item padding" style="position: relative;">
 				<view class="content" v-if="HolidayDelay.Approve==='No'">
-					<view></view>
-				</view>
-				<view class="content" v-if="HolidayDelay.Approve==='Yes'">
 					<view>
-						<text class="text-blue" v-if="HolidayDelay.ApproveStatus==='Pending'">等待审核</text>
-						<text class="text-blue" v-if="HolidayDelay.ApproveStatus==='Approved'">审核通过</text>
-						<text class="text-blue" v-if="HolidayDelay.ApproveStatus==='Rejected'">审核拒绝</text>
+						<view class="text-black"></view>
 					</view>
 				</view>
-				<view class="action">
-					<button class="cu-btn radius round shadow bg-grey" @tap="showModal" data-target="DialogModal" v-if="HolidayDelay.Days>0&&(HolidayDelay.Approve==='No'||HolidayDelay.ApproveStatus==='Rejected')">提交申请</button>
+				<view class="content" v-if="FHolidayDelay.Approve==='Yes'">
+					<view>
+						<text class="text-blue" v-if="FHolidayDelay.ApproveStatus==='Pending'">等待审核</text>
+						<text class="text-blue" v-if="FHolidayDelay.ApproveStatus==='Approved'">审核通过</text>
+						<text class="text-blue" v-if="FHolidayDelay.ApproveStatus==='Rejected'">审核拒绝</text>
+					</view>
+				</view>
+				<view class="action text-right margin-bottom" style="position: absolute;right: 10px;">
+					<button class="cu-btn radius round bg-green light" @tap="showModal" data-target="DialogModal" v-if="FHolidayDelay.Days>0&&(FHolidayDelay.Approve==='No'||FHolidayDelay.ApproveStatus==='Rejected'||$mbservices.isEmpty(FHolidayDelay.ApproveStatus))">提交申请</button>
 				</view>
 			</view>
 		</view>
 		<view class="cu-modal" :class="modalName=='DialogModal'?'show':''">
-			<view class="cu-dialog" style="width: 480upx;">
+			<view class="cu-dialog" style="width: 80vw">
 				<view class="cu-bar bg-white justify-end">
-					<view class="content">提示</view>
+					<view class="content text-bold">提示</view>
 					<view class="action" @tap="hideModal">
 						<text class="cuIcon-close text-red"></text>
 					</view>
@@ -57,11 +63,34 @@
 				</view>
 				<view class="cu-bar bg-white">
 					<view class="action">
-						<button class="cu-btn line-green text-green" @tap="hideModal">取消</button>
+						<button class="cu-btn line-green bg-gray light" @tap="hideModal">取消</button>
 					</view>
 					<view class="action">
-						<button class="cu-btn bg-green margin-left" @tap="actionClick">确定</button>
+						<button class="cu-btn bg-green light margin-left" @tap="actionClick">确定</button>
 					</view>
+				</view>
+			</view>
+		</view>
+
+		<view class="cu-modal" :class="modalName=='PropWindow'?'show':''">
+			<view class="cu-dialog" style="width: 80vw">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content text-bold">提示</view>
+					<view class="action" @tap="hideModal">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="padding-xl bg-white">
+					{{MsgContent}}
+				</view>
+				<view class="cu-bar bg-white flex justify-center">
+					<!-- <view class="action">
+						<button class="cu-btn bg-gray light text-green" @tap="hideModal">取消</button>
+					</view> -->
+					<button class="cu-btn bg-gray light lg" @tap="hideModal">知道了</button>
+					<!-- <view class="action">
+						
+					</view> -->
 				</view>
 			</view>
 		</view>
@@ -81,10 +110,19 @@
 					UIStatus: '',
 					StopDate: ''
 				},
+				FHolidayDelay: {
+					DocEntry: 0,
+					Approve: 'No',
+					ApproveStatus: '',
+					Days: 0,
+					UIStatus: '',
+					StopDate: ''
+				},
 				Annualeave: '',
 				ExtendToDate: '',
 				SaveExtendToDate: '',
-				initEntity: {}
+				initEntity: {},
+				MsgContent: ''
 			}
 		},
 		onLoad(e) {
@@ -106,7 +144,7 @@
 						}, {
 							FieldName: "CreateDate",
 							Operation: "GRATER_EQUAL",
-							ConditionValue: this.$mbservices.formatDateTime((new Date().getFullYear()) + '-01-01','yyyy-MM-dd'),
+							ConditionValue: this.$mbservices.formatDateTime((new Date().getFullYear()) + '-01-01', 'yyyy-MM-dd'),
 							Relationship: "AND"
 						}, {
 							FieldName: "CreateDate",
@@ -127,6 +165,12 @@
 								this.HolidayDelay.Days = item.Days
 								this.HolidayDelay.DocEntry = item.DocEntry
 								this.HolidayDelay.UIStatus = "Modify"
+
+								this.FHolidayDelay.Approve = item.Approve
+								this.FHolidayDelay.ApproveStatus = item.ApproveStatus
+								this.FHolidayDelay.Days = item.Days
+								this.FHolidayDelay.DocEntry = item.DocEntry
+								this.FHolidayDelay.UIStatus = "Modify"
 								isHave = true
 							}
 						});
@@ -157,8 +201,8 @@
 				this.getLastNianJia()
 				this.getMaxNum()
 			},
-			async BradgeMethod(){
-				let param=await this.GetInitRecord();
+			async BradgeMethod() {
+				let param = await this.GetInitRecord();
 				if (param.data.RecordCount <= 0) {
 					uni.showToast({
 						title: '获取系统初始化信息失败',
@@ -166,7 +210,7 @@
 					})
 					return false;
 				}
-				
+
 				//this.initEntity=param.data.data[0]
 				this.Annualeave = param.data.data[0].Annualeave;
 				this.ExtendToDate = param.data.data[0].ExtendToDate;
@@ -195,10 +239,16 @@
 				let param = {
 					HolidayCode: this.Annualeave
 				}
-				this.$mbservices.Request(this.$webapi.GetLastLeaveDays, 'POST', this.Annualeave, res => {
+				this.$mbservices.Request(this.$webapi.GetLastLeaveDays, 'POST', {
+					HolidayType: this.Annualeave
+				}, res => {
 					if (res.data.RecordCount > 0) {
 						this.HolidayDelay.Days = res.data.data.restDays
 						this.HolidayDelay.UIStatus = "New"
+
+						this.FHolidayDelay.Days = res.data.data.restDays
+						this.FHolidayDelay.UIStatus = "New"
+						this.$forceUpdate()
 					}
 				}, err => {})
 			},
@@ -206,6 +256,9 @@
 				this.$mbservices.Request(this.$webapi.GetHolidayDelayMaxNum, 'GET', {}, res => {
 					this.HolidayDelay.DocEntry = res.data
 					this.HolidayDelay.UIStatus = "New"
+
+					this.FHolidayDelay.DocEntry = res.data
+					this.FHolidayDelay.UIStatus = "New"
 				}, err => {})
 			},
 			showModal(e) {
@@ -228,14 +281,12 @@
 						uni.showToast({
 							title: '提交成功',
 							icon: 'none'
-						})
+						});
+						this.GetRecords()
 					} else {
-						uni.showToast({
-							title: '提交失败',
-							icon: 'none'
-						})
+						this.MsgContent = res.data
+						this.modalName = 'PropWindow'
 					}
-					this.GetRecords()
 					uni.hideLoading()
 				}, err => {
 					uni.showToast({
