@@ -14,7 +14,6 @@
 					<text class="name" style="color: var(--black);">{{userInfo.UserName}}</text>
 					<text class="depart" style="color: var(--black);">{{userInfo.CompanyName}}</text>
 					<view>
-						<!-- <text style="color: var(--black);">Tel1：</text> -->
 						<text style="color: var(--black);">{{userInfo.OrganizationName}}</text>
 					</view>
 				</view>
@@ -83,30 +82,6 @@
 					<text class="text-grey">关于我们</text>
 				</view>
 			</view>
-			<!-- <view class="cu-item" :class="menuArrow?'arrow':''">
-				<view class="content">
-					<text class="icon-circlefill text-grey"></text>
-					<text class="text-grey">编辑资料</text>
-				</view>
-			</view>
-			<view class="cu-item" :class="menuArrow?'arrow':''">
-				<view class="content">
-					<text class="icon-circlefill text-grey"></text>
-					<text class="text-grey">修改密码</text>
-				</view>
-			</view>
-			<view class="cu-item" :class="menuArrow?'arrow':''">
-				<view class="content">
-					<text class="icon-circlefill text-grey"></text>
-					<text class="text-grey">清除缓存</text>
-				</view>
-			</view>
-			<view class="cu-item" :class="menuArrow?'arrow':''">
-				<view class="content">
-					<text class="icon-circlefill text-grey"></text>
-					<text class="text-grey">关于</text>
-				</view>
-			</view> -->
 		</view>
 	</view>
 </template>

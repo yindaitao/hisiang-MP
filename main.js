@@ -1,17 +1,7 @@
 import Vue from 'vue'
 import App from './App'
 
-// import pageHead from './components/page-head.vue'
-// import pageFoot from './components/page-foot.vue'
-
 import store from './store'
-
-// /* ColorUI */
-// import basics from './components/basics/home.vue'
-// Vue.component('basics',basics)
-
-// import components from './components/component/home.vue'
-// Vue.component('components',components)
 
 Vue.config.productionTip = false
 
@@ -29,16 +19,7 @@ Vue.prototype.$mbservices = mbservices
 import custom from './pages/components/custom/custom.vue'
 Vue.component('custom', custom)
 
-/* 全局变量·排版信息 */
-/* Vue.prototype.ScheduleEntity = {
-	latitude: '',
-	longitude: '',
-	AttendanceAccording: ''
-}; */
-
 Vue.prototype.$store = store
-// Vue.component('page-head', pageHead)
-// Vue.component('page-foot', pageFoot)
 
 const app = new Vue({
 	store,

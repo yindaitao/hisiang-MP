@@ -1,412 +1,412 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		// #ifdef H5
-		{
-			"path": "pages/tabBar/firstPage/firstPage",
-			"style": {
-				"navigationBarTitleText": "",
-				"app-plus": {
-					"titleView": false,
-					"titleNView": {
-						"type": "transparent"
-					}
-				}
-			}
-		},
-		//#endif
-		// #ifdef APP-PLUS || MP-BAIDU || MP-WEIXIN
-		{
-			"path": "pages/tabBar/firstPage/firstPage",
-			"style": {
-				"navigationBarTitleText": "欢迎使用"
-			}
-		},
-		//#endif
+    "pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+        // #ifdef H5
+        {
+            "path": "pages/tabBar/firstPage/firstPage",
+            "style": {
+                "navigationBarTitleText": "",
+                "app-plus": {
+                    "titleView": false,
+                    "titleNView": {
+                        "type": "transparent"
+                    }
+                }
+            }
+        },
+        //#endif
+        // #ifdef APP-PLUS || MP-BAIDU || MP-WEIXIN
+        {
+            "path": "pages/tabBar/firstPage/firstPage",
+            "style": {
+                "navigationBarTitleText": "欢迎使用"
+            }
+        },
+        //#endif
 		{
 			"path": "pages/tabBar/personpage/personpage",
 			"style": {
 				"navigationBarTitleText": "个人中心"
 			}
 		},
-		{
-			"path": "pages/login/login",
-			"style": {
-				"navigationBarTitleText": "登录"
-			}
-		},
-		{
-			"path": "pages/person/personpage",
-			"style": {}
-		}, {
-			"path": "pages/Attendance/CheckInOut/CheckInOut",
-			"style": {}
-		}
-	],
-	"subPackages": [{
-			"root": "pages/CommonTools",
-			"pages": [{
-				"path": "TakePhotos/TakePhotos",
-				"style": {
-					"app-plus": {
-						//app页面不显示滚动条
-						"scrollIndicator": "none"
-					}
-				}
-			}]
-		},
-		{
-			"root": "pages/My",
-			"pages": [{
-				"path": "AttendanceCollection/AttendanceCollection",
-				"style": {}
-			}, {
-				"path": "AboutUs/AboutUs",
-				"style": {}
-			}, {
-				"path": "MySalary/MySalary",
-				"style": {}
-			} , {
-				"path": "RemainSalaryHoliday/RemainSalaryHoliday",
-				"style": {}
-			}   ,{
-                    "path" : "Question/Question",
-                    "style" : {}
-                }
-                ,{
-                    "path" : "Result/Result",
-                    "style" : {}
-                }
-                ,{
-                    "path" : "MyBaseInfo/MyBaseInfo",
-                    "style" : {}
-                }
-                ,{
-                    "path" : "SystemSetting/SystemSetting",
-                    "style" : {}
+        {
+            "path": "pages/login/login",
+            "style": {
+                "navigationBarTitleText": "登录"
+            }
+        },
+        {
+            "path": "pages/person/personpage",
+            "style": {}
+        },
+        {
+            "path": "pages/Attendance/CheckInOut/CheckInOut",
+            "style": {}
+        }
+    ],
+    "subPackages": [
+        {
+            "root": "pages/CommonTools",
+            "pages": [
+                {
+                    "path": "TakePhotos/TakePhotos",
+                    "style": {
+                        "app-plus": {
+                            //app页面不显示滚动条
+                            "scrollIndicator": "none"
+                        }
+                    }
                 }
             ]
-		},
-		{
-			"root": "pages/CommonConfirm",
-			"pages": [{
-				"path": "CommonConfirm",
-				"style": {
-					"navigationBarTitleText": "确认"
-				}
-			}]
-		},
-		{
-			"root": "pages/costApp",
-			"pages": [{
-					"path": "caform/caform",
-					"style": {
-						"navigationBarTitleText": "支出申请"
-					}
-				},
-				{
-					"path": "calist/calist",
-					"style": {
-						"navigationBarTitleText": "支出申请历史"
-					}
-				},
-				{
-					"path": "cadetail/cadetail",
-					"style": {
-						"navigationBarTitleText": "支出申请历史"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/costReim",
-			"pages": [{
-					"path": "list/list",
-					"style": {
-						"navigationBarTitleText": "历史申请"
-					}
-				},
-				{
-					"path": "form/form",
-					"style": {
-						"navigationBarTitleText": "费用报销"
-					}
-				},
-				{
-					"path": "detail/detail",
-					"style": {
-						"navigationBarTitleText": "费用报销详情"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/ReimbursementRequest",
-			"pages": [{
-					"path": "ReimRequestlist/ReimRequestlist",
-					"style": {
-						"navigationBarTitleText": "报销申请"
-					}
-				},
-				{
-					"path": "ReimRequestform/ReimRequestform",
-					"style": {
-						"navigationBarTitleText": "报销申请"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/RepaymentRequest",
-			"pages": [{
-					"path": "RepaymentRequestlist/RepaymentRequestlist",
-					"style": {
-						"navigationBarTitleText": "还款申请"
-					}
-				},
-				{
-					"path": "RepaymentRequestform/RepaymentRequestform",
-					"style": {
-						"navigationBarTitleText": "还款申请"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/BorrowRequest",
-			"pages": [{
-					"path": "BorrowRequestform/BorrowRequestform",
-					"style": {
-						"navigationBarTitleText": "借款申请"
-					}
-				},
-				{
-					"path": "BorrowRequestlist/BorrowRequestlist",
-					"style": {
-						"navigationBarTitleText": "借款申请"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/BusinesstravelRequest",
-			"pages": [{
-					"path": "BusinesstravelRequestlist/BusinesstravelRequestlist",
-					"style": {
-						"navigationBarTitleText": "差旅报销申请"
-					}
-				},
-				{
-					"path": "BusinesstravelRequestform/BusinesstravelRequestform",
-					"style": {
-						"navigationBarTitleText": "差旅报销申请"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/DepleteRequest",
-			"pages": [{
-					"path": "DepleteRequestlist/DepleteRequestlist",
-					"style": {
-						"navigationBarTitleText": "消耗申请"
-					}
-				},
-				{
-					"path": "DepleteRequestform/DepleteRequestform",
-					"style": {
-						"navigationBarTitleText": "消耗申请"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/CheckRecord",
-			"pages": [{
-				"path": "CheckRecord",
-				"style": {
-					"navigationBarTitleText": "打卡记录"
-				}
-			}   
-			 /* ,{
+        },
+        {
+            "root": "pages/My",
+            "pages": [
+                {
+                    "path": "AttendanceCollection/AttendanceCollection",
+                    "style": {}
+                },
+                {
+                    "path": "AboutUs/AboutUs",
+                    "style": {}
+                },
+                {
+                    "path": "MySalary/MySalary",
+                    "style": {}
+                },
+                {
+                    "path": "RemainSalaryHoliday/RemainSalaryHoliday",
+                    "style": {}
+                },
+                {
+                    "path": "Question/Question",
+                    "style": {}
+                },
+                {
+                    "path": "Result/Result",
+                    "style": {}
+                },
+                {
+                    "path": "MyBaseInfo/MyBaseInfo",
+                    "style": {}
+                },
+                {
+                    "path": "SystemSetting/SystemSetting",
+                    "style": {}
+                }
+            ]
+        },
+        {
+            "root": "pages/CommonConfirm",
+            "pages": [
+                {
+                    "path": "CommonConfirm",
+                    "style": {
+                        "navigationBarTitleText": "确认"
+                    }
+                }
+            ]
+        },
+        {
+            "root": "pages/costApp",
+            "pages": [
+                {
+                    "path": "caform/caform",
+                    "style": {
+                        "navigationBarTitleText": "支出申请"
+                    }
+                },
+                {
+                    "path": "calist/calist",
+                    "style": {
+                        "navigationBarTitleText": "支出申请历史"
+                    }
+                },
+                {
+                    "path": "cadetail/cadetail",
+                    "style": {
+                        "navigationBarTitleText": "支出申请历史"
+                    }
+                }
+            ]
+        },
+        {
+            "root": "pages/costReim",
+            "pages": [
+                {
+                    "path": "list/list",
+                    "style": {
+                        "navigationBarTitleText": "历史申请"
+                    }
+                },
+                {
+                    "path": "form/form",
+                    "style": {
+                        "navigationBarTitleText": "费用报销"
+                    }
+                },
+                {
+                    "path": "detail/detail",
+                    "style": {
+                        "navigationBarTitleText": "费用报销详情"
+                    }
+                }
+            ]
+        },
+        {
+            "root": "pages/ReimbursementRequest",
+            "pages": [
+                {
+                    "path": "ReimRequestlist/ReimRequestlist",
+                    "style": {
+                        "navigationBarTitleText": "报销申请"
+                    }
+                },
+                {
+                    "path": "ReimRequestform/ReimRequestform",
+                    "style": {
+                        "navigationBarTitleText": "报销申请"
+                    }
+                }
+            ]
+        },
+        {
+            "root": "pages/RepaymentRequest",
+            "pages": [
+                {
+                    "path": "RepaymentRequestlist/RepaymentRequestlist",
+                    "style": {
+                        "navigationBarTitleText": "还款申请"
+                    }
+                },
+                {
+                    "path": "RepaymentRequestform/RepaymentRequestform",
+                    "style": {
+                        "navigationBarTitleText": "还款申请"
+                    }
+                }
+            ]
+        },
+        {
+            "root": "pages/BorrowRequest",
+            "pages": [
+                {
+                    "path": "BorrowRequestform/BorrowRequestform",
+                    "style": {
+                        "navigationBarTitleText": "借款申请"
+                    }
+                },
+                {
+                    "path": "BorrowRequestlist/BorrowRequestlist",
+                    "style": {
+                        "navigationBarTitleText": "借款申请"
+                    }
+                }
+            ]
+        },
+        {
+            "root": "pages/BusinesstravelRequest",
+            "pages": [
+                {
+                    "path": "BusinesstravelRequestlist/BusinesstravelRequestlist",
+                    "style": {
+                        "navigationBarTitleText": "差旅报销申请"
+                    }
+                },
+                {
+                    "path": "BusinesstravelRequestform/BusinesstravelRequestform",
+                    "style": {
+                        "navigationBarTitleText": "差旅报销申请"
+                    }
+                }
+            ]
+        },
+        {
+            "root": "pages/DepleteRequest",
+            "pages": [
+                {
+                    "path": "DepleteRequestlist/DepleteRequestlist",
+                    "style": {
+                        "navigationBarTitleText": "消耗申请"
+                    }
+                },
+                {
+                    "path": "DepleteRequestform/DepleteRequestform",
+                    "style": {
+                        "navigationBarTitleText": "消耗申请"
+                    }
+                }
+            ]
+        },
+        {
+            "root": "pages/CheckRecord",
+            "pages": [
+                {
+                    "path": "CheckRecord",
+                    "style": {
+                        "navigationBarTitleText": "打卡记录"
+                    }
+                }
+                /* ,{
                     "path" : "CheckRecord",
                     "style" : {}
                 } */
             ]
-		},
-		{
-			"root": "pages/ApprovalNote",
-			"pages": [{
-					"path": "ApprovalNoteList",
-					"style": {}
-				},
-				{
-					"path": "ReceiptPage/ReceiptPage",
-					"style": {
-						"app-plus": {
-							"navigationBarTitleText": "确认订单",
-							"titleNView": {
-								"autoBackButton": false,
-								"buttons": [{
-									"float": "left",
-									"type": "back"
-								}]
-							}
-						}
-					}
-				},
-				{
-					//审批处理模板
-					"path": "ApprovalHandle",
-					"style": {}
-				}
-			]
-		},
-		{
-			"root": "pages/meeting",
-			"pages": [{
-					"path": "meetingroomlist",
-					"style": {
-						"navigationBarTitleText": "预约会议室",
-						"app-plus": {
-							"bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突 (小程序无法取消)
-						}
-					}
-				},
-				{
-					"path": "meetinglist",
-					"style": {
-						"navigationBarTitleText": "会议列表",
-						"app-plus": {
-							"bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突 (小程序无法取消)
-						}
-					}
-				},
-				{
-					"path": "meeting",
-					"style": {
-						"navigationBarTitleText": "会议",
-						"app-plus": {
-							"bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突 (小程序无法取消)
-						}
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/task",
-			"pages": [{
-					"path": "tasklist/tasklist",
-					"style": {
-						/* "enablePullDownRefresh": true */
-					}
-				},
-				{
-					"path": "taskdetail/taskdetail",
-					"style": {}
-				}
-			]
-		},
-		{
-			"root": "pages/ExtraWork",
-			"pages": [{
-					"path": "ExtraWorklist/ExtraWorklist",
-					"style": {}
-				},
-				{
-					"path": "ExtraWorkform/ExtraWorkform",
-					"style": {}
-				}
-			]
-		},
-		{
-			"root": "pages/Leave",
-			"pages": [{
-					"path": "Leavelist/Leavelist",
-					"style": {}
-				},
-				{
-					"path": "Leaveform/Leaveform",
-					"style": {}
-				}
-			]
-		},
-		{
-			"root": "pages/Goout",
-			"pages": [{
-					"path": "Gooutlist/Gooutlist",
-					"style": {}
-				},
-				{
-					"path": "Gooutform/Gooutform",
-					"style": {}
-				}
-			]
-		},
-		{
-			"root": "pages/Trip",
-			"pages": [{
-					"path": "Triplist/Triplist",
-					"style": {}
-				},
-				{
-					"path": "Tripform/Tripform",
-					"style": {}
-				},
-				{
-					"path": "Tripform/TripSelect",
-					"style": {}
-				}
-			]
-		},
-		{
-			"root": "pages/MessageRecords",
-			"pages": [{
-					"path": "MessageRecordslist/MessageRecordslist",
-					"style": {}
-				},
-				{
-					"path": "MessageRecordsform/MessageRecordsform",
-					"style": {}
-				}
-			]
-		},
-		{
-			"root": "pages/MainMenu",
-			"pages": [{
-				"path": "ExtendAnnualLeave/ExtendAnnualLeave",
-				"style": {}
-			}]
-		}
-	],
-	"tabBar": {
-		"color": "#7A7E83",
-		"selectedColor": "#007AFF",
-		"borderStyle": "black",
-		"backgroundColor": "#F8F8F8",
-		"list": [{
-				"pagePath": "pages/tabBar/firstPage/firstPage",
-				"iconPath": "static/template.png",
-				"selectedIconPath": "static/templateHL.png",
-				"text": "菜单"
-			},
-			{
-				"pagePath": "pages/Attendance/CheckInOut/CheckInOut",
-				"iconPath": "static/location.png",
-				"selectedIconPath": "static/locationfill.png",
-				"text": "打卡"
-			},
-			{
-				"pagePath": "pages/tabBar/personpage/personpage",
-				"iconPath": "static/mime.png",
-				"selectedIconPath": "static/mimeHL.png",
-				"text": "我的"
-			}
-		]
-	},
-	"globalStyle": {
-		"navigationBarBackgroundColor": "#39b54a",
-		"navigationBarTitleText": "SmartOffice",
-		"navigationStyle": "custom",
-		"navigationBarTextStyle": "white"
-	}
+        },
+        {
+            "root": "pages/ApprovalNote",
+            "pages": [
+                {
+                    "path": "ApprovalNoteList",
+                    "style": {}
+                },
+                {
+                    "path": "ReceiptPage/ReceiptPage",
+                    "style": {
+                        "app-plus": {
+                            "navigationBarTitleText": "确认订单",
+                            "titleNView": {
+                                "autoBackButton": false,
+                                "buttons": [
+                                    {
+                                        "float": "left",
+                                        "type": "back"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    //审批处理模板
+                    "path": "ApprovalHandle",
+                    "style": {}
+                }
+            ]
+        },
+        {
+            "root": "pages/task",
+            "pages": [
+                {
+                    "path": "tasklist/tasklist",
+                    "style": {
+                        /* "enablePullDownRefresh": true */
+                    }
+                },
+                {
+                    "path": "taskdetail/taskdetail",
+                    "style": {}
+                }
+            ]
+        },
+        {
+            "root": "pages/ExtraWork",
+            "pages": [
+                {
+                    "path": "ExtraWorklist/ExtraWorklist",
+                    "style": {}
+                },
+                {
+                    "path": "ExtraWorkform/ExtraWorkform",
+                    "style": {}
+                }
+            ]
+        },
+        {
+            "root": "pages/Leave",
+            "pages": [
+                {
+                    "path": "Leavelist/Leavelist",
+                    "style": {}
+                },
+                {
+                    "path": "Leaveform/Leaveform",
+                    "style": {}
+                }
+            ]
+        },
+        {
+            "root": "pages/Goout",
+            "pages": [
+                {
+                    "path": "Gooutlist/Gooutlist",
+                    "style": {}
+                },
+                {
+                    "path": "Gooutform/Gooutform",
+                    "style": {}
+                }
+            ]
+        },
+        {
+            "root": "pages/Trip",
+            "pages": [
+                {
+                    "path": "Triplist/Triplist",
+                    "style": {}
+                },
+                {
+                    "path": "Tripform/Tripform",
+                    "style": {}
+                },
+                {
+                    "path": "Tripform/TripSelect",
+                    "style": {}
+                }
+            ]
+        },
+        {
+            "root": "pages/MessageRecords",
+            "pages": [
+                {
+                    "path": "MessageRecordslist/MessageRecordslist",
+                    "style": {}
+                },
+                {
+                    "path": "MessageRecordsform/MessageRecordsform",
+                    "style": {}
+                }
+            ]
+        },
+        {
+            "root": "pages/MainMenu",
+            "pages": [
+                {
+                    "path": "ExtendAnnualLeave/ExtendAnnualLeave",
+                    "style": {}
+                }
+            ]
+        }
+    ],
+    "tabBar": {
+        "color": "#7A7E83",
+        "selectedColor": "#007AFF",
+        "borderStyle": "black",
+        "backgroundColor": "#F8F8F8",
+        "list": [
+            {
+                "pagePath": "pages/tabBar/firstPage/firstPage",
+                "iconPath": "static/template.png",
+                "selectedIconPath": "static/templateHL.png",
+                "text": "菜单"
+            },
+            {
+                "pagePath": "pages/Attendance/CheckInOut/CheckInOut",
+                "iconPath": "static/location.png",
+                "selectedIconPath": "static/locationfill.png",
+                "text": "打卡"
+            },
+            {
+                "pagePath": "pages/tabBar/personpage/personpage",
+                "iconPath": "static/mime.png",
+                "selectedIconPath": "static/mimeHL.png",
+                "text": "我的"
+            }
+        ]
+    },
+    "globalStyle": {
+        "navigationBarBackgroundColor": "#39b54a",
+        "navigationBarTitleText": "SmartOffice",
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white"
+    }
 }

@@ -42,47 +42,47 @@
 				gridCol: 3,
 				gridBorder: false,
 				title: "这是段描述性的文字",
-				grids: [
-					"../../../static/sp.png",
-					"../../../static/c2.png",
-					"../../../static/c3.png",
-					"../../../static/c4.png",
-					"../../../static/c5.png",
-					"../../../static/c6.png",
-					"../../../static/c7.png",
-					"../../../static/c8.png",
-					"../../../static/c9.png"
-				],
+				// grids: [
+				// 	"../../../static/sp.png",
+				// 	"../../../static/c2.png",
+				// 	"../../../static/c3.png",
+				// 	"../../../static/c4.png",
+				// 	"../../../static/c5.png",
+				// 	"../../../static/c6.png",
+				// 	"../../../static/c7.png",
+				// 	"../../../static/c8.png",
+				// 	"../../../static/c9.png"
+				// ],
 				imgUrls: [
 					this.$webapi.webroot + "/Images/MP/bannera.png",
 					this.$webapi.webroot + "/Images/MP/bannerb.png"
 				],
-				grids1: [{
-						id: 1,
-						text: "请假",
-						url: "../../../static/sp.png"
-					},
-					{
-						id: 2,
-						text: "",
-						url: "../../../static/c2.png"
-					},
-					{
-						id: 3,
-						text: "",
-						url: "../../../static/c3.png"
-					},
-					{
-						id: 4,
-						text: "",
-						url: "../../../static/c4.png"
-					},
-					{
-						id: 5,
-						text: "",
-						url: "../../../static/c5.png"
-					}
-				],
+				// grids1: [{
+				// 		id: 1,
+				// 		text: "请假",
+				// 		url: "../../../static/sp.png"
+				// 	},
+				// 	{
+				// 		id: 2,
+				// 		text: "",
+				// 		url: "../../../static/c2.png"
+				// 	},
+				// 	{
+				// 		id: 3,
+				// 		text: "",
+				// 		url: "../../../static/c3.png"
+				// 	},
+				// 	{
+				// 		id: 4,
+				// 		text: "",
+				// 		url: "../../../static/c4.png"
+				// 	},
+				// 	{
+				// 		id: 5,
+				// 		text: "",
+				// 		url: "../../../static/c5.png"
+				// 	}
+				// ],
 				ApprovalBage: "",
 				BacklogBage: "",
 				MessageBage: "",
@@ -188,11 +188,6 @@
 					case "histasklist": //已办任务
 						uni.navigateTo({
 							url: "/pages/histask/histasklist/histasklist"
-						});
-						break;
-					case "meeting": //预约会议室
-						uni.navigateTo({
-							url: "/pages/meeting/meetingroomlist"
 						});
 						break;
 					case "AlertMessage": //警报提醒
@@ -455,48 +450,6 @@
 							}
 						});
 						
-						
-						/* resultM.data.forEach(item => {
-							item.children.forEach(_item => {
-								_item.children.forEach(__item => {
-									if (_item.isVisible === "Yes") {
-										if (__item.Code === "approvallist") {
-											_this.iconList.push({
-												id: __item.Code,
-												icon: __item.Icon,
-												color: __item.Remarks,
-												badge: _this.ApprovalBage,
-												name: __item.Name
-											});
-										} else if (__item.Code === "tasklist") {
-											_this.iconList.push({
-												id: __item.Code,
-												icon: __item.Icon,
-												color: __item.Remarks,
-												badge: _this.BacklogBage,
-												name: __item.Name
-											});
-										} else if (__item.Code === "AlertMessage") {
-											_this.iconList.push({
-												id: __item.Code,
-												icon: __item.Icon,
-												color: __item.Remarks,
-												badge: _this.MessageBage,
-												name: __item.Name
-											});
-										} else {
-											_this.iconList.push({
-												id: __item.Code,
-												icon: __item.Icon,
-												color: __item.Remarks,
-												badge: 0,
-												name: __item.Name
-											});
-										}
-									}
-								});
-							});
-						}); */
 						if (!this.$mbservices.isEmpty(e.data)) {
 							if (JSON.parse(e.data).from === "ApprovalNoteList") {
 								uni.navigateTo({

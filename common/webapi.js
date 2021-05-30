@@ -1,11 +1,7 @@
-var websiteUrl = "https://so.magicdata.co";
-/* https://oa.magicbox.net.cn*/
-/* http://localhost:62142 */
-/* http://localhost:51682 */
-/* http://oa.magicbox.net.cn */
-/* http://192.168.0.109:8080 */
-/* https://oa.magicbox.net.cn*/
-/* https://so.magicdata.co */
+var websiteUrl = "https://oa.magicbox.net.cn";
+
+/* https://oa.magicbox.net.cn  magic  */
+/* https://so.magicdata.co  hisiang  */
 module.exports = {
 	/* 接口根目录 */
 	webroot: websiteUrl,
@@ -149,10 +145,6 @@ module.exports = {
 	submitDepleteRequestList: websiteUrl + '/api/DepleteDetails/Save',
 	/* 获取我的审核列表 */
 	getApprovalNotesList: websiteUrl + '/api/ApprovalNote/GetApprovalNotes',
-	// 获取可用会议室列表
-	getMeetingroomList: websiteUrl + "/api/MeetingRoom/GetRecords",
-	// 获取可用会议列表
-	getMeetingList: websiteUrl + "/api/Meeting/GetRecords",
 	// 获取我的审批未读
 	getApprovalNote: websiteUrl + "/api/ApprovalNote/GetRecordCounter",
 	//获取待办事项未读

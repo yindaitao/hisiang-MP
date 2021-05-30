@@ -251,40 +251,6 @@
 				});
 			}
 			// #endif
-			// #ifdef MP-WEIXIN
-			/* let param = {
-				PageIndex: 1,
-				RowsPerPage: "1000",
-				type: "Initialize",
-				Parameter: {
-					LoadChildren: "Load",
-					Conditions: [{
-						FieldName: "Activated",
-						Operation: "EQUAL",
-						ConditionValue: 'Y',
-						Relationship: "AND"
-					}],
-					ChildCriterias: [{
-						BusinessObjectSearchType: "Search",
-						BusinessObjectTypeName: "ScheduleLine",
-						Conditions: [{
-							FieldName: "UserId",
-							Operation: "EQUAL",
-							ConditionValue: uni.getStorageSync("JSUserInfo").UserId,
-							Relationship: "AND"
-						}]
-					}],
-				}
-
-			};
-			this.$mbservices.Request(this.$webapi.getScheduleList, 'POST', param, res => {
-				if (res.data.RecordCount > 0) {
-					Vue.prototype.ScheduleEntity = res.data.data[0];
-				}
-			}, err => {
-				console.log(err);
-			}) */
-			//#endif
 		},
 		onHide: function() {
 			console.log('App Hide')
@@ -293,14 +259,8 @@
 </script>
 
 <style>
-	/* uni.css - 通用组件、模板样式库，可以当作一套ui库应用 */
-
-	/* @import './common/uni.css'; */
-
-
 	@import "./common/icon.css";
 	@import "./common/colorui.css";
-	/* @import "./common/main.css"; */
 
 	::-webkit-scrollbar {
 	  display: none;
