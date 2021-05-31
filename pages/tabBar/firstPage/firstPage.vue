@@ -30,7 +30,7 @@
 </template>
 
 <script>
-	import uniIcon from "../../../components/uni-icon/uni-icon";
+    import uniIcon from "../../../components/uni-icons/components/uni-icons/uni-icons";
 	export default {
 		comments: {
 			uniIcon

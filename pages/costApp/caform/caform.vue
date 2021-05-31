@@ -107,7 +107,7 @@
 
 <script>
 import abc from "../../components/uni-datetimepicker.vue";
-import uniIcon from "../../../components/uni-icon/uni-icon.vue";
+import uniIcon from "../../../components/uni-icons/components/uni-icons/uni-icons";
 var sourceType = [["camera"], ["album"], ["camera", "album"]];
 var sizeType = [["compressed"], ["original"], ["compressed", "original"]];
 export default {

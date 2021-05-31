@@ -122,7 +122,7 @@
 
 <script>
 	import abc from "../../components/uni-datetimepicker.vue";
-	import uniIcon from "../../../components/uni-icon/uni-icon.vue";
+    import uniIcon from "../../../components/uni-icons/components/uni-icons/uni-icons";
 	let sourceType = [
 		["camera"],
 		["album"],
