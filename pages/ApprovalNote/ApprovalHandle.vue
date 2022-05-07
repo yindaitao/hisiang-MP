@@ -72,7 +72,7 @@
         <view v-if="appNote.ApproveStatus==='Pending'">
             <view class="cu-bar bg-white solid-bottom solid-top">
                 <view class="action">
-                    <text class="icon-title text-orange"></text> 审批操作
+                    <text class="icon-title text-orange"></text> 审批意见
                 </view>
             </view>
             <view class="bg-white padding">
