@@ -170,8 +170,9 @@ export default {
                                         title: "" + retsucc.data
                                     });
                                     _this.getApprovalStages(
-                                        retsucc.data.DocEntry
+                                        _this.appNote.DocEntry
                                     );
+									_this.getApprovalNoteData(_this.appNote.DocEntry);
                                     return false;
                                 }
                                 _this.$mbservices.setIsRefresh(true);
