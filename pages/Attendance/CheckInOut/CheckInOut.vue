@@ -259,7 +259,7 @@ ss<template>
 				covers: [{
 					width: 50,
 					height: 50,
-					id: '_marker_1',
+					id: 1,
 					latitude: 36.645008,
 					longitude: 116.915131,
 					// #ifdef APP-PLUS

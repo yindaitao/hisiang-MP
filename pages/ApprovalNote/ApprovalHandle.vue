@@ -69,26 +69,29 @@
         </view>
 
         <!-- 审批操作 -->
-        <view v-if="appNote.ApproveStatus==='Pending'">
+        <view>
             <view class="cu-bar bg-white solid-bottom solid-top">
                 <view class="action">
                     <text class="icon-title text-orange"></text> 审批意见
                 </view>
             </view>
             <view class="bg-white padding">
-                <view class="cu-form-group">
+                <view class="cu-form-group" v-if="appNote.ApproveStatus === 'Pending'">
                     <textarea
                         data-placeholder="在此输入审批意见"
                         maxlength="-1"
                         :disabled="modalName!=null"
                         placeholder-class='placeholder'
-                        :class="textareaAValue?'value':''"
+                        :class="appNote.ApprovalComments?'value':''"
                         @input="textareaAInput"
-						:value="textareaAValue"
+						:value="appNote.ApprovalComments" 
                     ></textarea>
                 </view>
+				<view class="cu-form-group" v-if="appNote.ApproveStatus !== 'Pending'">
+				    <text>{{appNote.ApprovalComments}}</text>
+				</view>
             </view>
-            <view class="cu-bar bg-white solid-bottom solid-top">
+            <view class="cu-bar bg-white solid-bottom solid-top"  v-if="appNote.ApproveStatus==='Pending'">
                 <view class="action">
 
                 </view>
@@ -136,7 +139,7 @@ export default {
             }
         },
         textareaAInput(e) {
-            this.textareaAValue = e.detail.value;
+            this.appNote.ApprovalComments = e.detail.value;
         },
         actionClick(type, e) {
             var _content = type === "A" ? "确定同意申请?" : "确定拒绝申请?";
@@ -152,7 +155,7 @@ export default {
                         /* 开始提交审批 */
                         _this.appNote.UIStatus = "Modify";
                         _this.appNote.ApproveStatus = type;
-                        _this.appNote.ApprovalComments = _this.textareaAValue;
+                        //_this.appNote.ApprovalComments = _this.textareaAValue;
                         _this.appNote.Approver = parseInt(
                             uni.getStorageSync("JSUserInfo").UserId
                         );
@@ -229,6 +232,9 @@ export default {
                 item => {
                     if (item.data.RecordCount >= 1) {
                         _this.appNote = item.data.data[0];
+						if(this.$mbservices.isEmpty(_this.appNote.ApprovalComments)){
+							_this.appNote.ApprovalComments = "";
+						}
                     }
                 },
                 errItem => {}
