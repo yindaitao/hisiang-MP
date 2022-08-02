@@ -1,8 +1,8 @@
-var websiteUrl = "https://oa.magicbox.net.cn";
+var websiteUrl = "https://so.magicdata.co";
 
 /* https://oa.magicbox.net.cn  magic  */
 /* https://so.magicdata.co  hisiang  */
-module.exports = {
+module.exports = {	
 	/* 接口根目录 */
 	webroot: websiteUrl,
 	/* 图片上传路径 */

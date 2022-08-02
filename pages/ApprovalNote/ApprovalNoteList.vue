@@ -59,6 +59,10 @@
 									<text class="icon-timefill margin-right-xs"></text>
 									创建时间:{{list.CreateDate}}
 								</view>
+								<view class="text-gray text-sm" v-if="list.BusinessType==='FRP-Payment'">
+									<text class="icon-timefill margin-right-xs"></text>
+									截止日期:{{$mbservices.isEmpty(list.date1)?'无':list.date1}}
+								</view>
 							</view>
 							<view class="action">
 								<view v-if="list.ApproveStatus==='Pending'" class="cu-tag round bg-olive light">{{list.AApproveStatus}}</view>
