@@ -36,7 +36,7 @@
 							<text class="text-grey text-left">{{item.FieldName}}</text>
 						</view>
 						<view class="flex-sub padding-sm radius basis-xs text-right">
-							<text class="text-grey text-right badge radius">￥ {{item.Value}}</text>
+							<text class="text-grey text-left badge radius">￥ {{item.Value.toString()==="NaN"?0:item.Value}}</text>
 						</view>
 					</view>
 				</view>

@@ -167,29 +167,6 @@
 					fail: err => {}
 				});
 			},
-			async ValidateUserInfo(UserId, Pswd, OpenId) {
-				return new Promise((res, err) => {
-					uni.request({
-						url: this.$webapi.ValidateUserInfo,
-						method: "POST",
-						header: {
-							"content-type": "application/x-www-form-urlencoded;charset=utf-8",
-							Authorization: "Basic bWFnaWM6MTIzNA=="
-						},
-						data: {
-							UserId: UserId,
-							Pswd: Pswd,
-							OpenId: OpenId
-						},
-						success: result => {
-							res(result)
-						},
-						fail: fail => {
-							err(fail)
-						}
-					});
-				})
-			},
 			async submitLoginAction(code) {
 				if (this.$mbservices.isEmpty(this.Openid)) {
 					uni.showModal({
@@ -197,18 +174,7 @@
 					})
 					return;
 				}
-				let reponse = await this.ValidateUserInfo(this.logininfo.userCode, hex_md5.hxmd5(this.logininfo.password), this.Openid);
-				
-				if (this.$mbservices.isEmpty(reponse) || this.$mbservices.isEmpty(reponse.data) || this.$mbservices.isEmpty(
-						reponse.data.RecordCount) || reponse.data.RecordCount <= 0) {
-					uni.showToast({
-						title: reponse.data.data,
-						icon: 'none'
-					})
-					this.logininfo.loading = false;
-					return false;
-				}
-
+		
 				let __this = this;
 				let OrherInfo = {};
 				OrherInfo.IsFirst = true;

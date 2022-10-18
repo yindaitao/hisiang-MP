@@ -1,4 +1,4 @@
-var websiteUrl = "https://oa.magicbox.net.cn";
+var websiteUrl = "http://192.168.116.143:49832";
 
 /* https://oa.magicbox.net.cn  magic  */
 /* https://so.magicdata.co  hisiang  */
@@ -12,7 +12,7 @@ module.exports = {
 	/* 登录 */
 	login: websiteUrl + '/Token',
 	/* 登陆前验证 */
-	ValidateUserInfo: websiteUrl + '/api/User/ValidateUserInfo',
+	ValidateUserInfo: websiteUrl + '/api/WeChat/ValidateUserInfo',
 	/* 根据用户id获取用户信息 */
 	getUserInfo: websiteUrl + '/api/User/GetUsers',
 	/* 获取AccessToken */

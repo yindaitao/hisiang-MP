@@ -152,13 +152,13 @@
 						<view class="cu-form-group">
 							<view class="title text-gray">紧急联系人</view>
 							<view>
-								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.EmergencyContact}}</text>
+								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.EmergencyContact===null?"":EmployeeInfo.EmergencyContact}}</text>
 							</view>
 						</view>
 						<view class="cu-form-group">
 							<view class="title text-gray">紧急联系人电话</view>
 							<view>
-								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.EmergencyPhone}}</text>
+								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.EmergencyPhone===null?"":EmployeeInfo.EmergencyPhone}}</text>
 							</view>
 						</view>
 						<view class="cu-form-group">
@@ -228,43 +228,31 @@
 						<view class="cu-form-group">
 							<view class="title text-gray">入职日期</view>
 							<view>
-								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.StartDate}}</text>
+								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.StartDate===null?"":EmployeeInfo.StartDate}}</text>
 							</view>
 						</view>
 						<view class="cu-form-group">
 							<view class="title text-gray">试用周期</view>
 							<view>
-								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.TrialPeriod}}</text>
+								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.TrialPeriod===null?"":EmployeeInfo.TrialPeriod}}</text>
 							</view>
 						</view>
 						<view class="cu-form-group">
 							<view class="title text-gray">转正日期</view>
 							<view>
-								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.OfficalStartDate}}</text>
+								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.OfficalStartDate===null?"":EmployeeInfo.OfficalStartDate}}</text>
 							</view>
 						</view>
 						<view class="cu-form-group">
 							<view class="title text-gray">固定电话</view>
 							<view>
-								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.Phone}}</text>
+								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.Phone===null?"":EmployeeInfo.Phone}}</text>
 							</view>
 						</view>
 						<view class="cu-form-group">
 							<view class="title text-gray">司龄</view>
 							<view>
-								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.ComapnyAge}}</text>
-							</view>
-						</view>
-						<view class="cu-form-group">
-							<view class="title text-gray">离职日期</view>
-							<view>
-								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.TermDate}}</text>
-							</view>
-						</view>
-						<view class="cu-form-group">
-							<view class="title text-gray">离职原因</view>
-							<view>
-								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.TermReason}}</text>
+								<text class="text-right text-grey padding-right text-cut">{{EmployeeInfo.ComapnyAge===null?"":EmployeeInfo.ComapnyAge}}</text>
 							</view>
 						</view>
 					</view>
