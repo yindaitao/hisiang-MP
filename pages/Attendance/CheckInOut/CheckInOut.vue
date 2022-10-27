@@ -227,6 +227,7 @@ ss<template>
 		data() {
 			let _timeShow = this.$mbservices.formatDateTime(new Date(), 'hh:mm:ss')
 			return {
+				ExtraLongLatLineNum: null,
 				Loaded: false,
 				txtContent: '',
 				TimeShow: _timeShow,
@@ -352,7 +353,7 @@ ss<template>
 					title: '请稍后...'
 				})
 				let param = {
-					PageIndex: 1,
+					PageIndex: 1, 
 					RowsPerPage: "1000",
 					type: "Initialize",
 					Parameter: {
@@ -516,6 +517,8 @@ ss<template>
 												if (parseFloat(opt.distance) <= parseFloat(_opt.LimitRadius)) {
 													isHave = true;
 													option = opt;
+													option.IsMealAllowance = _opt.IsMealAllowance;
+													this.ExtraLongLatLineNum = _opt.LineNum;
 													aimIndex = idx;
 												}
 											}
@@ -533,6 +536,7 @@ ss<template>
 										this.ScheduleEntity.Latitude = option.Latitude;
 										this.ScheduleEntity.Longitude = option.Longitude;
 										this.ScheduleEntity.LimitRadius = option.LimitRadius; //this.element.elements[0];
+										this.ScheduleEntity.IsMealAllowance = option.IsMealAllowance;
 
 										this.Loaded = true;
 										this.$forceUpdate()
@@ -852,6 +856,10 @@ ss<template>
 					data.ScheduleLmt = this.ScheduleEntity.LimitRadius; //this.element.elements[0];
 					data.CurentLat = this.latitude;
 					data.CurentLng = this.longitude;
+					//打卡记录 储存  排班编码、
+					data.ScheduleCode = this.ScheduleEntity.ScheduleCode;
+					data.ExtraLongLatLineNum = this.ExtraLongLatLineNum;
+					data.IsMealAllowance = this.ScheduleEntity.IsMealAllowance;
 					if (this.element.elements[0] === undefined || this.element.elements.length <= 0 || this.$mbservices.isEmpty(this.element
 							.elements[0].distance)) {
 						uni.showToast({
@@ -983,6 +991,10 @@ ss<template>
 					data.ScheduleLmt = this.ScheduleEntity.LimitRadius; //this.element.elements[0];
 					data.CurentLat = this.latitude;
 					data.CurentLng = this.longitude;
+					//打卡记录 储存  排班编码、
+					data.ScheduleCode = this.ScheduleEntity.ScheduleCode;
+					data.ExtraLongLatLineNum = this.ExtraLongLatLineNum;
+					data.IsMealAllowance = this.ScheduleEntity.IsMealAllowance;
 					if (this.element.elements[0] === undefined || this.element.elements.length <= 0 || this.$mbservices.isEmpty(this.element
 							.elements[0].distance)) {
 						uni.showToast({
