@@ -66,7 +66,10 @@
             "scope.userLocation" : {
                 "desc" : "请选择允许以保证能够正常打卡"
             }
-        }
+        },
+		"requiredPrivateInfos": [
+			"getLocation"
+		]
     },
     "mp-alipay" : {
         "usingComponents" : true
