@@ -939,7 +939,7 @@ ss<template>
 					})
 					return false;
 				} */
-				if (this.$mbservices.isEmpty(this.txtContent)) {
+				if (this.$mbservices.isEmpty(this.txtContent.trim())) {
 					uni.showToast({
 						title: '请输入外勤原因',
 						icon: 'none'
