@@ -232,6 +232,12 @@ export default {
                 item => {
                     if (item.data.RecordCount >= 1) {
                         _this.appNote = item.data.data[0];
+						if(_this.appNote.BusinessOrderNo.indexOf('GQ') > -1 || _this.appNote.BusinessOrderNo.indexOf('GPY') > -1 
+						|| _this.appNote.BusinessOrderNo.indexOf('GBP') > -1 || _this.appNote.BusinessOrderNo.indexOf('GEMLOG') > -1 
+						 || _this.appNote.BusinessOrderNo.indexOf('GS') > -1 ||
+						 (_this.appNote.BusinessType === "FRP-BusinessOrderSea" && _this.appNote.BusinessOrderNo.indexOf('G') > -1)){
+							_this.appNote.BusinessTypeName = _this.appNote.BusinessTypeName.replace("FRP","LRP");
+						}
 						if(this.$mbservices.isEmpty(_this.appNote.ApprovalComments)){
 							_this.appNote.ApprovalComments = "";
 						}

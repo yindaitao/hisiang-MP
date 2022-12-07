@@ -749,6 +749,11 @@
 										item.BBusinessType = item.BusinessTypeName;
 										break;
 								}
+								if(item.BusinessOrderNo.indexOf('GQ') > -1 || item.BusinessOrderNo.indexOf('GPY') > -1 || item.BusinessOrderNo.indexOf('GBP') > -1 
+								|| item.BusinessOrderNo.indexOf('GEMLOG') > -1 || item.BusinessOrderNo.indexOf('GS') > -1 ||
+								(item.BusinessType === "FRP-BusinessOrderSea" && item.BusinessOrderNo.indexOf('G') > -1)){
+									item.BBusinessType = item.BusinessTypeName.replace("FRP","LRP");
+								};
 								item.Amount =
 									parseFloat(item.Amount).toString() === "NaN" ?
 									0.0 :
