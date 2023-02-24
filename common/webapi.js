@@ -1,4 +1,4 @@
-var websiteUrl = "https://oa.magicbox.net.cn";
+var websiteUrl = "https://so.magicdata.co";
 
 /* https://oa.magicbox.net.cn  magic  */
 /* https://so.magicdata.co  hisiang  */

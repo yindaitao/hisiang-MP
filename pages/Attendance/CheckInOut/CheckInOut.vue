@@ -4,10 +4,11 @@ ss<template>
 		<scroll-view scroll-y class="page" :style="{'height':scrollBarHeight+'px'}">
 			<view class="bg-white">
 				<view class="top">
-					<view class="bg-blue margin-0 light" style="margin-top: 0px;">当前经纬度:{{latitude}},{{longitude}}</view>
+					<view class="bg-blue margin-0 light" style="margin-top: 0px;">当前经纬度:{{latitude}},{{longitude}}
+					</view>
 				</view>
-				<map id="_mapController" ref="_mapController" :latitude="latitude" @markertap="openMap()" @callouttap="openMap()"
-				 :longitude="longitude" :markers="covers" :circles="circles" :scale="scale">
+				<map id="_mapController" ref="_mapController" :latitude="latitude" @markertap="openMap()"
+					@callouttap="openMap()" :longitude="longitude" :markers="covers" :circles="circles" :scale="scale">
 					<!--  -->
 				</map>
 			</view>
@@ -15,22 +16,26 @@ ss<template>
 				<text>当前连接WIFI:{{WIFIInfo.SSID}}</text>
 			</view>
 			<view class="flex padding justify-center" style="position: relative;">
-				<view v-if="Loaded" @tap="showModal" data-target="ConfirmModal" :class="[toggleDelay?'animation-scale-up':'',IsOutSideWork?'bg-gradual-orange':'bg-gradual-blue']"
-				 class="animation-reverse padding-xl justify-center text-white text-center margin-top-xs" style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
+				<view v-if="Loaded" @tap="showModal" data-target="ConfirmModal"
+					:class="[toggleDelay?'animation-scale-up':'',IsOutSideWork?'bg-gradual-orange':'bg-gradual-blue']"
+					class="animation-reverse padding-xl justify-center text-white text-center margin-top-xs"
+					style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
 					<view class="margin-top">
 						<text class="text-bold">{{BtnActionName}}</text><br />
 						<text>{{TimeShow}}</text>
 					</view>
 				</view>
-				<view v-if="!Loaded" data-target="ConfirmModal" class="animation-reverse padding-xl justify-center text-white text-center margin-top-xs bg-grey"
-				 style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
+				<view v-if="!Loaded" data-target="ConfirmModal"
+					class="animation-reverse padding-xl justify-center text-white text-center margin-top-xs bg-grey"
+					style="min-width: 120px;min-height: 120px;width: 120px;height: 120px;border-radius: 50%;">
 					<view class="margin-top">
 						<text class="text-bold">考勤打卡</text><br />
 						<text>{{TimeShow}}</text>
 					</view>
 				</view>
 				<!-- <text class="text-white" style="position: absolute;margin-top: 75px;">{{TimeShow}}</text> -->
-				<text class="top text-blue text-sm" style="position: absolute;top:15px;right: 15px;" @tap="ToCheckRecord">历史打卡记录</text>
+				<text class="top text-blue text-sm" style="position: absolute;top:15px;right: 15px;"
+					@tap="ToCheckRecord">历史打卡记录</text>
 			</view>
 			<view class="flex solid-bottom padding justify-center" style="position: relative;">
 				<view>
@@ -41,7 +46,7 @@ ss<template>
 					</button>
 				</view>
 			</view>
-			
+
 			<!-- <view class="flex padding justify-center" style="position: relative;">
 				<view>
 					<button class="cu-btn bg-white shadow round-dot" style="background-color: rgba(0,0,0,0);" @tap="ToCheckRecord">
@@ -49,19 +54,27 @@ ss<template>
 					</button>
 				</view>
 			</view> -->
-			<view class="cu-timeline bg-white" v-for="(item,index) in WorkRecords" :key="index" style="background-color: rgba(0,0,0,0);">
+			<view class="cu-timeline bg-white" v-for="(item,index) in WorkRecords" :key="index"
+				style="background-color: rgba(0,0,0,0);">
 				<!-- style="background-color: rgba(0,0,0,0);" -->
-				<view class="cu-time cu-tag radius round margin-left">第{{index+1}}次打卡<text v-if="ScheduleEntity.AttendanceAccording==='Wifi'&&item.RecordIsEffective!=='Yes'"
-					 class="cu-tag radius bg-red">无效</text></view>
+				<view class="cu-time cu-tag radius round margin-left">第{{index+1}}次打卡<text
+						v-if="ScheduleEntity.AttendanceAccording==='Wifi'&&item.RecordIsEffective!=='Yes'"
+						class="cu-tag radius bg-red">无效</text></view>
 				<view class="cu-item">
 					<view class="content">
 						<view class="cu-capsule radius" style="background-color: rgba(0,0,0,0);">
-							<view class="cu-tag bg-cyan" v-if="getMornAfter(item.CheckDatetime)==='上午'">{{getMornAfter(item.CheckDatetime)}}</view>
-							<view class="cu-tag bg-orange" v-if="getMornAfter(item.CheckDatetime)==='下午'">{{getMornAfter(item.CheckDatetime)}}</view>
-							<view class="cu-tag bg-red" v-if="getMornAfter(item.CheckDatetime)==='未知'">{{getMornAfter(item.CheckDatetime)}}</view>
-							<view class="cu-tag line-cyan" v-if="getMornAfter(item.CheckDatetime)==='上午'">{{getCheckTime(item.CheckDatetime)}}</view>
-							<view class="cu-tag line-orange" v-if="getMornAfter(item.CheckDatetime)==='下午'">{{getCheckTime(item.CheckDatetime)}}</view>
-							<view class="cu-tag line-red" v-if="getMornAfter(item.CheckDatetime)==='未知'">{{getCheckTime(item.CheckDatetime)}}</view>
+							<view class="cu-tag bg-cyan" v-if="getMornAfter(item.CheckDatetime)==='上午'">
+								{{getMornAfter(item.CheckDatetime)}}</view>
+							<view class="cu-tag bg-orange" v-if="getMornAfter(item.CheckDatetime)==='下午'">
+								{{getMornAfter(item.CheckDatetime)}}</view>
+							<view class="cu-tag bg-red" v-if="getMornAfter(item.CheckDatetime)==='未知'">
+								{{getMornAfter(item.CheckDatetime)}}</view>
+							<view class="cu-tag line-cyan" v-if="getMornAfter(item.CheckDatetime)==='上午'">
+								{{getCheckTime(item.CheckDatetime)}}</view>
+							<view class="cu-tag line-orange" v-if="getMornAfter(item.CheckDatetime)==='下午'">
+								{{getCheckTime(item.CheckDatetime)}}</view>
+							<view class="cu-tag line-red" v-if="getMornAfter(item.CheckDatetime)==='未知'">
+								{{getCheckTime(item.CheckDatetime)}}</view>
 						</view>
 						<view class="margin-top">
 							<text class="icon-locationfill"></text>{{item.RecordAddress}}附近
@@ -72,8 +85,9 @@ ss<template>
 						<view class="cu-form-group text-left bg-white" style="background-color: rgba(0,0,0,0);">
 							<!-- style="background-color: rgba(0,0,0,0);" -->
 							<view class="grid col-4 grid-square flex-sub">
-								<view class="padding-xs bg-img" :style="'background-image:url(' + _item +')'" v-for="(_item,_idx) in item.PicPaths"
-								 :key="_idx" @tap="ViewImage1(item.PicPaths,_idx)" :data-url="_item">
+								<view class="padding-xs bg-img" :style="'background-image:url(' + _item +')'"
+									v-for="(_item,_idx) in item.PicPaths" :key="_idx"
+									@tap="ViewImage1(item.PicPaths,_idx)" :data-url="_item">
 								</view>
 							</view>
 						</view>
@@ -87,20 +101,26 @@ ss<template>
 					<view class="action text-bold text-xxl">确定打卡?</view>
 					<view class="text-content">
 						<view class="text-left"><text class="text-bold">打卡时间:</text>{{TimeShow}}</view>
-						<view class="text-left" v-if="ValidateAAType()===1"><text class="text-bold">打卡地点:</text><text class="text-sm">{{currentArea.address}}附近</text></view>
-						<view class="text-left" v-if="ValidateAAType()===2"><text class="text-bold">当前链接WIFI:</text><text class="text-sm text-blue text-bold">{{WIFIInfo.SSID}}</text></view>
-						<view class="text-left" v-if="ValidateAAType()===2"><text class="text-bold">当前Mac地址:</text><text class="text-sm text-blue text-bold">{{WIFIInfo.BSSID}}</text>&nbsp;<button
-							 class="cu-btn sm bg-yellow" @tap="cloneMac">复制</button></view>
+						<view class="text-left" v-if="ValidateAAType()===1"><text class="text-bold">打卡地点:</text><text
+								class="text-sm">{{currentArea.address}}附近</text></view>
+						<view class="text-left" v-if="ValidateAAType()===2"><text
+								class="text-bold">当前链接WIFI:</text><text
+								class="text-sm text-blue text-bold">{{WIFIInfo.SSID}}</text></view>
+						<view class="text-left" v-if="ValidateAAType()===2"><text class="text-bold">当前Mac地址:</text><text
+								class="text-sm text-blue text-bold">{{WIFIInfo.BSSID}}</text>&nbsp;<button
+								class="cu-btn sm bg-yellow" @tap="cloneMac">复制</button></view>
 						<view class="text-left">
 							<text class="text-bold">在此备注:</text>
-							<textarea class="text sm-border placeholder" v-if="modalName==='ConfirmModal'" :disabled="modalName===null"
-							 @input="txtInput" style="height: 150px;min-height: 150px;width: 100%;"></textarea>
+							<textarea class="text sm-border placeholder" v-if="modalName==='ConfirmModal'"
+								:disabled="modalName===null" @input="txtInput"
+								style="height: 150px;min-height: 150px;width: 100%;"></textarea>
 						</view>
 					</view>
 				</view>
 				<view class="cu-form-group text-left margin-top" style="background-color: rgba(0,0,0,0);">
 					<view class="grid col-4 grid-square flex-sub">
-						<view class="bg-img" v-for="(item,index) in imgList" :key="index" @tap="ViewImage" :data-url="imgList[index]">
+						<view class="bg-img" v-for="(item,index) in imgList" :key="index" @tap="ViewImage"
+							:data-url="imgList[index]">
 							<image :src="imgList[index]" mode="aspectFill"></image>
 							<view class="cu-tag bg-red" @tap.stop="DelImg" :data-index="index">
 								<text class='icon-close'></text>
@@ -137,15 +157,15 @@ ss<template>
 									<view class="flex-sub">
 										<text>{{index +1}}、出差申请单</text>
 									</view>
-									<radio class="round" :class="radio=='radio' + index?'checked':''" :checked="radio=='radio' + index?true:false"
-									 :value="'radio' + index"></radio>
+									<radio class="round" :class="radio=='radio' + index?'checked':''"
+										:checked="radio=='radio' + index?true:false" :value="'radio' + index"></radio>
 								</label>
 								<label class="flex justify-between align-center flex-sub" v-if="index===1">
 									<view class="flex-sub">
 										<text>{{index +1}}、外出申请单</text>
 									</view>
-									<radio class="round" :class="radio=='radio' + index?'checked':''" :checked="radio=='radio' + index?true:false"
-									 :value="'radio' + index"></radio>
+									<radio class="round" :class="radio=='radio' + index?'checked':''"
+										:checked="radio=='radio' + index?true:false" :value="'radio' + index"></radio>
 								</label>
 							</view>
 						</view>
@@ -171,7 +191,8 @@ ss<template>
 					<view class="action text-bold text-xxl">外勤打卡信息</view>
 					<view class="text-content">
 						<view class="text-left"><text class="text-bold">打卡时间:</text>{{TimeShow}}</view>
-						<view class="text-left" v-if="ValidateAAType()===1"><text class="text-bold">打卡地点:</text><text class="text-sm">{{currentArea.address}}附近</text></view>
+						<view class="text-left" v-if="ValidateAAType()===1"><text class="text-bold">打卡地点:</text><text
+								class="text-sm">{{currentArea.address}}附近</text></view>
 
 						<!-- <view class="text-left">
 							<view class="flex p-xs">
@@ -186,15 +207,24 @@ ss<template>
 							</view>
 						</view> -->
 						<view class="text-left">
+							<text class="text-bold">是否居家:</text>
+							<text>是</text>
+							<switch class="wx-switch-input" @change="SwitchWFH" :checked="IsWorkFromHouse"
+								style="margin: 0 19px;"></switch>
+							<text>否</text>
+						</view>
+						<view class="text-left">
 							<text class="text-bold">在此备注:</text>
-							<textarea class="text sm-border placeholder" v-if="modalName==='GooutRecord'" :disabled="modalName===null"
-							 @input="txtInput" style="height: 150px;min-height: 150px;width: 100%;" placeholder="在此输入外勤原因"></textarea>
+							<textarea class="text sm-border placeholder" v-if="modalName==='GooutRecord'"
+								:disabled="modalName===null" @input="txtInput"
+								style="height: 150px;min-height: 150px;width: 100%;" placeholder="在此输入外勤原因"></textarea>
 						</view>
 					</view>
 				</view>
 				<view class="cu-form-group text-left margin-top" style="background-color: rgba(0,0,0,0);">
 					<view class="grid col-4 grid-square flex-sub">
-						<view class="bg-img" v-for="(item,index) in imgList" :key="index" @tap="ViewImage" :data-url="imgList[index]">
+						<view class="bg-img" v-for="(item,index) in imgList" :key="index" @tap="ViewImage"
+							:data-url="imgList[index]">
 							<image :src="imgList[index]" mode="aspectFill"></image>
 							<view class="cu-tag bg-red" @tap.stop="DelImg" :data-index="index">
 								<text class='icon-close'></text>
@@ -277,7 +307,8 @@ ss<template>
 				RecordPicPathArr: [],
 				qqmapsdk: {},
 				element: {},
-				toggleDelay: false
+				toggleDelay: false,
+				IsWorkFromHouse: false,
 			}
 		},
 		async onShow() {
@@ -479,7 +510,8 @@ ss<template>
 					var disEntity = value //await this.calcDistanceCurToAim();
 					this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
 					this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
-					this.circles[0].radius = parseFloat(this.ScheduleEntity.LimitRadius) > 0 ? parseFloat(this.ScheduleEntity.LimitRadius) :
+					this.circles[0].radius = parseFloat(this.ScheduleEntity.LimitRadius) > 0 ? parseFloat(this
+							.ScheduleEntity.LimitRadius) :
 						0;
 					if (parseFloat(disEntity.elements[0].distance) > parseFloat(this.ScheduleEntity.LimitRadius)) {
 						if (this.ScheduleEntity.IsExtraLongLat === 'Yes') { //多个打卡地
@@ -490,7 +522,8 @@ ss<template>
 									longitude: parseFloat(item.Longitude),
 									color: '#32CD324D',
 									fillColor: '#32CD324D',
-									radius: parseFloat(item.LimitRadius) > 0 ? parseFloat(item.LimitRadius) : 500.0,
+									radius: parseFloat(item.LimitRadius) > 0 ? parseFloat(item
+										.LimitRadius) : 500.0,
 									strokeWidth: 0
 								})
 								_To += item.Latitude + "," + item.Longitude + ";";
@@ -511,9 +544,12 @@ ss<template>
 									var aimIndex = 0;
 									res.result.elements.forEach((opt, idx) => {
 										this.ScheduleEntity.ExtraLongLatLines.forEach((_opt, _idx) => {
-											if (parseFloat(opt.to.lat) === parseFloat(_opt.Latitude) && parseFloat(opt.to.lng) === parseFloat(
+											if (parseFloat(opt.to.lat) === parseFloat(_opt
+													.Latitude) && parseFloat(opt.to.lng) ===
+												parseFloat(
 													_opt.Longitude)) {
-												if (parseFloat(opt.distance) <= parseFloat(_opt.LimitRadius)) {
+												if (parseFloat(opt.distance) <= parseFloat(_opt
+														.LimitRadius)) {
 													isHave = true;
 													option = opt;
 													aimIndex = idx;
@@ -532,7 +568,8 @@ ss<template>
 
 										this.ScheduleEntity.Latitude = option.Latitude;
 										this.ScheduleEntity.Longitude = option.Longitude;
-										this.ScheduleEntity.LimitRadius = option.LimitRadius; //this.element.elements[0];
+										this.ScheduleEntity.LimitRadius = option
+										.LimitRadius; //this.element.elements[0];
 
 										this.Loaded = true;
 										this.$forceUpdate()
@@ -586,7 +623,8 @@ ss<template>
 								success: (res) => {
 									this.WIFIInfo.SSID = res.wifi.SSID
 									this.WIFIInfo.BSSID = res.wifi.BSSID
-									if (!(this.WIFIInfo.BSSID.toLocaleLowerCase().indexOf(this.ScheduleEntity.WifiMac.toLocaleLowerCase()) ===
+									if (!(this.WIFIInfo.BSSID.toLocaleLowerCase().indexOf(this
+												.ScheduleEntity.WifiMac.toLocaleLowerCase()) ===
 											-1)) {
 										this.BtnActionName = "外勤打卡";
 										this.IsOutSideWork = true;
@@ -610,7 +648,7 @@ ss<template>
 				}
 				/* 锁定WIFI打卡-结束 */
 			},
-
+			
 
 
 
@@ -843,7 +881,8 @@ ss<template>
 					UIStatus: "New"
 				};
 				if (this.ScheduleEntity.AttendanceAccording === 'Wifi') {
-					data.RecordIsEffective = this.ScheduleEntity.WifiMac.toLocaleLowerCase() === this.WIFIInfo.BSSID.toLocaleLowerCase() ?
+					data.RecordIsEffective = this.ScheduleEntity.WifiMac.toLocaleLowerCase() === this.WIFIInfo.BSSID
+						.toLocaleLowerCase() ?
 						'Yes' : 'No'
 				}
 				if (this.ScheduleEntity.AttendanceAccording === 'LatLng') {
@@ -852,7 +891,8 @@ ss<template>
 					data.ScheduleLmt = this.ScheduleEntity.LimitRadius; //this.element.elements[0];
 					data.CurentLat = this.latitude;
 					data.CurentLng = this.longitude;
-					if (this.element.elements[0] === undefined || this.element.elements.length <= 0 || this.$mbservices.isEmpty(this.element
+					if (this.element.elements[0] === undefined || this.element.elements.length <= 0 || this.$mbservices
+						.isEmpty(this.element
 							.elements[0].distance)) {
 						uni.showToast({
 							title: '正在计算距离，请稍后再试...',
@@ -862,7 +902,8 @@ ss<template>
 						return false;
 					}
 					data.DistanceToAim = this.element.elements[0].distance;
-					if (data.DistanceToAim <= 0 || this.$mbservices.isEmpty(data.DistanceToAim) || data.DistanceToAim.toString() ===
+					if (data.DistanceToAim <= 0 || this.$mbservices.isEmpty(data.DistanceToAim) || data.DistanceToAim
+						.toString() ===
 						'NaN') {
 						uni.showToast({
 							title: '距离异常，请刷新重试...',
@@ -916,6 +957,14 @@ ss<template>
 					uni.hideLoading()
 				})
 			},
+			SwitchWFH(e){
+				var that = this;
+				if(e.target.value === false){
+					that.IsWorkFromHouse = false;
+				}else{
+					that.IsWorkFromHouse = true;
+				}
+			},
 			submitData() {
 				/* if (this.$mbservices.isEmpty(this.GooutHours) || this.GooutHours <= 0) {
 					uni.showToast({
@@ -952,6 +1001,12 @@ ss<template>
 					pathurls += item + ','
 				})
 				pathurls = pathurls.substr(0, pathurls.length - 1);
+				var IsWFH = "";
+				if(that.IsWorkFromHouse === false){
+					IsWFH = "N";
+				}else{
+					IsWFH = "Y";
+				}
 				let data = {
 					DocNum: "1",
 					CreatorId: uni.getStorageSync("JSUserInfo").UserId,
@@ -971,10 +1026,12 @@ ss<template>
 					Hours: this.GooutHours,
 					RecordRemarks: this.txtContent,
 					AttendanceAccording: this.ScheduleEntity.AttendanceAccording,
+					IsWorkFromHouse: IsWFH,
 					UIStatus: "New"
 				};
 				if (this.ScheduleEntity.AttendanceAccording === 'Wifi') {
-					data.RecordIsEffective = this.ScheduleEntity.WifiMac.toLocaleLowerCase() === this.WIFIInfo.BSSID.toLocaleLowerCase() ?
+					data.RecordIsEffective = this.ScheduleEntity.WifiMac.toLocaleLowerCase() === this.WIFIInfo.BSSID
+						.toLocaleLowerCase() ?
 						'Yes' : 'No'
 				}
 				if (this.ScheduleEntity.AttendanceAccording === 'LatLng') {
@@ -983,7 +1040,8 @@ ss<template>
 					data.ScheduleLmt = this.ScheduleEntity.LimitRadius; //this.element.elements[0];
 					data.CurentLat = this.latitude;
 					data.CurentLng = this.longitude;
-					if (this.element.elements[0] === undefined || this.element.elements.length <= 0 || this.$mbservices.isEmpty(this.element
+					if (this.element.elements[0] === undefined || this.element.elements.length <= 0 || this.$mbservices
+						.isEmpty(this.element
 							.elements[0].distance)) {
 						uni.showToast({
 							title: '正在计算距离，请稍后再试...',
@@ -993,7 +1051,8 @@ ss<template>
 						return false;
 					}
 					data.DistanceToAim = this.element.elements[0].distance;
-					if (data.DistanceToAim <= 0 || this.$mbservices.isEmpty(data.DistanceToAim) || data.DistanceToAim.toString() ===
+					if (data.DistanceToAim <= 0 || this.$mbservices.isEmpty(data.DistanceToAim) || data.DistanceToAim
+						.toString() ===
 						'NaN') {
 						uni.showToast({
 							title: '距离异常，请刷新重试...',
@@ -1066,12 +1125,14 @@ ss<template>
 						}, {
 							FieldName: "CheckDatetime",
 							Operation: "GRATER_EQUAL",
-							ConditionValue: this.$mbservices.formatDateTime(new Date(), 'yyyy/MM/dd') + ' 00:00:00',
+							ConditionValue: this.$mbservices.formatDateTime(new Date(), 'yyyy/MM/dd') +
+								' 00:00:00',
 							Relationship: "AND"
 						}, {
 							FieldName: "CheckDatetime",
 							Operation: "LESS_EQUAL",
-							ConditionValue: this.$mbservices.formatDateTime(new Date(), 'yyyy/MM/dd') + ' 23:59:59',
+							ConditionValue: this.$mbservices.formatDateTime(new Date(), 'yyyy/MM/dd') +
+								' 23:59:59',
 							Relationship: "AND"
 						}],
 					}
@@ -1219,9 +1280,12 @@ ss<template>
 							success: (e) => {
 								[tempFilePaths].forEach(_item => {
 									uni.uploadFile({
-										url: this.$webapi.uploadFilePath, //仅为示例，非真实的接口地址
+										url: this.$webapi
+										.uploadFilePath, //仅为示例，非真实的接口地址
 										header: {
-											Authorization: "bearer " + uni.getStorageSync("JSUserInfo").access_token
+											Authorization: "bearer " + uni
+												.getStorageSync("JSUserInfo")
+												.access_token
 										},
 										filePath: _item,
 										name: 'file',
@@ -1229,9 +1293,11 @@ ss<template>
 											'user': 'test'
 										},
 										success: (uploadFileRes) => {
-											JSON.parse(uploadFileRes.data).forEach(item => {
-												this.PicPaths.push(item.filePath)
-											});
+											JSON.parse(uploadFileRes.data).forEach(
+												item => {
+													this.PicPaths.push(item
+														.filePath)
+												});
 
 										}
 									});
@@ -1261,7 +1327,8 @@ ss<template>
 							uni.uploadFile({
 								url: this.$webapi.uploadFilePath, //仅为示例，非真实的接口地址
 								header: {
-									Authorization: "bearer " + uni.getStorageSync("JSUserInfo").access_token
+									Authorization: "bearer " + uni.getStorageSync("JSUserInfo")
+										.access_token
 								},
 								filePath: _item,
 								name: 'file',
@@ -1379,7 +1446,8 @@ ss<template>
 							var res = res.result;
 							/* 锁定经纬度打卡-开始 */
 							if (this.ScheduleEntity.AttendanceAccording === "LatLng") {
-								if (parseFloat(res.elements[0].distance) > parseFloat(this.ScheduleEntity.LimitRadius)) {
+								if (parseFloat(res.elements[0].distance) > parseFloat(this
+										.ScheduleEntity.LimitRadius)) {
 									this.BtnActionName = "外勤打卡";
 									this.IsOutSideWork = true;
 								} else {
