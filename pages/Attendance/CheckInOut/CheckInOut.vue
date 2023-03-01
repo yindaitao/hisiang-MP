@@ -257,6 +257,7 @@ ss<template>
 		data() {
 			let _timeShow = this.$mbservices.formatDateTime(new Date(), 'hh:mm:ss')
 			return {
+				ExtraLongLatLineNum: null,
 				Loaded: false,
 				txtContent: '',
 				TimeShow: _timeShow,
@@ -891,6 +892,10 @@ ss<template>
 					data.ScheduleLmt = this.ScheduleEntity.LimitRadius; //this.element.elements[0];
 					data.CurentLat = this.latitude;
 					data.CurentLng = this.longitude;
+					//打卡记录 储存  排班编码、
+					data.ScheduleCode = this.ScheduleEntity.ScheduleCode;
+					data.ExtraLongLatLineNum = this.ExtraLongLatLineNum;
+					data.IsMealAllowance = this.ScheduleEntity.IsMealAllowance;
 					if (this.element.elements[0] === undefined || this.element.elements.length <= 0 || this.$mbservices
 						.isEmpty(this.element
 							.elements[0].distance)) {
@@ -980,20 +985,20 @@ ss<template>
 					})
 					return false;
 				} */
-				if (this.$mbservices.isEmpty(this.txtContent)) {
+				if (this.$mbservices.isEmpty(this.txtContent.trim())) {
 					uni.showToast({
 						title: '请输入外勤原因',
 						icon: 'none'
 					})
 					return false;
 				}
-				if (this.IsOutSideWork && this.PicPaths.length <= 0) {
+				/* if (this.IsOutSideWork && this.PicPaths.length <= 0) {
 					uni.showToast({
 						title: '外勤打卡必须上传图片',
 						icon: 'none'
 					})
 					return false;
-				}
+				}*/
 				this.modalName = null;
 
 				let pathurls = '';
@@ -1002,11 +1007,13 @@ ss<template>
 				})
 				pathurls = pathurls.substr(0, pathurls.length - 1);
 				var IsWFH = "";
-				if(that.IsWorkFromHouse === false){
+				if(this.IsWorkFromHouse === false){
 					IsWFH = "N";
 				}else{
 					IsWFH = "Y";
 				}
+				console.log("IsWFH    IsWFH    IsWFH");
+				console.log(IsWFH);
 				let data = {
 					DocNum: "1",
 					CreatorId: uni.getStorageSync("JSUserInfo").UserId,
@@ -1029,6 +1036,8 @@ ss<template>
 					IsWorkFromHouse: IsWFH,
 					UIStatus: "New"
 				};
+				console.log("data data   tdata");
+				console.log(data);
 				if (this.ScheduleEntity.AttendanceAccording === 'Wifi') {
 					data.RecordIsEffective = this.ScheduleEntity.WifiMac.toLocaleLowerCase() === this.WIFIInfo.BSSID
 						.toLocaleLowerCase() ?
@@ -1040,6 +1049,10 @@ ss<template>
 					data.ScheduleLmt = this.ScheduleEntity.LimitRadius; //this.element.elements[0];
 					data.CurentLat = this.latitude;
 					data.CurentLng = this.longitude;
+					//打卡记录 储存  排班编码、
+					data.ScheduleCode = this.ScheduleEntity.ScheduleCode;
+					data.ExtraLongLatLineNum = this.ExtraLongLatLineNum;
+					data.IsMealAllowance = this.ScheduleEntity.IsMealAllowance;
 					if (this.element.elements[0] === undefined || this.element.elements.length <= 0 || this.$mbservices
 						.isEmpty(this.element
 							.elements[0].distance)) {
