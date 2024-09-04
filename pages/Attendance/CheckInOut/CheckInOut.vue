@@ -554,6 +554,7 @@ ss<template>
 													isHave = true;
 													option = opt;
 													aimIndex = idx;
+													this.ScheduleEntity.IsMealAllowance = _opt.IsMealAllowance;
 												}
 											}
 										})
@@ -569,8 +570,7 @@ ss<template>
 
 										this.ScheduleEntity.Latitude = option.Latitude;
 										this.ScheduleEntity.Longitude = option.Longitude;
-										this.ScheduleEntity.LimitRadius = option
-										.LimitRadius; //this.element.elements[0];
+										this.ScheduleEntity.LimitRadius = option.LimitRadius; //this.element.elements[0];
 
 										this.Loaded = true;
 										this.$forceUpdate()

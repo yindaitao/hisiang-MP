@@ -2,6 +2,7 @@ var websiteUrl = "https://so.magicdata.co";
 
 /* https://oa.magicbox.net.cn  magic  */
 /* https://so.magicdata.co  hisiang  */
+/*http://sh.mysosys.com*/ 
 module.exports = {	
 	/* 接口根目录 */
 	webroot: websiteUrl,
@@ -156,7 +157,7 @@ module.exports = {
 	/* 保存打卡记录 */
 	saveWorkRecord: websiteUrl + '/api/WorkRecord/SaveEntity',
 	/* 获取今天的打卡记录 */
-	getWorkRecords: websiteUrl + '/api/WorkRecord/GetRecordsList',
+	getWorkRecords: websiteUrl + '/api/WorkRecord/GetRecords',
 	// 获取发票类型
 	getVatRecords: websiteUrl + '/api/Vat/GetRecords',
 	// 获取系统初始化表格的数据

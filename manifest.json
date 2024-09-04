@@ -57,9 +57,9 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wx39ca3f975d178890",
+        "appid" : "wx047c21bdfe1dcffc",
         "setting" : {
-            "urlCheck" : false
+            "urlCheck" : true
         },
         "usingComponents" : true,
         "permission" : {
@@ -67,9 +67,7 @@
                 "desc" : "请选择允许以保证能够正常打卡"
             }
         },
-		"requiredPrivateInfos": [
-			"getLocation"
-		]
+        "requiredPrivateInfos" : [ "getLocation" ]
     },
     "mp-alipay" : {
         "usingComponents" : true
