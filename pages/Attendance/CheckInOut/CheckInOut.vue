@@ -999,6 +999,7 @@ ss<template>
 					})
 					return false;
 				}*/
+				this.RefreshAddress();
 				this.modalName = null;
 
 				let pathurls = '';
@@ -1167,6 +1168,7 @@ ss<template>
 				this.GooutHours = e.detail.value;
 			},
 			RefreshAddress(e) {
+				console.log("RefreshAddress  进入");
 				this.circles[0].latitude = null; //parseFloat(this.ScheduleEntity.Latitude);
 				this.circles[0].longitude = null; // parseFloat(this.ScheduleEntity.Longitude);
 				var arr = [];
@@ -1200,7 +1202,7 @@ ss<template>
 					uni.showLoading({
 						title: '请稍后...'
 					})
-
+					this.RefreshAddress();
 					let param = {
 						PageIndex: 1,
 						RowsPerPage: "1000",

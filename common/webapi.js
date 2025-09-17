@@ -1,4 +1,4 @@
-var websiteUrl = "https://so.magicdata.co";
+var websiteUrl = "https://freightresourceplanning.com";
 
 /* https://oa.magicbox.net.cn  magic  */
 /* https://so.magicdata.co  hisiang  */
