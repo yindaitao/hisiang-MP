@@ -860,6 +860,15 @@ ss<template>
 						return false;
 					}
 				}
+				console.log("_New_getLocationInfo   之前   RecordAddress  打卡地址  "+this.currentArea.address);
+				console.log("_New_getLocationInfo   之前   RecordAddress  打卡地址  "+this.ScheduleEntity.AttendanceAccording);
+				console.log("_New_getLocationInfo   之前   RecordAddress  经纬度  "+this.ScheduleEntity.Latitude+"   "
+				+this.ScheduleEntity.Longitude);
+				this._New_getLocationInfo();
+				console.log("_New_getLocationInfo   之后   RecordAddress  打卡地址  "+this.currentArea.address);
+				console.log("_New_getLocationInfo   之后   RecordAddress  打卡地址  "+this.ScheduleEntity.AttendanceAccording);
+				console.log("_New_getLocationInfo   之后   RecordAddress  经纬度  "+this.ScheduleEntity.Latitude+"   "
+				+this.ScheduleEntity.Longitude);
 				this.modalName = null;
 
 				let data = {
