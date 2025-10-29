@@ -343,6 +343,9 @@ ss<template>
 				this.TimeShow = this.$mbservices.formatDateTime(new Date(), 'hh:mm:ss')
 			}, 1000);
 			// #endif
+			setInterval(() => {
+				this._New_getLocationInfo();
+			}, 60000);
 			this._New_isGetLocation();
 			this.getWorkRecords();
 		},
@@ -509,8 +512,8 @@ ss<template>
 				/* 锁定经纬度打卡-开始 */
 				if (this.ScheduleEntity.AttendanceAccording === "LatLng") {
 					var disEntity = value //await this.calcDistanceCurToAim();
-					this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);
-					this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);
+					this.circles[0].latitude = parseFloat(this.ScheduleEntity.Latitude);//获取排班管理设置的经度
+					this.circles[0].longitude = parseFloat(this.ScheduleEntity.Longitude);//获取排班管理设置的纬度
 					this.circles[0].radius = parseFloat(this.ScheduleEntity.LimitRadius) > 0 ? parseFloat(this
 							.ScheduleEntity.LimitRadius) :
 						0;
@@ -650,26 +653,6 @@ ss<template>
 				/* 锁定WIFI打卡-结束 */
 			},
 			
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 			/* 新流程-结束 */
 			ReloadScheduleInfo() {
@@ -836,7 +819,7 @@ ss<template>
 				}
 				return '未知'
 			},
-			submitDataCommon() {
+			submitDataCommon() {//点击 圆圈打卡
 				if (this.$mbservices.isEmpty(this.ScheduleEntity.ScheduleCode)) {
 					uni.showModal({
 						title: '无排班信息,请刷新重试'
@@ -860,15 +843,7 @@ ss<template>
 						return false;
 					}
 				}
-				console.log("_New_getLocationInfo   之前   RecordAddress  打卡地址  "+this.currentArea.address);
-				console.log("_New_getLocationInfo   之前   RecordAddress  打卡地址  "+this.ScheduleEntity.AttendanceAccording);
-				console.log("_New_getLocationInfo   之前   RecordAddress  经纬度  "+this.ScheduleEntity.Latitude+"   "
-				+this.ScheduleEntity.Longitude);
 				this._New_getLocationInfo();
-				console.log("_New_getLocationInfo   之后   RecordAddress  打卡地址  "+this.currentArea.address);
-				console.log("_New_getLocationInfo   之后   RecordAddress  打卡地址  "+this.ScheduleEntity.AttendanceAccording);
-				console.log("_New_getLocationInfo   之后   RecordAddress  经纬度  "+this.ScheduleEntity.Latitude+"   "
-				+this.ScheduleEntity.Longitude);
 				this.modalName = null;
 
 				let data = {
@@ -1203,7 +1178,7 @@ ss<template>
 					title: "打卡记录"
 				});
 			},
-			showModal(e) {
+			showModal(e) {//获取排班信息
 				if (!this.Loaded) {
 					return;
 				}
@@ -1211,7 +1186,8 @@ ss<template>
 					uni.showLoading({
 						title: '请稍后...'
 					})
-					this.RefreshAddress();
+					this.RefreshAddress();//重新获取地址
+					this._New_getLocationInfo();
 					let param = {
 						PageIndex: 1,
 						RowsPerPage: "1000",
@@ -1254,8 +1230,15 @@ ss<template>
 								if (this.IsOutSideWork) {
 									this.modalName = "GooutRecord";
 								} else {
+				console.log("_New_getLocationInfo   之前   RecordAddress  打卡地址  "+this.currentArea.address);
+				console.log("_New_getLocationInfo   之前   RecordAddress  打卡地址  "+this.ScheduleEntity.AttendanceAccording);
+				console.log("_New_getLocationInfo   之前   RecordAddress  经纬度  "+this.ScheduleEntity.Latitude+"   ");
+									this._New_getLocationInfo();
+				console.log("_New_getLocationInfo   之后   RecordAddress  打卡地址  "+this.currentArea.address);
+				console.log("_New_getLocationInfo   之后   RecordAddress  打卡地址  "+this.ScheduleEntity.AttendanceAccording);
+				console.log("_New_getLocationInfo   之后   RecordAddress  经纬度  "+this.ScheduleEntity.Latitude+"   ");
 									//this.modalName = e.currentTarget.dataset.target;
-									this.submitDataCommon()
+									this.submitDataCommon();
 								}
 							}
 						} else {

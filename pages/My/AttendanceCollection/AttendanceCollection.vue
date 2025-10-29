@@ -70,7 +70,7 @@
 					<view class="action">
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">请假合计：{{AttendanceEntity.SickLeave}}天</text>
+							<text class="text-grey">请假合计：{{AttendanceEntity.LeaveTotal}}天</text>
 						</view>
 					</view>
 					<!-- <view class="action">
@@ -167,11 +167,11 @@
 					<view class="content">
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">国内出差：{{AttendanceEntity.GExtraWorkHours}}天</text>
+							<text class="text-grey">国内出差：{{AttendanceEntity.DomesticGooutDays}}天</text>
 						</view>
 						<view>
 							<text class="icon-title text-grey"></text>
-							<text class="text-grey">国外出差：{{AttendanceEntity.GExtraWorkHours}}天</text>
+							<text class="text-grey">国外出差：{{AttendanceEntity.AbroadGooutDays}}天</text>
 						</view>
 					</view>
 				</view>
@@ -210,6 +210,7 @@
 					LeaveWithSalary: 0,
 					LeaveWithSalaryLast: 0,
 					LeaveWithSalaryTotal: 0,
+					LeaveTotal:0,//请假合计
 					Late: 0,
 					Early: 0,
 					NeglectWork: 0,
@@ -231,7 +232,9 @@
 					LastQinQingJia: 0,
 					UseNianJia: 0,
 					UseDaiXinBingJia: 0,
-					UseQinQingJia: 0
+					UseQinQingJia: 0,
+					DomesticGooutDays:0,//国内出差
+					AbroadGooutDays:0,//国外出差
 				}
 			}
 		},
@@ -276,6 +279,7 @@
 				this.AttendanceEntity.LeaveWithSalary = 0;
 				this.AttendanceEntity.LeaveWithSalaryLast = 0;
 				this.AttendanceEntity.LeaveWithSalaryTotal = 0;
+				this.AttendanceEntity.LeaveTotal = 0;
 				this.AttendanceEntity.Late = 0;
 				this.AttendanceEntity.Early = 0;
 				this.AttendanceEntity.NeglectWork = 0;
@@ -298,6 +302,8 @@
 				this.AttendanceEntity.UseNianJia = 0;
 				this.AttendanceEntity.UseDaiXinBingJia = 0;
 				this.AttendanceEntity.UseQinQingJia = 0;
+				this.AttendanceEntity.DomesticGooutDays = 0;//国内出差
+				this.AttendanceEntity.AbroadGooutDays = 0;//国外出差
 			},
 			getLastAttendanceRecords() {
 				uni.showLoading({
@@ -334,11 +340,14 @@
 						this.AttendanceEntity.RExtraWorkHours = res.data.data[0].RExtraWorkHours;
 						this.AttendanceEntity.RExtraWorkMeal = res.data.data[0].RExtraWorkMeal;
 						this.AttendanceEntity.SickLeave = res.data.data[0].SickLeave;
+						this.AttendanceEntity.LeaveTotal = res.data.data[0].LeaveTotal;//请假合计
 						this.AttendanceEntity.StandardAttendanceCount = res.data.data[0].StandardAttendanceCount;
 						this.AttendanceEntity.HoursTotal = parseFloat(this.AttendanceEntity.GExtraWorkHours) + parseFloat(this.AttendanceEntity
 							.RExtraWorkHours) + parseFloat(this.AttendanceEntity.HExtraWorkHours);
 						this.AttendanceEntity.MealsTotal = parseInt(this.AttendanceEntity.GExtraWorkMeal) + parseInt(this.AttendanceEntity
 							.HExtraWorkMeal) + parseInt(this.AttendanceEntity.RExtraWorkMeal);
+						this.AttendanceEntity.DomesticGooutDays = res.data.data[0].DomesticGooutDays;//国内出差
+						this.AttendanceEntity.AbroadGooutDays = res.data.data[0].AbroadGooutDays;//国外出差
 						/* this.AttendanceEntity.SumNianJia = parseFloat(this.AttendanceEntity.SumNianJia).toFixed(2);
 						this.AttendanceEntity.SumDaiXinBingJia = parseFloat(this.AttendanceEntity.SumDaiXinBingJia).toFixed(2);
 						this.AttendanceEntity.SumQinQingJia = parseFloat(this.AttendanceEntity.SumQinQingJia).toFixed(2);
@@ -375,6 +384,7 @@
 						this.AttendanceEntity.LeaveWithSalary = res.data.data.LeaveWithSalary;
 						this.AttendanceEntity.LeaveWithSalaryLast = res.data.data.LeaveWithSalaryLast;
 						this.AttendanceEntity.LeaveWithSalaryTotal = res.data.data.LeaveWithSalaryTotal;
+						console.log(this.AttendanceEntity);
 					}
 				}, err => {});
 			},
